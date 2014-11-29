@@ -2,12 +2,6 @@
 	cursor: pointer;
 }
 
-.types .btn {
-	width: 5em;
-	font-weight: bold;
-	border-width: 0.25em;
-}
-
 .clearable{
 	background: #fff url(data:image/gif;base64,R0lGODlhBwAHAIAAAP///5KSkiH5BAAAAAAALAAAAAAHAAcAAAIMTICmsGrIXnLxuDMLADs=) no-repeat right -10px center;
 	padding-right: 18px; /* Use the same right padding (18) in jQ! */
