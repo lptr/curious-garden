@@ -30,7 +30,7 @@
 
 		$scope.reset = function () {
 			$scope.payee = "";
-			$scope.amount = 0;
+			$scope.amount = undefined;
 			$scope.sourceAccount = "";
 			$scope.targetAccount = "";
 			$scope.status = "";
