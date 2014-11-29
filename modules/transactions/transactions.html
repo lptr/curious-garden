@@ -1,4 +1,4 @@
-<form id="form" name="curious" class="form-horizontal" action="javascript:return;">
+<form id="form" name="transaction" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
 <fieldset>
 
 <!-- Transaction Type -->
@@ -20,45 +20,46 @@
 </div>
 
 <!-- Payee -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="payee">Payee</label>
 	<div class="col-md-4">
-		<input id="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="who is the payee?">
+		<input id="payee" name="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="who is the payee?" ng-required="true" />
+		<small class="error" ng-show="transaction.payee.$error.ng-required">Payee is required.</small>
 	</div>
 </div>
 
 <!-- Amount -->
-<div class="form-group form-group-lg">
+<div class="form-group form-group-lg" show-errors>
 	<label class="col-md-4 control-label" for="amount">Amount</label>	
 	<div class="col-md-4">
 		<div class="input-group input-group-lg">
-			<input id="amount" ng-model="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" required="true" />
+			<input id="amount" name="amount" ng-model="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" ng-required="true"/>
 			<span class="input-group-addon">Ft</span>
 		</div>
 	</div>
 </div>
 
 <!-- Source Account -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
 	<div class="col-md-4">
-		<input id="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?">
+		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="true"/>
 	</div>
 </div>
 
 <!-- Target Account -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
 	<div class="col-md-4">
-		<input id="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?">
+		<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="true"/>
 	</div>
 </div>
 
 <!-- Status -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="status">Status</label>
 	<div class="col-md-4">
-		<select id="status" ng-model="status" class="form-control">
+		<select id="status" name="status" ng-model="status" class="form-control" ng-required>
 			<option value="paid">paid</option>
 			<option value="pending">pending</option>
 			<option value="planned">planned</option>
@@ -67,34 +68,34 @@
 </div>
 
 <!-- Category -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="category">Category</label>
 	<div class="col-md-4">
-		<input id="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what is this transaction about?" required />
+		<input id="category" name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what is this transaction about?" ng-required="true"/>
 	</div>
 </div>
 
 <!-- Memo -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="memo">Memo</label>	
 	<div class="col-md-4">
-		<input id="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable"/>
+		<input id="memo" name="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable" />
 	</div>
 </div>
 
 <!-- Date -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="date">Date</label>	
 	<div class="col-md-4">
-		<input id="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" required="true" />
+		<input id="date" name="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" ng-required="true"/>
 	</div>
 </div>
 
 <!-- Cost Date -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label" for="costMonth">Cost Date</label>	
 	<div class="col-md-4">
-		<input id="costMonth" ng-model="costMonth" type="month" placeholder="when to book it" class="form-control" required="true" />
+		<input id="costMonth" name="costMonth" ng-model="costMonth" type="month" placeholder="when to book it" class="form-control" ng-required="true"/>
 	</div>
 </div>
 
@@ -102,7 +103,8 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="submit"></label>
 	<div class="col-md-4">
-		<input id="submit" type="submit" class="btn btn-primary" onclick="submitForm(this.form);" value="Submit"/>
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<button type="button" class="btn btn-danger pull-right" ng-click="reset()">Reset</button>
 	</div>
 </div>
 </fieldset>

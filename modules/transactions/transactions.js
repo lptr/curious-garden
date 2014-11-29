@@ -1,5 +1,5 @@
 (function () {
-	var transactionModule = angular.module("kapa.transactions", ["kapa.server", "ngRoute", "ui.bootstrap"]);
+	var transactionModule = angular.module("kapa.transactions", ["kapa.server", "ngRoute", "ui.bootstrap", "ui.bootstrap.showErrors"]);
 
 	transactionModule.config(function ($routeProvider) {
 		$routeProvider
@@ -9,18 +9,10 @@
 			});
 	});
 
-	transactionModule.controller("TransactionsController", function ($scope, kapaServer) {
+	transactionModule.controller("TransactionsController", function ($scope, $filter, kapaServer) {
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
-
-		$scope.payee = "";
-		$scope.amount = 0;
-		$scope.sourceAccount = "";
-		$scope.targetAccount = "";
-		$scope.memo = "";
-		$scope.date = new Date();
-		$scope.costMonth = new Date();
 
 		kapaServer.query("getAccounts").success(function (accounts) {
 			console.log("Got accounts", accounts);
@@ -35,37 +27,45 @@
 			$scope.categories = categories;
 		});
 
-		var submitForm = function(form) {
-			var form = $(form);
-			var payee = form.find("[name = 'payee']").val();
-			var amount = form.find("[name = 'amount']").val();
-			var sourceAccount = form.find("[name = 'sourceAccount']").val();
-			var targetAccount = form.find("[name = 'targetAccount']").val();
-			var status = form.find("[name = 'status']").val();
-			var category = form.find("[name = 'category']").val();
-			var date = form.find("[name = 'date']").val();
-			var costMonth = form.find("[name = 'costMonth']").val();
-			var memo = form.find("[name = 'memo']").val();
+		$scope.reset = function () {
+			$scope.payee = "";
+			$scope.amount = 0;
+			$scope.sourceAccount = "";
+			$scope.targetAccount = "";
+			$scope.status = "";
+			$scope.category = "";
+			$scope.memo = "";
+			$scope.date = new Date();
+			$scope.costMonth = new Date();
+			$scope.$broadcast('show-errors-reset');
+		}
 
-			// Disable form
-			form.find("input[type != 'submit'], select, textarea").prop("disabled", "true");
+		$scope.reset();
+		$scope.submiting = false;
+
+		$scope.submit = function () {
+			if ($scope.transaction.$invalid) {
+				alert("Invalid data");
+				return;
+			}
+			$scope.submiting = true;
 
 			var formData = {
-				payee: payee,
-				amount: amount,
-				sourceAccount: sourceAccount,
-				targetAccount: targetAccount,
-				status: status,
-				category: category,
-				date: date,
-				costMonth: costMonth,
-				memo: memo
+				payee: $scope.payee,
+				amount: $scope.amount,
+				sourceAccount: $scope.sourceAccount,
+				targetAccount: $scope.targetAccount,
+				status: $scope.status,
+				category: $scope.category,
+				memo: $scope.memo,
+				date: $filter("date")($scope.date, "yyyy-MM-dd"),
+				costMonth: $filter("date")($scope.costMonth, "yyyy-MM")
 			};
-			kapaServer.query("submit", formData, function (id) {
+			kapaServer.query("submit", formData).success(function (id) {
 				alert("Successfully submited new cost with ID " + id + ".");
-				form.find("input[type != 'submit'], select, textarea").val("").prop("disabled", false);
-				form.find("input:radio, input:checkbox")
-					.removeAttr("checked").removeAttr("selected").prop("disabled", false);
+				$scope.reset();
+			}).finally(function () {
+				$scope.submiting = false;
 			});
 		}
 
