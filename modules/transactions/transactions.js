@@ -9,7 +9,7 @@
 			});
 	});
 
-	transactionModule.controller("TransactionsController", function ($scope, $filter, kapaServer) {
+	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, kapaServer) {
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
@@ -42,14 +42,15 @@
 		}
 
 		$scope.reset();
-		$scope.submiting = false;
 
 		$scope.submit = function () {
 			if ($scope.transaction.$invalid) {
 				alert("Invalid data");
 				return;
 			}
-			$scope.submiting = true;
+			var popup = $modal.open({
+				templateUrl: "save-dialog.html"
+			});
 
 			var formData = {
 				payee: $scope.payee,
@@ -69,10 +70,9 @@
 			}
 
 			kapaServer.query("submit", formData).success(function (id) {
-				alert("Successfully submited new cost with ID " + id + ".");
 				$scope.reset();
 			}).finally(function () {
-				$scope.submiting = false;
+				popup.close();
 			});
 		}
 	});
