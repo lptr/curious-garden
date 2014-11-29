@@ -1,0 +1,14 @@
+.account-withdrawal {
+	background-color: #fff4f4;
+	transition: background-color 0.5s;
+}
+
+.account-deposit {
+	background-color: #f4fff4;
+	transition: background-color 0.5s;
+}
+
+.account-transfer {
+	background-color: #f4f4ff;
+	transition: background-color 0.5s;
+}
