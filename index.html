@@ -1,0 +1,384 @@
+<?doctype html?>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+	<script src="https://code.jquery.com/jquery-2.1.1.js"></script>
+	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+	<style>
+	.types .btn {
+		width: 5em;
+		font-weight: bold;
+		border-width: 0.25em;
+	}
+	</style>
+	<script>
+	var queryServer = function(method, data, callback) {
+		$.ajax("https://script.google.com/macros/s/AKfycbzr__tdtQoB4Hg9mJOCaK8Y9AL8Fwx4uyIxHefJSis/dev",
+		{
+			dataType: "jsonp",
+			data: {
+				method: method,
+				data: JSON.stringify(data)
+			},
+			success: function(data) {
+				callback(data);
+			},
+			error: function (xhr, error, exception) {
+				console.log("Error", xhr, error, exception);
+				alert("Error: " + error);
+			}
+		});
+	}
+
+	var configureAccount = function (accountName) {
+		var accountSelect = $("#" + accountName + "AccountSelect");
+		var account = $("#" + accountName + "Account");
+		var customAccount = $("#" + accountName + "CustomAccount");
+		var updateAccount = function () {
+			var selectedAccount = accountSelect.val();
+			var isCustom = selectedAccount === "custom";
+			account.prop("disabled", !isCustom);
+			if (isCustom) {
+				customAccount.collapse("show");
+				account.val("");
+				account.focus();
+			} else {
+				customAccount.collapse("hide");
+				account.val(accountSelect.val());
+			}
+		};
+		accountSelect.change(updateAccount);
+		accountSelect.append($("<option></option")
+			.attr("value", "custom")
+			.text("Custom..."));
+		accountSelect.val("custom");
+		updateAccount();
+		queryServer("getAccounts", null, function (accounts) {
+			$.each(accounts, function(index, value) {
+				accountSelect
+					.append($("<option></option>")
+					.attr("value", value)
+					.text(value));
+			});
+		});
+	};
+
+	$(function () {
+		var payeeSelect = $("#payeeSelect");
+		var updatePayee = function () {
+			var payee = $("#payee");
+			var selectedPayee = payeeSelect.val();
+			var isCustom = selectedPayee === "custom";
+			payee.prop("disabled", !isCustom);
+			if (isCustom) {
+				$("#customPayee").collapse("show");
+				payee.val("");
+				payee.focus();
+			} else {
+				$("#customPayee").collapse("hide");
+				payee.val(payeeSelect.val());
+			}
+		};
+		payeeSelect.change(updatePayee);
+		payeeSelect.append($("<option></option")
+			.attr("value", "custom")
+			.text("Custom..."));
+		payeeSelect.val("custom");
+		updatePayee();
+		queryServer("getPayees", null, function (payees) {
+			var firstLetter = "";
+			var group;
+			$.each(payees, function(index, value) {
+				var currentFirstLetter = value.toUpperCase().charAt(0);
+				if (!group || firstLetter !== currentFirstLetter) {
+					firstLetter = currentFirstLetter;
+					group = $("<optgroup></optgroup>")
+						.attr("label", firstLetter);
+					payeeSelect.append(group);
+				}
+				group
+					.append($("<option></option>")
+					.attr("value", value)
+					.text(value.substring(0, 24)));
+			});
+		});
+		
+		configureAccount("source");
+		configureAccount("target");
+
+		var categorySelect = $("#categorySelect");
+		var updateCategory = function () {
+			var category = $("#category");
+			var selectedCategory = categorySelect.val();
+			var isCustom = selectedCategory === "custom";
+			category.prop("disabled", !isCustom);
+			if (isCustom) {
+				$("#customCategory").collapse("show");
+				category.val("");
+				category.focus();
+			} else {
+				category.val(categorySelect.find(":selected").parent().prop("label") + " - " + categorySelect.val());
+				$("#customCategory").collapse("hide");
+			}
+		};
+		categorySelect.change(updateCategory);
+		categorySelect
+			.append($("<option></option>")
+			.attr("value", "custom")
+			.text("Custom..."));
+		updateCategory();
+		queryServer("getCategories", null, function (categories) {
+			$.each(categories, function (index, category) {
+				var categoryGroup = $("<optgroup></optgroup>")
+					.attr("label", category.name);
+				categorySelect.append(categoryGroup);
+				$.each(category.subs, function (index, subCategory) {
+					categoryGroup
+						.append($("<option></option>")
+						.attr("value", subCategory)
+						.text(subCategory));
+				});
+			});
+		});
+
+		$("#date").val(new Date().toISOString().slice(0,10));
+		$("#costMonth").val(new Date().toISOString().slice(0,7));
+		
+		var transactionType = $("form input[name = 'type']");
+		transactionType.change(function (x) {
+			selectType($("#transactionType input:checked").attr("value"));
+		});
+		selectType("withdrawal");
+	});
+
+	function submitForm(form) {
+		var form = $(form);
+		var payee = form.find("[name = 'payee']").val();
+		var amount = form.find("[name = 'amount']").val();
+		var sourceAccount = form.find("[name = 'sourceAccount']").val();
+		var targetAccount = form.find("[name = 'targetAccount']").val();
+		var status = form.find("[name = 'status']").val();
+		var category = form.find("[name = 'category']").val();
+		var date = form.find("[name = 'date']").val();
+		var costMonth = form.find("[name = 'costMonth']").val();
+		var memo = form.find("[name = 'memo']").val();
+
+		// Disable form
+		form.find("input[type != 'submit'], select, textarea").prop("disabled", "true");
+
+		var formData = {
+			payee: payee,
+			amount: amount,
+			sourceAccount: sourceAccount,
+			targetAccount: targetAccount,
+			status: status,
+			category: category,
+			date: date,
+			costMonth: costMonth,
+			memo: memo
+		};
+		queryServer("submit", formData, function (id) {
+			alert("Successfully submited new cost with ID " + id + ".");
+			form.find("input[type != 'submit'], select, textarea").val("").prop("disabled", false);
+			form.find("input:radio, input:checkbox")
+				.removeAttr("checked").removeAttr("selected").prop("disabled", false);
+		});
+	}
+
+	function selectType(type) {
+		console.log("selectType " + type);
+		var selectAccount = function (name, select) {
+			console.log("selectAccount(" + name + ", " + select + ")");
+			$("#" + name + "AccountGroup").collapse(select ? "show" : "hide");
+			if (!select) {
+				$("#" + name + "AccountSelect").val("custom");
+				$("#" + name).val("");
+			}
+		};
+		var source;
+		var target;
+		var color;
+		switch (type) {
+			case "withdrawal":
+				source = true;
+				target = false;
+				color = "#FFF4F4";
+				break;
+			case "deposit":
+				source = false;
+				target = true;
+				color = "#F4FFF4";
+				break;
+			case "transfer":
+				source = true;
+				target = true;
+				color = "#F4F4FF";
+				break;
+		}
+		selectAccount("source", source);
+		selectAccount("target", target);
+		$("#amount").animate({backgroundColor: color});
+	}
+	</script>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Kíváncsi Kert</a>
+		</div>
+		<div id="navbar" class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#">Transactions</a></li>
+				<li><a href="#">Market</a></li>
+			</ul>
+		</div><!--/.nav-collapse -->
+	</div><!--/.container-fluid -->
+</nav>
+
+<div role="document" class="container">
+<form id="form" name="curious" class="form-horizontal" action="javascript:return;">
+<fieldset>
+
+<!-- Transaction Type -->
+<div class="form-group types">
+	<label class="col-md-4 control-label">Transaction type</label>
+	<div class="col-md-4">
+		<div class="btn-group" data-toggle="buttons" id="transactionType">
+			<label class="btn btn-danger btn-lg active">
+				<input type="radio" name="type" value="withdrawal">–
+			</label>
+			<label class="btn btn-success btn-lg">
+				<input type="radio" name="type" value="deposit">+
+			</label>
+			<label class="btn btn-primary btn-lg">
+				<input type="radio" name="type" value="transfer">→
+			</label>
+		</div>
+	</div>
+</div>
+
+<!-- Payee -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="payee">Payee</label>
+	<div class="col-md-4">
+		<select id="payeeSelect" name="payeeSelect" class="form-control">
+		</select>
+		<div id="customPayee" class="collapse in">
+			<input id="payee" name="payee" type="text" class="form-control" placeholder="who did we pay to?" required="true" />
+		</div>
+	</div>
+</div>
+
+<!-- Amount -->
+<div class="form-group form-group-lg">
+	<label class="col-md-4 control-label" for="amount">Amount</label>	
+	<div class="col-md-4">
+		<div class="input-group input-group-lg">
+			<input id="amount" name="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" required="true" />
+			<span class="input-group-addon">Ft</span>
+		</div>
+	</div>
+</div>
+
+<!-- Source Account -->
+<div class="form-group">
+	<div id="sourceAccountGroup" class="collapse in">
+		<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
+		<div class="col-md-4">
+			<select id="sourceAccountSelect" name="sourceAccountSelect" class="form-control">
+			</select>
+			<div id="sourceCustomAccount" class="collapse in">
+				<input id="sourceAccount" name="sourceAccount" type="text" class="form-control" placeholder="which account did we withdraw from?" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Target Account -->
+<div class="form-group">
+	<div id="targetAccountGroup" class="collapse in">
+		<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
+		<div class="col-md-4">
+			<select id="targetAccountSelect" name="targetAccountSelect" class="form-control">
+			</select>
+			<div id="targetCustomAccount" class="collapse in">
+				<input id="targetAccount" name="targetAccount" type="text" class="form-control" placeholder="which account did we deposit to?" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Status -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="status">Status</label>
+	<div class="col-md-4">
+		<select id="status" name="status" class="form-control">
+			<option value="paid">paid</option>
+			<option value="pending">pending</option>
+			<option value="planned">planned</option>
+		</select>
+	</div>
+</div>
+
+<!-- Category -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="categorySelect">Category</label>
+	<div class="col-md-4">
+		<select id="categorySelect" class="form-control">
+		</select>
+		<div id="customCategory" class="collapse in">
+			<input id="category" name="category" type="text" placeholder="custom category" class="form-control" required="true" />
+		</div>
+	</div>
+</div>
+
+<!-- Memo -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="memo">Memo</label>	
+	<div class="col-md-4">
+		<input id="memo" name="memo" type="text" placeholder="anything else" class="form-control"/>
+	</div>
+</div>
+
+<!-- Date -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="date">Date</label>	
+	<div class="col-md-4">
+		<input id="date" name="date" type="date" placeholder="when to book it" class="form-control" required="true" />
+	</div>
+</div>
+
+<!-- Cost Date -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="costMonth">Cost Date</label>	
+	<div class="col-md-4">
+		<input id="costMonth" name="costMonth" type="month" placeholder="when to book it" class="form-control" required="true" />
+	</div>
+</div>
+
+<!-- Submit -->
+<div class="form-group">
+	<label class="col-md-4 control-label" for="submit"></label>
+	<div class="col-md-4">
+		<input id="submit" type="submit" class="btn btn-primary" onclick="submitForm(this.form);" value="Submit"/>
+	</div>
+</div>
+</fieldset>
+</form>
+</div>
+	
+</body>
+</html>
