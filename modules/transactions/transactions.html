@@ -23,7 +23,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="payee">Payee</label>
 	<div class="col-md-4">
-		<input id="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control" placeholder="who is the payee?">
+		<input id="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="who is the payee?">
 	</div>
 </div>
 
@@ -42,7 +42,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
 	<div class="col-md-4">
-		<input id="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control" placeholder="which account did we withdraw from?">
+		<input id="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?">
 	</div>
 </div>
 
@@ -50,7 +50,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
 	<div class="col-md-4">
-		<input id="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control" placeholder="which account did we withdraw from?">
+		<input id="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?">
 	</div>
 </div>
 
@@ -70,7 +70,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="category">Category</label>
 	<div class="col-md-4">
-		<input id="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control" placeholder="what is this transaction about?" required />
+		<input id="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what is this transaction about?" required />
 	</div>
 </div>
 
@@ -78,7 +78,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="memo">Memo</label>	
 	<div class="col-md-4">
-		<input id="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control"/>
+		<input id="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable"/>
 	</div>
 </div>
 
