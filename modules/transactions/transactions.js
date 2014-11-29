@@ -37,7 +37,6 @@
 			$scope.category = "";
 			$scope.memo = "";
 			$scope.date = new Date();
-			$scope.costMonth = new Date();
 			$scope.$broadcast('show-errors-reset');
 		}
 
@@ -59,7 +58,7 @@
 				category: $scope.category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
-				costMonth: $filter("date")($scope.costMonth, "yyyy-MM")
+				costMonth: $filter("date")($scope.date, "yyyy-MM")
 			};
 
 			if ($scope.type == "withdrawal" || $scope.type == "transfer") {
