@@ -61,7 +61,7 @@
 				costMonth: costMonth,
 				memo: memo
 			};
-			kapaServer.query("submit", formData).success(function (id) {
+			kapaServer.query("submit", formData, function (id) {
 				alert("Successfully submited new cost with ID " + id + ".");
 				form.find("input[type != 'submit'], select, textarea").val("").prop("disabled", false);
 				form.find("input:radio, input:checkbox")
