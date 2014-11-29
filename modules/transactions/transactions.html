@@ -5,16 +5,10 @@
 <div class="form-group types">
 	<label class="col-md-4 control-label">Transaction type</label>
 	<div class="col-md-4">
-		<div class="btn-group" data-toggle="buttons" id="transactionType">
-			<label class="btn btn-danger btn-lg active">
-				<input type="radio" name="type" value="withdrawal">–
-			</label>
-			<label class="btn btn-success btn-lg">
-				<input type="radio" name="type" value="deposit">+
-			</label>
-			<label class="btn btn-primary btn-lg">
-				<input type="radio" name="type" value="transfer">→
-			</label>
+		<div class="btn-group">
+			<label class="btn btn-danger btn-lg" ng-model="type" btn-radio="'withdrawal'">-</label>
+			<label class="btn btn-success btn-lg" ng-model="type" btn-radio="'deposit'">+</label>
+			<label class="btn btn-primary btn-lg" ng-model="type" btn-radio="'transfer'">→</label>
 		</div>
 	</div>
 </div>
@@ -33,25 +27,29 @@
 	<label class="col-md-4 control-label" for="amount">Amount</label>	
 	<div class="col-md-4">
 		<div class="input-group input-group-lg">
-			<input id="amount" name="amount" ng-model="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" ng-required="true"/>
+			<input id="amount" name="amount" ng-model="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" ng-required="true" ng-class="{
+	'account-withdrawal': type == 'withdrawal',
+	'account-deposit': type == 'deposit',
+	'account-transfer': type == 'transfer'
+			}"/>
 			<span class="input-group-addon">Ft</span>
 		</div>
 	</div>
 </div>
 
 <!-- Source Account -->
-<div class="form-group" show-errors>
+<div class="form-group" show-errors ng-show="type == 'withdrawal' || type == 'transfer'">
 	<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
 	<div class="col-md-4">
-		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="true"/>
+		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="type == 'withdrawal' || type == 'transfer'"/>
 	</div>
 </div>
 
 <!-- Target Account -->
-<div class="form-group" show-errors>
+<div class="form-group" show-errors ng-show="type == 'deposit' || type == 'transfer'">
 	<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
 	<div class="col-md-4">
-		<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="true"/>
+		<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="type == 'deposit' || type == 'transfer'"/>
 	</div>
 </div>
 

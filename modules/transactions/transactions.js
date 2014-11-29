@@ -13,6 +13,7 @@
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
+		$scope.type = "withdrawal";
 
 		kapaServer.query("getAccounts").success(function (accounts) {
 			console.log("Got accounts", accounts);
@@ -53,14 +54,20 @@
 			var formData = {
 				payee: $scope.payee,
 				amount: $scope.amount,
-				sourceAccount: $scope.sourceAccount,
-				targetAccount: $scope.targetAccount,
 				status: $scope.status,
 				category: $scope.category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
 				costMonth: $filter("date")($scope.costMonth, "yyyy-MM")
 			};
+
+			if ($scope.type == "withdrawal" || $scope.type == "transfer") {
+				formData.sourceAccount = $scope.sourceAccount;
+			}
+			if ($scope.type == "deposit" || $scope.type == "transfer") {
+				formData.targetAccount = $scope.targetAccount;
+			}
+
 			kapaServer.query("submit", formData).success(function (id) {
 				alert("Successfully submited new cost with ID " + id + ".");
 				$scope.reset();
@@ -68,47 +75,5 @@
 				$scope.submiting = false;
 			});
 		}
-
-		var selectType = function (type) {
-			console.log("selectType " + type);
-			var selectAccount = function (name, select) {
-				console.log("selectAccount(" + name + ", " + select + ")");
-				$("#" + name + "AccountGroup").collapse(select ? "show" : "hide");
-				if (!select) {
-					$("#" + name + "AccountSelect").val("custom");
-					$("#" + name).val("");
-				}
-			};
-			var source;
-			var target;
-			var color;
-			switch (type) {
-				case "withdrawal":
-					source = true;
-					target = false;
-					color = "#FFF4F4";
-					break;
-				case "deposit":
-					source = false;
-					target = true;
-					color = "#F4FFF4";
-					break;
-				case "transfer":
-					source = true;
-					target = true;
-					color = "#F4F4FF";
-					break;
-			}
-			selectAccount("source", source);
-			selectAccount("target", target);
-			$("#amount").animate({backgroundColor: color});
-		}
-
-		// Init
-		var transactionType = $("form input[name = 'type']");
-		transactionType.change(function (x) {
-			selectType($("#transactionType input:checked").attr("value"));
-		});
-		selectType("withdrawal");
 	});
 })();
