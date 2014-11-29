@@ -22,15 +22,15 @@
 		$scope.date = new Date();
 		$scope.costMonth = new Date();
 
-		kapaServer.query("getAccounts", null, function (accounts) {
+		kapaServer.query("getAccounts").success(function (accounts) {
 			console.log("Got accounts", accounts);
 			$scope.accounts = accounts;
 		});
-		kapaServer.query("getPayees", null, function (payees) {
+		kapaServer.query("getPayees").success(function (payees) {
 			console.log("Got payees", payees);
 			$scope.payees = payees;
 		});
-		kapaServer.query("getTransactionCategories", null, function (categories) {
+		kapaServer.query("getTransactionCategories").success(function (categories) {
 			console.log("Got transaction categories", categories);
 			$scope.categories = categories;
 		});
@@ -61,7 +61,7 @@
 				costMonth: costMonth,
 				memo: memo
 			};
-			kapaServer.query("submit", formData, function (id) {
+			kapaServer.query("submit", formData).success(function (id) {
 				alert("Successfully submited new cost with ID " + id + ".");
 				form.find("input[type != 'submit'], select, textarea").val("").prop("disabled", false);
 				form.find("input:radio, input:checkbox")
