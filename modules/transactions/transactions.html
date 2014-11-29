@@ -43,11 +43,7 @@
 	<div id="sourceAccountGroup" class="collapse in">
 		<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
 		<div class="col-md-4">
-			<select id="sourceAccountSelect" name="sourceAccountSelect" class="form-control">
-			</select>
-			<div id="sourceCustomAccount" class="collapse in">
-				<input id="sourceAccount" name="sourceAccount" type="text" class="form-control" placeholder="which account did we withdraw from?" />
-			</div>
+			<kapa-account account="source" placeholder="which account did we withdraw from?"></kapa-account>
 		</div>
 	</div>
 </div>
@@ -57,11 +53,7 @@
 	<div id="targetAccountGroup" class="collapse in">
 		<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
 		<div class="col-md-4">
-			<select id="targetAccountSelect" name="targetAccountSelect" class="form-control">
-			</select>
-			<div id="targetCustomAccount" class="collapse in">
-				<input id="targetAccount" name="targetAccount" type="text" class="form-control" placeholder="which account did we deposit to?" />
-			</div>
+			<kapa-account account="source" placeholder="which account did we withdraw from?"></kapa-account>
 		</div>
 	</div>
 </div>

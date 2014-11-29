@@ -58,40 +58,50 @@
 		}
 	});
 
-	transactionModule.controller("TransactionsController", function (kapaServer) {
-		var configureAccount = function (accountName) {
-			var accountSelect = $("#" + accountName + "AccountSelect");
-			var account = $("#" + accountName + "Account");
-			var customAccount = $("#" + accountName + "CustomAccount");
-			var updateAccount = function () {
-				var selectedAccount = accountSelect.val();
-				var isCustom = selectedAccount === "custom";
-				account.prop("disabled", !isCustom);
-				if (isCustom) {
-					customAccount.collapse("show");
-					account.val("");
-					account.focus();
-				} else {
-					customAccount.collapse("hide");
-					account.val(accountSelect.val());
-				}
-			};
-			accountSelect.change(updateAccount);
-			accountSelect.append($("<option></option")
-				.attr("value", "custom")
-				.text("Custom..."));
-			accountSelect.val("custom");
-			updateAccount();
-			kapaServer.query("getAccounts", null, function (accounts) {
-				$.each(accounts, function(index, value) {
-					accountSelect
-						.append($("<option></option>")
-						.attr("value", value)
-						.text(value));
+	transactionModule.directive("kapaAccount", function (kapaServer) {
+		return {
+			restrict: "E",
+			templateUrl: "modules/transactions/account.html",
+			scope: {
+				accountName: "@account",
+				placeholder: "@"
+			},
+			link: function (scope, element, attrs) {
+				var account = element.find("input");
+				var accountSelect = element.find("select");
+				var customAccount = element.find("div");
+				var updateAccount = function () {
+					var selectedAccount = accountSelect.val();
+					var isCustom = selectedAccount === "custom";
+					account.prop("disabled", !isCustom);
+					if (isCustom) {
+						customAccount.collapse("show");
+						account.val("");
+						account.focus();
+					} else {
+						customAccount.collapse("hide");
+						account.val(accountSelect.val());
+					}
+				};
+				accountSelect.change(updateAccount);
+				accountSelect.append($("<option></option")
+					.attr("value", "custom")
+					.text("Custom..."));
+				accountSelect.val("custom");
+				updateAccount();
+				kapaServer.query("getAccounts", null, function (accounts) {
+					$.each(accounts, function(index, value) {
+						accountSelect
+							.append($("<option></option>")
+							.attr("value", value)
+							.text(value));
+					});
 				});
-			});
-		};
+			}
+		}
+	});
 
+	transactionModule.controller("TransactionsController", function (kapaServer) {
 		var submitForm = function(form) {
 			var form = $(form);
 			var payee = form.find("[name = 'payee']").val();
@@ -163,8 +173,7 @@
 
 		// Init
 		
-		configureAccount("source");
-		configureAccount("target");
+		// configureAccount("target");
 
 		var categorySelect = $("#categorySelect");
 		var updateCategory = function () {
