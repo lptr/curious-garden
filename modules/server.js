@@ -10,7 +10,7 @@
 						callback: "JSON_CALLBACK"
 					}
 				}).error(function(data, status, headers, config) {
-					console.log("Error", xhr, error, exception);
+					console.log("Error", data, status, headers, config);
 					alert("Error: " + error);
 				});
 			}
