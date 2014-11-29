@@ -23,7 +23,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="payee">Payee</label>
 	<div class="col-md-4">
-		<kapa-payee></kapa-payee>
+		<input id="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" class="form-control" placeholder="who is the payee?">
 	</div>
 </div>
 
@@ -32,7 +32,7 @@
 	<label class="col-md-4 control-label" for="amount">Amount</label>	
 	<div class="col-md-4">
 		<div class="input-group input-group-lg">
-			<input id="amount" name="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" required="true" />
+			<input id="amount" ng-model="amount" type="number" pattern="\d*" class="form-control input-lg" placeholder="the money" required="true" />
 			<span class="input-group-addon">Ft</span>
 		</div>
 	</div>
@@ -40,21 +40,17 @@
 
 <!-- Source Account -->
 <div class="form-group">
-	<div id="sourceAccountGroup" class="collapse in">
-		<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
-		<div class="col-md-4">
-			<kapa-account account="source" placeholder="which account did we withdraw from?"></kapa-account>
-		</div>
+	<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
+	<div class="col-md-4">
+		<input id="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" class="form-control" placeholder="which account did we withdraw from?">
 	</div>
 </div>
 
 <!-- Target Account -->
 <div class="form-group">
-	<div id="targetAccountGroup" class="collapse in">
-		<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
-		<div class="col-md-4">
-			<kapa-account account="source" placeholder="which account did we withdraw from?"></kapa-account>
-		</div>
+	<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
+	<div class="col-md-4">
+		<input id="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" class="form-control" placeholder="which account did we withdraw from?">
 	</div>
 </div>
 
@@ -62,7 +58,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="status">Status</label>
 	<div class="col-md-4">
-		<select id="status" name="status" class="form-control">
+		<select id="status" ng-model="status" class="form-control">
 			<option value="paid">paid</option>
 			<option value="pending">pending</option>
 			<option value="planned">planned</option>
@@ -72,13 +68,9 @@
 
 <!-- Category -->
 <div class="form-group">
-	<label class="col-md-4 control-label" for="categorySelect">Category</label>
+	<label class="col-md-4 control-label" for="category">Category</label>
 	<div class="col-md-4">
-		<select id="categorySelect" class="form-control">
-		</select>
-		<div id="customCategory" class="collapse in">
-			<input id="category" name="category" type="text" placeholder="custom category" class="form-control" required="true" />
-		</div>
+		<input id="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" class="form-control" placeholder="which account did we withdraw from?" placeholder="what is this transaction about?" required />
 	</div>
 </div>
 
@@ -86,7 +78,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="memo">Memo</label>	
 	<div class="col-md-4">
-		<input id="memo" name="memo" type="text" placeholder="anything else" class="form-control"/>
+		<input id="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control"/>
 	</div>
 </div>
 
@@ -94,7 +86,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="date">Date</label>	
 	<div class="col-md-4">
-		<input id="date" name="date" type="date" placeholder="when to book it" class="form-control" required="true" />
+		<input id="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" required="true" />
 	</div>
 </div>
 
@@ -102,7 +94,7 @@
 <div class="form-group">
 	<label class="col-md-4 control-label" for="costMonth">Cost Date</label>	
 	<div class="col-md-4">
-		<input id="costMonth" name="costMonth" type="month" placeholder="when to book it" class="form-control" required="true" />
+		<input id="costMonth" ng-model="costMonth" type="month" placeholder="when to book it" class="form-control" required="true" />
 	</div>
 </div>
 

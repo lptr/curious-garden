@@ -1,5 +1,5 @@
 (function () {
-	var transactionModule = angular.module("kapa.transactions", ["kapa.server", "ngRoute"]);
+	var transactionModule = angular.module("kapa.transactions", ["kapa.server", "ngRoute", "ui.bootstrap"]);
 
 	transactionModule.config(function ($routeProvider) {
 		$routeProvider
@@ -9,99 +9,32 @@
 			});
 	});
 
-	transactionModule.controller("PayeeController", function (kapaServer) {
-		var payeeSelect = $("#payeeSelect");
-		var updatePayee = function () {
-			var payee = $("#payee");
-			var selectedPayee = payeeSelect.val();
-			var isCustom = selectedPayee === "custom";
-			payee.prop("disabled", !isCustom);
-			if (isCustom) {
-				$("#customPayee").collapse("show");
-				payee.val("");
-				payee.focus();
-			} else {
-				$("#customPayee").collapse("hide");
-				payee.val(payeeSelect.val());
-			}
-		};
-		payeeSelect.change(updatePayee);
-		payeeSelect.append($("<option></option")
-			.attr("value", "custom")
-			.text("Custom..."));
-		payeeSelect.val("custom");
-		updatePayee();
-		kapaServer.query("getPayees", null, function (payees) {
-			var firstLetter = "";
-			var group;
-			$.each(payees, function(index, value) {
-				var currentFirstLetter = value.toUpperCase().charAt(0);
-				if (!group || firstLetter !== currentFirstLetter) {
-					firstLetter = currentFirstLetter;
-					group = $("<optgroup></optgroup>")
-						.attr("label", firstLetter);
-					payeeSelect.append(group);
-				}
-				group
-					.append($("<option></option>")
-					.attr("value", value)
-					.text(value.substring(0, 24)));
-			});
+	transactionModule.controller("TransactionsController", function ($scope, kapaServer) {
+		$scope.accounts = [];
+		$scope.payees = [];
+		$scope.categories = [];
+
+		$scope.payee = "";
+		$scope.amount = 0;
+		$scope.sourceAccount = "";
+		$scope.targetAccount = "";
+		$scope.memo = "";
+		$scope.date = new Date();
+		$scope.costMonth = new Date();
+
+		kapaServer.query("getAccounts", null, function (accounts) {
+			console.log("Got accounts", accounts);
+			$scope.accounts = accounts;
 		});
-	});
+		kapaServer.query("getPayees", null, function (payees) {
+			console.log("Got payees", payees);
+			$scope.payees = payees;
+		});
+		kapaServer.query("getTransactionCategories", null, function (categories) {
+			console.log("Got transaction categories", categories);
+			$scope.categories = categories;
+		});
 
-	transactionModule.directive("kapaPayee", function () {
-		return {
-			restrict: "E",
-			templateUrl: "modules/transactions/payee.html",
-			controller: "PayeeController"
-		}
-	});
-
-	transactionModule.directive("kapaAccount", function (kapaServer) {
-		return {
-			restrict: "E",
-			templateUrl: "modules/transactions/account.html",
-			scope: {
-				accountName: "@account",
-				placeholder: "@"
-			},
-			link: function (scope, element, attrs) {
-				var account = element.find("input");
-				var accountSelect = element.find("select");
-				var customAccount = element.find("div");
-				var updateAccount = function () {
-					var selectedAccount = accountSelect.val();
-					var isCustom = selectedAccount === "custom";
-					account.prop("disabled", !isCustom);
-					if (isCustom) {
-						customAccount.collapse("show");
-						account.val("");
-						account.focus();
-					} else {
-						customAccount.collapse("hide");
-						account.val(accountSelect.val());
-					}
-				};
-				accountSelect.change(updateAccount);
-				accountSelect.append($("<option></option")
-					.attr("value", "custom")
-					.text("Custom..."));
-				accountSelect.val("custom");
-				updateAccount();
-				kapaServer.query("getAccounts", null, function (accounts) {
-					$.each(accounts, function(index, value) {
-						accountSelect
-							.append($("<option></option>")
-							.attr("value", value)
-							.text(value));
-					});
-				});
-			}
-		}
-	});
-
-	transactionModule.controller("TransactionsController", function (kapaServer) {
 		var submitForm = function(form) {
 			var form = $(form);
 			var payee = form.find("[name = 'payee']").val();
@@ -172,47 +105,6 @@
 		}
 
 		// Init
-		
-		// configureAccount("target");
-
-		var categorySelect = $("#categorySelect");
-		var updateCategory = function () {
-			var category = $("#category");
-			var selectedCategory = categorySelect.val();
-			var isCustom = selectedCategory === "custom";
-			category.prop("disabled", !isCustom);
-			if (isCustom) {
-				$("#customCategory").collapse("show");
-				category.val("");
-				category.focus();
-			} else {
-				category.val(categorySelect.find(":selected").parent().prop("label") + " - " + categorySelect.val());
-				$("#customCategory").collapse("hide");
-			}
-		};
-		categorySelect.change(updateCategory);
-		categorySelect
-			.append($("<option></option>")
-			.attr("value", "custom")
-			.text("Custom..."));
-		updateCategory();
-		kapaServer.query("getCategories", null, function (categories) {
-			$.each(categories, function (index, category) {
-				var categoryGroup = $("<optgroup></optgroup>")
-					.attr("label", category.name);
-				categorySelect.append(categoryGroup);
-				$.each(category.subs, function (index, subCategory) {
-					categoryGroup
-						.append($("<option></option>")
-						.attr("value", subCategory)
-						.text(subCategory));
-				});
-			});
-		});
-
-		$("#date").val(new Date().toISOString().slice(0,10));
-		$("#costMonth").val(new Date().toISOString().slice(0,7));
-		
 		var transactionType = $("form input[name = 'type']");
 		transactionType.change(function (x) {
 			selectType($("#transactionType input:checked").attr("value"));
