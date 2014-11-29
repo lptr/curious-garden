@@ -9,6 +9,55 @@
 			});
 	});
 
+	transactionModule.controller("PayeeController", function (kapaServer) {
+		var payeeSelect = $("#payeeSelect");
+		var updatePayee = function () {
+			var payee = $("#payee");
+			var selectedPayee = payeeSelect.val();
+			var isCustom = selectedPayee === "custom";
+			payee.prop("disabled", !isCustom);
+			if (isCustom) {
+				$("#customPayee").collapse("show");
+				payee.val("");
+				payee.focus();
+			} else {
+				$("#customPayee").collapse("hide");
+				payee.val(payeeSelect.val());
+			}
+		};
+		payeeSelect.change(updatePayee);
+		payeeSelect.append($("<option></option")
+			.attr("value", "custom")
+			.text("Custom..."));
+		payeeSelect.val("custom");
+		updatePayee();
+		kapaServer.query("getPayees", null, function (payees) {
+			var firstLetter = "";
+			var group;
+			$.each(payees, function(index, value) {
+				var currentFirstLetter = value.toUpperCase().charAt(0);
+				if (!group || firstLetter !== currentFirstLetter) {
+					firstLetter = currentFirstLetter;
+					group = $("<optgroup></optgroup>")
+						.attr("label", firstLetter);
+					payeeSelect.append(group);
+				}
+				group
+					.append($("<option></option>")
+					.attr("value", value)
+					.text(value.substring(0, 24)));
+			});
+		});
+	});
+
+	transactionModule.directive("kapaPayee", function () {
+		return {
+			restrict: "E",
+			templateUrl: "modules/transactions/payee.html",
+			controller: "PayeeController"
+		}
+	});
+
 	transactionModule.controller("TransactionsController", function (kapaServer) {
 		var configureAccount = function (accountName) {
 			var accountSelect = $("#" + accountName + "AccountSelect");
@@ -113,45 +162,6 @@
 		}
 
 		// Init
-
-		var payeeSelect = $("#payeeSelect");
-		var updatePayee = function () {
-			var payee = $("#payee");
-			var selectedPayee = payeeSelect.val();
-			var isCustom = selectedPayee === "custom";
-			payee.prop("disabled", !isCustom);
-			if (isCustom) {
-				$("#customPayee").collapse("show");
-				payee.val("");
-				payee.focus();
-			} else {
-				$("#customPayee").collapse("hide");
-				payee.val(payeeSelect.val());
-			}
-		};
-		payeeSelect.change(updatePayee);
-		payeeSelect.append($("<option></option")
-			.attr("value", "custom")
-			.text("Custom..."));
-		payeeSelect.val("custom");
-		updatePayee();
-		kapaServer.query("getPayees", null, function (payees) {
-			var firstLetter = "";
-			var group;
-			$.each(payees, function(index, value) {
-				var currentFirstLetter = value.toUpperCase().charAt(0);
-				if (!group || firstLetter !== currentFirstLetter) {
-					firstLetter = currentFirstLetter;
-					group = $("<optgroup></optgroup>")
-						.attr("label", firstLetter);
-					payeeSelect.append(group);
-				}
-				group
-					.append($("<option></option>")
-					.attr("value", value)
-					.text(value.substring(0, 24)));
-			});
-		});
 		
 		configureAccount("source");
 		configureAccount("target");
