@@ -44,7 +44,14 @@
 
 		$scope.submit = function () {
 			if ($scope.transaction.$invalid) {
-				alert("Invalid data");
+				$modal.open({
+					templateUrl: "error-dialog.html",
+					controller: function ($scope, $modalInstance) {
+						$scope.close = function () {
+							$modalInstance.dismiss("close");
+						}
+					}
+				});
 				return;
 			}
 			var popup = $modal.open({
