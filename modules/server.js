@@ -22,6 +22,9 @@
 			serverUrl = "https://script.google.com/macros/s/AKfycbwBGeZPzlmi-4wu23s3NyQP0T1rE71750FNYOFPAozPignicus/exec"
 		}
 		return {
+			getUrl: function () {
+				return serverUrl;
+			},
 			query: function (method, data) {
 				return $http.jsonp(serverUrl, {
 					params: {
@@ -31,7 +34,7 @@
 					}
 				}).error(function(data, status, headers, config) {
 					console.log("Error", data, status, headers, config);
-					alert("Error: " + error);
+					alert("Error: " + status);
 				});
 			}
 		}
