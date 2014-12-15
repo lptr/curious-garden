@@ -70,9 +70,14 @@
 
 			if ($scope.type == "withdrawal" || $scope.type == "transfer") {
 				formData.sourceAccount = $scope.sourceAccount;
+			} else {
+				formData.sourceAccount = null;
 			}
+
 			if ($scope.type == "deposit" || $scope.type == "transfer") {
 				formData.targetAccount = $scope.targetAccount;
+			} else {
+				formData.targetAccount = null;
 			}
 
 			kapaServer.query("submitTransaction", formData).success(function (id) {
