@@ -76,10 +76,10 @@
 			<a class="navbar-brand" href="#">Kíváncsi Kert</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-				<li><a href="#transactions">Transactions</a></li>
-				<li><a href="#work">Work</a></li>
-				<li><a href="#">Market</a></li>
+			<ul class="nav navbar-nav" ng-controller="NavLinksController">
+				<li ng-class="{ active: isActive('^/?(navbar)?$')}"><a href="#/">Home</a></li>
+				<li ng-class="{ active: isActive('^/transactions')}"><a href="#transactions">Transactions</a></li>
+				<li ng-class="{ active: isActive('^/work')}"><a href="#work">Work</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div><!--/.container-fluid -->

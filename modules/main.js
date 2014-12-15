@@ -23,4 +23,11 @@
 			$(this).removeClass('x onX').val('').change();
 		});
 	});	
+
+	app.controller("NavLinksController", function ($scope, $location) {
+		$scope.isActive = function (viewLocation) {
+			var path = $location.path();
+			return path.match(viewLocation);
+		};
+	});
 })();
