@@ -1,5 +1,5 @@
 (function () {
-	var app = angular.module("kapa", ["kapa.transactions", "ngRoute"]);
+	var app = angular.module("kapa", ["kapa.transactions", "kapa.work", "ngRoute"]);
 //	app.config(function ($locationProvider) {
 //		$locationProvider.html5Mode(true);
 //	});

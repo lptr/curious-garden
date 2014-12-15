@@ -1,0 +1,106 @@
+<form name="work" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
+<fieldset>
+
+<!-- Employee -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Employee</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="employee" class="form-control" ng-model="employee" ng-options="employee for employee in employees" ng-required="true"></select>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-user"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Hours -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Hours</label>	
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="hours" ng-model="hours" type="number" pattern="\d*(?:\.\d*)?" class="form-control" placeholder="the number of hours worked" ng-required="true"/>
+			<span class="input-group-addon">hr</span>
+		</div>
+	</div>
+</div>
+
+<!-- Category -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Category</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what did they work on?" ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-tags"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Memo -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label" for="memo">Memo</label>	
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable" />
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-paperclip"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Date -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Date</label>	
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-calendar"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Submit -->
+<div class="form-group">
+	<label class="col-md-4 control-label"></label>	
+	<div class="col-md-4">
+		<button type="submit" class="btn btn-primary">
+			<span class="glyphicon glyphicon-ok"></span>
+			Submit
+		</button>
+		<button type="button" class="btn btn-danger pull-right" ng-click="reset()">
+			<span class="glyphicon glyphicon-trash"></span>
+			Reset
+		</button>
+	</div>
+</div>
+</fieldset>
+</form>
+
+<script type="text/ng-template" id="save-dialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Submitting new transaction</h3>
+    </div>
+    <div class="modal-body">
+    	Working, please wait...
+    </div>
+</script>
+
+<script type="text/ng-template" id="error-dialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">
+        	<span class="glyphicon glyphicon-warning-sign"></span>
+        	Invalid transaction
+        </h3>
+    </div>
+    <div class="modal-body">
+    	Some required data is missing. Please fill all fields except for memo.
+    </div>
+    <div class="modal-footer">
+    	<button class="btn btn-primary" ng-click="close()">Close</button>
+    </div>
+</script>
