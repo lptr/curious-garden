@@ -75,7 +75,7 @@
 				formData.targetAccount = $scope.targetAccount;
 			}
 
-			kapaServer.query("submit", formData).success(function (id) {
+			kapaServer.query("submitTransaction", formData).success(function (id) {
 				$scope.reset();
 			}).finally(function () {
 				popup.close();
