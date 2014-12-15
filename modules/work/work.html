@@ -16,11 +16,15 @@
 
 <!-- Hours -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Hours</label>	
+	<label class="col-md-4 control-label">Time spent</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="hours" ng-model="hours" type="tel" pattern="\d*(?:\.\d*)?" class="form-control" placeholder="the number of hours worked" ng-required="true"/>
+			<input name="hours" ng-model="hours" type="number" pattern="\d*" class="form-control" placeholder="hours worked" ng-required="true"/>
 			<span class="input-group-addon">hr</span>
+		</div>
+		<div class="input-group">
+			<input name="minutes" ng-model="minutes" type="number" pattern="\d*" class="form-control" placeholder="minutes worked" ng-required="false"/>
+			<span class="input-group-addon">min</span>
 		</div>
 	</div>
 </div>

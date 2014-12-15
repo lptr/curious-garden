@@ -25,6 +25,7 @@
 		$scope.reset = function () {
 			$scope.employee = "";
 			$scope.hours = undefined;
+			$scope.minutes = undefined;
 			$scope.category = "";
 			$scope.memo = "";
 			$scope.date = new Date();
@@ -49,9 +50,14 @@
 				templateUrl: "save-dialog.html"
 			});
 
+			var hours = parseInt($scope.hours);
+			if ($scope.minutes) {
+				hours += parseInt($scope.minutes) / 60;
+			}
+
 			var formData = {
 				employee: $scope.employee,
-				hours: $scope.hours,
+				hours: hours,
 				category: $scope.category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
