@@ -37,6 +37,30 @@
 
 	<link rel="stylesheet" href="modules/work/work.css" />
 	<script src="modules/work/work.js"></script>
+
+<script type="text/ng-template" id="save-dialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Submitting</h3>
+    </div>
+    <div class="modal-body">
+    	Working, please wait...
+    </div>
+</script>
+
+<script type="text/ng-template" id="error-dialog.html">
+    <div class="modal-header">
+        <h3 class="modal-title">
+        	<span class="glyphicon glyphicon-warning-sign"></span>
+        	Invalid data
+        </h3>
+    </div>
+    <div class="modal-body">
+    	Some required data is missing. Please fill required fields and re-submit.
+    </div>
+    <div class="modal-footer">
+    	<button class="btn btn-primary" ng-click="close()">Close</button>
+    </div>
+</script>
 </head>
 <body>
 
