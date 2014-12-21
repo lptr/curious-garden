@@ -85,7 +85,7 @@
 						amount: amount,
 						sourceAccount: sourceAccount,
 						targetAccount: targetAccount,
-						category: "",
+						category: "imported",
 						memo: memo,
 						status: "paid",
 						date: $filter("date")(date, "yyyy-MM-dd"),
@@ -98,14 +98,23 @@
 				}
 
 				console.log("Parsed transactions", imported.length, imported);
-				kapaServer
-					.query("submitTransactions", imported)
-					.success(function (id) {
-						alert("Upload successful");
-					})
-					.error(function (error) {
-						alert("Upload failed: " + error);
-					});
+
+				var submitTransaction = function (index) {
+					if (index < imported.length) {
+						kapaServer
+							.query("submitTransaction", imported[index])
+							.success(function (id) {
+								console.log("Uploaded transaction " + (index + 1) + "/" + imported.length);
+								submitTransaction(index + 1);
+							})
+							.error(function (error) {
+								alert("Upload failed: " + error + " at " + index + " out of " + imported.length);
+							});
+					} else {
+						alert("Finished uploading");
+					}
+				}
+				submitTransaction(0);
 			};
 			reader.readAsText($scope.file);
 		}
