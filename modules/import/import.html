@@ -1,0 +1,25 @@
+<div ng-controller="ImportMagnetController">
+<form name="importMagnet" class="form-horizontal" novalidate ng-submit="import()">
+<fieldset>
+
+<div class="form-group">
+	<label class="col-md-2 control-label">Magnet Import</label>
+ 	<div class="col-md-4">
+		<div class="input-group">
+ 			<input name="file" type="file" class="form-control" ng-model="file" accept="application/xml" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" />
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-file"></span>
+			</span>
+		</div>
+	</div>
+ 	<div class="col-md-2">
+		<button type="submit" class="btn btn-primary">
+			<span class="glyphicon glyphicon-import"></span>
+			Import Magnet
+		</button>
+	</div>
+</div>
+
+</fieldset>
+</form>
+</div>
