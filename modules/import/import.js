@@ -28,6 +28,22 @@
 
 				for (var transaction = transactions.iterateNext(); transaction; transaction = transactions.iterateNext()) {
 					console.log("Transaction", transaction);
+
+					// XML Format:
+					// <Tranzakcio NBID="764934324">
+					// 	<Tranzakcioszam>54574584</Tranzakcioszam>
+					// 	<Nev>John Smith</Nev>
+					// 	<Szamlaszam>16200113-18513284</Szamlaszam>
+					// 	<Ellenpartner>Something Something Co.</Ellenpartner>
+					// 	<Ellenszamla>HU10 1170 0132 4336 0940 1110 0001</Ellenszamla>
+					// 	<Osszeg Devizanem="HUF">100.00</Osszeg>
+					// 	<Kozlemeny>Message</Kozlemeny>
+					// 	<Terhelesnap>2014.10.01.</Terhelesnap>
+					// 	<Esedekessegnap>2014.10.01.</Esedekessegnap>
+					// 	<Jutalekosszeg Devizanem="HUF">0.00</Jutalekosszeg>
+					// 	<Tipus>Átutalás (IG2)</Tipus>
+					// </Tranzakcio>
+
 					var id = getValue(transaction, "Tranzakcioszam");
 					var payee = getValue(transaction, "Ellenpartner");
 					var payeeAccount = getValue(transaction, "Ellenszamla");
