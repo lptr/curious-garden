@@ -50,7 +50,10 @@
 				templateUrl: "save-dialog.html"
 			});
 
-			var hours = parseInt($scope.hours);
+			var hours = 0;
+			if ($scope.hours) {
+				hours += parseInt($scope.hours);
+			}
 			if ($scope.minutes) {
 				hours += parseInt($scope.minutes) / 60;
 			}
