@@ -19,11 +19,11 @@
 	<label class="col-md-4 control-label">Eltöltött idő</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="hours" ng-model="hours" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott órák" ng-required="true"/>
+			<input name="hours" ng-model="hours" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott órák" ng-required="!minutes"/>
 			<span class="input-group-addon">óra</span>
 		</div>
 		<div class="input-group">
-			<input name="minutes" ng-model="minutes" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott percek" ng-required="false"/>
+			<input name="minutes" ng-model="minutes" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott percek" ng-required="!hours"/>
 			<span class="input-group-addon">perc</span>
 		</div>
 	</div>
