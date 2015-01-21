@@ -99,7 +99,7 @@
 	<label class="col-md-4 control-label" for="category">Kategória</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="category" name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="milyen kategóriába tartozik ez a tranzakció?" ng-required="true"/>
+			<input id="category" name="category" type="text" ng-model="category" typeahead="category.hungarian for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="milyen kategóriába tartozik ez a tranzakció?" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-tags"></span>
 			</span>

@@ -1,5 +1,10 @@
 (function () {
-	var workModule = angular.module("kapa.work", ["kapa.server", "ngRoute", "ui.bootstrap", "ui.bootstrap.showErrors"]);
+	var workModule = angular.module("kapa.work", [
+		"kapa.services",
+		"ngRoute",
+		"ui.bootstrap",
+		"ui.bootstrap.showErrors"
+	]);
 
 	workModule.config(function ($routeProvider) {
 		$routeProvider
@@ -9,16 +14,14 @@
 			});
 	});
 
-	workModule.controller("WorkController", function ($scope, $filter, $modal, kapaServer) {
+	workModule.controller("WorkController", function ($scope, $filter, $modal, kapaServer, categoryManager, employeeManager) {
 		$scope.employees = [];
 		$scope.categories = [];
 
-		kapaServer.query("getEmployees").success(function (employees) {
-			console.log("Got employees", employees);
+		employeeManager.load(function (employees) {
 			$scope.employees = employees;
 		});
-		kapaServer.query("getWorkCategories").success(function (categories) {
-			console.log("Got work categories", categories);
+		categoryManager.load(function (categories) {
 			$scope.categories = categories;
 		});
 
@@ -50,6 +53,8 @@
 				templateUrl: "save-dialog.html"
 			});
 
+			var category = categoryManager.convertCategory($scope.categories, $scope.category);
+
 			var hours = 0;
 			if ($scope.hours) {
 				hours += parseInt($scope.hours);
@@ -61,7 +66,7 @@
 			var formData = {
 				employee: $scope.employee,
 				hours: hours,
-				category: $scope.category,
+				category: category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
 				costMonth: $filter("date")($scope.date, "yyyy-MM")

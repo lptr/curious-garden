@@ -1,5 +1,10 @@
 (function () {
-	var transactionModule = angular.module("kapa.transactions", ["kapa.server", "ngRoute", "ui.bootstrap", "ui.bootstrap.showErrors"]);
+	var transactionModule = angular.module("kapa.transactions", [
+		"kapa.services",
+		"ngRoute",
+		"ui.bootstrap",
+		"ui.bootstrap.showErrors"
+	]);
 
 	transactionModule.config(function ($routeProvider) {
 		$routeProvider
@@ -9,22 +14,19 @@
 			});
 	});
 
-	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, kapaServer) {
+	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, kapaServer, payeeManager, accountManager, categoryManager) {
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
 		$scope.type = "withdrawal";
 
-		kapaServer.query("getAccounts").success(function (accounts) {
-			console.log("Got accounts", accounts);
+		accountManager.load(function (accounts) {
 			$scope.accounts = accounts;
 		});
-		kapaServer.query("getPayees").success(function (payees) {
-			console.log("Got payees", payees);
+		payeeManager.load(function (payees) {
 			$scope.payees = payees;
 		});
-		kapaServer.query("getTransactionCategories").success(function (categories) {
-			console.log("Got transaction categories", categories);
+		categoryManager.load(function (categories) {
 			$scope.categories = categories;
 		});
 
@@ -58,11 +60,13 @@
 				templateUrl: "save-dialog.html"
 			});
 
+			var category = categoryManager.convertCategory($scope.categories, $scope.category);
+
 			var formData = {
 				payee: $scope.payee,
 				amount: $scope.amount,
 				status: $scope.status,
-				category: $scope.category,
+				category: category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
 				costMonth: $filter("date")($scope.date, "yyyy-MM")

@@ -1,5 +1,10 @@
 (function() {
-	var importModule = angular.module("kapa.import", ["kapa.server", "ngRoute", "ui.bootstrap", "ui.bootstrap.showErrors"]);
+	var importModule = angular.module("kapa.import", [
+			"kapa.services",
+			"ngRoute",
+			"ui.bootstrap",
+			"ui.bootstrap.showErrors"
+		]);
 
 	importModule.config(function($routeProvider) {
 		$routeProvider
