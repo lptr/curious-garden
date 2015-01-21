@@ -13,9 +13,9 @@
 	<script src="https://code.jquery.com/ui/1.11.2/jquery-ui.min.js"></script>
 
 	<!-- Bootstrap -->
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css" />
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.js"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css" />
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.js"></script>
 
 	<!-- Angular -->
 	<script src="https://code.angularjs.org/1.3.4/angular.js"></script>
@@ -71,19 +71,27 @@
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
+				<span class="sr-only">Navigáció ki/be</span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="#">Kíváncsi Kert</a>
+			<a class="navbar-brand" href="#">KAPA</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
 			<ul class="nav navbar-nav" ng-controller="NavLinksController">
-				<li ng-class="{ active: isActive('^/?(navbar)?$')}"><a href="#/">Home</a></li>
-				<li ng-class="{ active: isActive('^/transactions')}"><a href="#transactions">Transactions</a></li>
-				<li ng-class="{ active: isActive('^/work')}"><a href="#work">Work</a></li>
-				<li ng-class="{ active: isActive('^/import')}"><a href="#import">Import</a></li>
+				<li ng-class="{ active: isActive('^/transactions')}"><a href="#transactions">
+					<span class="glyphicon glyphicon-euro"></span>
+					Tranzakciók
+				</a></li>
+				<li ng-class="{ active: isActive('^/work')}"><a href="#work">
+					<span class="glyphicon glyphicon-grain"></span>
+					Munka
+				</a></li>
+				<li ng-class="{ active: isActive('^/import')}"><a href="#import">
+					<span class="glyphicon glyphicon-upload"></span>
+					Adatok
+				</a></li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div><!--/.container-fluid -->

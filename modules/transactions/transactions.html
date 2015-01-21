@@ -3,17 +3,20 @@
 
 <!-- Transaction Type -->
 <div class="form-group">
-	<label class="col-md-4 control-label">Transaction type</label>
+	<label class="col-md-4 control-label">Tranzakció típusa</label>
 	<div class="col-md-4">
 		<div class="btn-group">
 			<label class="btn btn-danger" ng-model="type" btn-radio="'withdrawal'">
-				<span class="glyphicon glyphicon-open"></span> withdraw
+				<span class="glyphicon glyphicon-open"></span>
+				kivét
 			</label>
 			<label class="btn btn-success" ng-model="type" btn-radio="'deposit'">
-				<span class="glyphicon glyphicon-save"></span> deposit
+				<span class="glyphicon glyphicon-save"></span>
+				betét
 			</label>
 			<label class="btn btn-primary" ng-model="type" btn-radio="'transfer'">
-				<span class="glyphicon glyphicon-transfer"></span> transfer
+				<span class="glyphicon glyphicon-transfer"></span>
+				transzfer
 			</label>
 		</div>
 	</div>
@@ -21,11 +24,11 @@
 
 <!-- Payee -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="payee">Payee</label>
+	<label class="col-md-4 control-label" for="payee">Üzletfél</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="payee" name="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="who is the payee?" ng-required="true" />
-			<small class="error" ng-show="transaction.payee.$error.ng-required">Payee is required.</small>
+			<input id="payee" name="payee" ng-model="payee" type="text" typeahead="payee for payee in payees | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="kinek fizettünk?" ng-required="true" />
+			<small class="error" ng-show="transaction.payee.$error.ng-required">Az üzletfelet meg kell adnod.</small>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-user"></span>
 			</span>
@@ -35,10 +38,10 @@
 
 <!-- Amount -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="amount">Amount</label>	
+	<label class="col-md-4 control-label" for="amount">Összeg</label>	
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="amount" name="amount" ng-model="amount" type="number" pattern="\d*" class="form-control amount" placeholder="the money" ng-required="true" ng-class="{
+			<input id="amount" name="amount" ng-model="amount" type="number" pattern="\d*" class="form-control amount" placeholder="mennyit fizettünk?" ng-required="true" ng-class="{
 	'account-withdrawal': type == 'withdrawal',
 	'account-deposit': type == 'deposit',
 	'account-transfer': type == 'transfer'
@@ -50,10 +53,10 @@
 
 <!-- Source Account -->
 <div class="form-group" show-errors ng-show="type == 'withdrawal' || type == 'transfer'">
-	<label class="col-md-4 control-label" for="sourceAccount">Withdraw from</label>
+	<label class="col-md-4 control-label" for="sourceAccount">Felvétel erről a számláról</label>
 	<div class="col-md-4">
 		<div class="input-group">
-	  		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="type == 'withdrawal' || type == 'transfer'"/>
+	  		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="melyik számláról fizettünk?" ng-required="type == 'withdrawal' || type == 'transfer'"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-open"></span>
 			</span>
@@ -63,10 +66,10 @@
 
 <!-- Target Account -->
 <div class="form-group" show-errors ng-show="type == 'deposit' || type == 'transfer'">
-	<label class="col-md-4 control-label" for="targetAccount">Deposit to</label>
+	<label class="col-md-4 control-label" for="targetAccount">Betét erre a számlára</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="which account did we withdraw from?" ng-required="type == 'deposit' || type == 'transfer'"/>
+			<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in accounts | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="melyik számlára fizettünk be?" ng-required="type == 'deposit' || type == 'transfer'"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-save"></span>
 			</span>
@@ -76,13 +79,13 @@
 
 <!-- Status -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="status">Status</label>
+	<label class="col-md-4 control-label" for="status">Státusz</label>
 	<div class="col-md-4">
 		<div class="input-group">
 			<select id="status" name="status" ng-model="status" class="form-control" ng-required="true">
-				<option value="paid">paid</option>
-				<option value="pending">pending</option>
-				<option value="planned">planned</option>
+				<option value="paid">fizetett</option>
+				<option value="pending">függőben</option>
+				<option value="planned">tervezett</option>
 			</select>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-check"></span>
@@ -93,10 +96,10 @@
 
 <!-- Category -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="category">Category</label>
+	<label class="col-md-4 control-label" for="category">Kategória</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="category" name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what is this transaction about?" ng-required="true"/>
+			<input id="category" name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="milyen kategóriába tartozik ez a tranzakció?" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-tags"></span>
 			</span>
@@ -106,10 +109,10 @@
 
 <!-- Memo -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="memo">Memo</label>	
+	<label class="col-md-4 control-label" for="memo">Megjegyzés</label>	
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="memo" name="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable" />
+			<input id="memo" name="memo" ng-model="memo" type="text" placeholder="bármi egyéb információ?" class="form-control clearable" />
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-paperclip"></span>
 			</span>
@@ -119,10 +122,10 @@
 
 <!-- Date -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="date">Date</label>	
+	<label class="col-md-4 control-label" for="date">Dátum</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="date" name="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" ng-required="true"/>
+			<input id="date" name="date" ng-model="date" type="date" placeholder="mikor történt a tranzakció?" class="form-control" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-calendar"></span>
 			</span>
@@ -134,13 +137,13 @@
 <div class="form-group">
 	<label class="col-md-4 control-label"></label>	
 	<div class="col-md-4">
-		<button type="submit" class="btn btn-primary">
-			<span class="glyphicon glyphicon-ok"></span>
-			Submit
-		</button>
 		<button type="button" class="btn btn-danger pull-right" ng-click="reset()">
 			<span class="glyphicon glyphicon-trash"></span>
-			Reset
+			Töröl
+		</button>
+		<button type="submit" class="btn btn-primary">
+			<span class="glyphicon glyphicon-ok"></span>
+			Rögzít
 		</button>
 	</div>
 </div>

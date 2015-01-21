@@ -3,7 +3,7 @@
 
 <!-- Employee -->
 <div class="form-group">
-	<label class="col-md-4 control-label">Employee</label>
+	<label class="col-md-4 control-label">Munkatárs</label>
 	<div class="col-md-4">
 		<div class="input-group">
 			<select name="employee" class="form-control" ng-model="employee" ng-options="employee for employee in employees" ng-required="true"></select>
@@ -16,25 +16,25 @@
 
 <!-- Hours -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Time spent</label>
+	<label class="col-md-4 control-label">Eltöltött idő</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="hours" ng-model="hours" type="number" pattern="\d*" class="form-control" placeholder="hours worked" ng-required="true"/>
-			<span class="input-group-addon">hr</span>
+			<input name="hours" ng-model="hours" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott órák" ng-required="true"/>
+			<span class="input-group-addon">óra</span>
 		</div>
 		<div class="input-group">
-			<input name="minutes" ng-model="minutes" type="number" pattern="\d*" class="form-control" placeholder="minutes worked" ng-required="false"/>
-			<span class="input-group-addon">min</span>
+			<input name="minutes" ng-model="minutes" type="number" pattern="\d*" class="form-control" placeholder="ledolgozott percek" ng-required="false"/>
+			<span class="input-group-addon">perc</span>
 		</div>
 	</div>
 </div>
 
 <!-- Category -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Category</label>
+	<label class="col-md-4 control-label">Kategória</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="what did they work on?" ng-required="true"/>
+			<input name="category" type="text" ng-model="category" typeahead="category for category in categories | filter:$viewValue" typeahead-min-length="0" class="form-control clearable" placeholder="min dolgozott?" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-tags"></span>
 			</span>
@@ -44,10 +44,10 @@
 
 <!-- Memo -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="memo">Memo</label>	
+	<label class="col-md-4 control-label" for="memo">Megjegyzés</label>	
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="memo" ng-model="memo" type="text" placeholder="anything else to add?" class="form-control clearable" />
+			<input name="memo" ng-model="memo" type="text" placeholder="bármi egyéb információ?" class="form-control clearable" />
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-paperclip"></span>
 			</span>
@@ -57,10 +57,10 @@
 
 <!-- Date -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Date</label>	
+	<label class="col-md-4 control-label">Dátum</label>	
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="date" ng-model="date" type="date" placeholder="when to book it" class="form-control" ng-required="true"/>
+			<input name="date" ng-model="date" type="date" placeholder="melyik nap végezték a munkát?" class="form-control" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-calendar"></span>
 			</span>
@@ -72,13 +72,13 @@
 <div class="form-group">
 	<label class="col-md-4 control-label"></label>	
 	<div class="col-md-4">
-		<button type="submit" class="btn btn-primary">
-			<span class="glyphicon glyphicon-ok"></span>
-			Submit
-		</button>
 		<button type="button" class="btn btn-danger pull-right" ng-click="reset()">
 			<span class="glyphicon glyphicon-trash"></span>
-			Reset
+			Töröl
+		</button>
+		<button type="submit" class="btn btn-primary">
+			<span class="glyphicon glyphicon-ok"></span>
+			Rögzít
 		</button>
 	</div>
 </div>
