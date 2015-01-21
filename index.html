@@ -43,10 +43,10 @@
 
 <script type="text/ng-template" id="save-dialog.html">
     <div class="modal-header">
-        <h3 class="modal-title">Submitting</h3>
+        <h3 class="modal-title">Adatok küldése</h3>
     </div>
     <div class="modal-body">
-    	Working, please wait...
+    	Dolgozom, kérlek, várj&hellip;
     </div>
 </script>
 
@@ -54,14 +54,16 @@
     <div class="modal-header">
         <h3 class="modal-title">
         	<span class="glyphicon glyphicon-warning-sign"></span>
-        	Invalid data
+        	Hibás adat!
         </h3>
     </div>
     <div class="modal-body">
-    	Some required data is missing. Please fill required fields and re-submit.
+    	Lehet, hogy valamit nem töltöttél ki.
+    	Az üresen hagyott kötelező mezők pirossal ki vannak emelve,
+    	ezeket mindenképp töltsd ki.
     </div>
     <div class="modal-footer">
-    	<button class="btn btn-primary" ng-click="close()">Close</button>
+    	<button class="btn btn-primary" ng-click="close()">Bezár</button>
     </div>
 </script>
 </head>
