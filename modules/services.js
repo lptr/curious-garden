@@ -1,6 +1,31 @@
 (function () {
 	var services = angular.module("kapa.services", []);
 
+	services.factory("normalizer", function() {
+		var normalize = (function() {
+			var translate_re = /[éáűőúöüóíÉÁŰPŐÚÖÜÓÍ]/g;
+			var translate = { "é": "e", "á": "a", "ű": "u", "ő": "o", "ú": "u", "ö": "o", "ü": "u", "ó": "o", "í": "i", "É": "E", "Á": "A", "Ű": "U", "Ő": "O", "Ú": "U", "Ö": "O", "Ü": "U", "Ó": "O", "Í": "I" };
+			return function(input) {
+				return (input.replace(translate_re, function(match) { 
+					return translate[match]; 
+				})).toLowerCase();
+			};
+		})();
+
+		return {
+			find: function (elements, input, property) {
+				var inputRegex = new RegExp("\\b" + normalize(input));
+				return elements.filter(function (element) {
+					if (property) {
+						element = element[property];
+					}
+					var normalizedElement = normalize(element);
+					return inputRegex.test(normalizedElement);
+				});
+			}
+		};
+	});
+
 	services.factory("kapaServer", function ($http, $location) {
 		var getQueryString = function () {
 			var result = {}

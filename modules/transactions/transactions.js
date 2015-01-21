@@ -14,7 +14,7 @@
 			});
 	});
 
-	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, kapaServer, payeeManager, accountManager, categoryManager) {
+	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, normalizer, kapaServer, payeeManager, accountManager, categoryManager) {
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
@@ -29,6 +29,8 @@
 		categoryManager.load(function (categories) {
 			$scope.categories = categories;
 		});
+
+		$scope.find = normalizer.find;
 
 		$scope.reset = function () {
 			$scope.payee = "";
