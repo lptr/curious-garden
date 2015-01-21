@@ -6,6 +6,9 @@
 			var translate_re = /[éáűőúöüóíÉÁŰPŐÚÖÜÓÍ]/g;
 			var translate = { "é": "e", "á": "a", "ű": "u", "ő": "o", "ú": "u", "ö": "o", "ü": "u", "ó": "o", "í": "i", "É": "E", "Á": "A", "Ű": "U", "Ő": "O", "Ú": "U", "Ö": "O", "Ü": "U", "Ó": "O", "Í": "I" };
 			return function(input) {
+				if (!input) {
+					return input;
+				}
 				return (input.replace(translate_re, function(match) { 
 					return translate[match]; 
 				})).toLowerCase();
