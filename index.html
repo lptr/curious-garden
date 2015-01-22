@@ -42,43 +42,45 @@
 	<script src="modules/import/import.js"></script>
 
 <script type="text/ng-template" id="save-dialog.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Adatok küldése</h3>
-    </div>
-    <div class="modal-body">
-    	Dolgozom, kérlek, várj&hellip;
-    </div>
+	<div class="modal-header">
+		<h3 class="modal-title">Adatok küldése</h3>
+	</div>
+	<div class="modal-body">
+		Dolgozom, kérlek, várj&hellip;
+	</div>
 </script>
 
 <script type="text/ng-template" id="error-dialog.html">
-    <div class="modal-header">
-        <h3 class="modal-title">
-        	<span class="glyphicon glyphicon-warning-sign"></span>
-        	Hibás adat!
-        </h3>
-    </div>
-    <div class="modal-body">
-    	Lehet, hogy valamit nem töltöttél ki.
-    	Az üresen hagyott kötelező mezők pirossal ki vannak emelve,
-    	ezeket mindenképp töltsd ki.
-    </div>
-    <div class="modal-footer">
-    	<button class="btn btn-primary" ng-click="close()">Bezár</button>
-    </div>
+	<div class="modal-header">
+		<h3 class="modal-title">
+			<span class="glyphicon glyphicon-warning-sign"></span>
+			Hibás adat!
+		</h3>
+	</div>
+	<div class="modal-body">
+		Lehet, hogy valamit nem töltöttél ki.
+		Az üresen hagyott kötelező mezők pirossal ki vannak emelve,
+		ezeket mindenképp töltsd ki.
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary" ng-click="close()">Bezár</button>
+	</div>
 </script>
 
 <script type="text/ng-template" id="access-denied.html">
-    <div class="modal-header">
-        <h3 class="modal-title">Az első használat előtt</h3>
-    </div>
-    <div class="modal-body">
-    	<p>
-			<a href="javascript:window.location.href='https://script.google.com/macros/s/AKfycbwBGeZPzlmi-4wu23s3NyQP0T1rE71750FNYOFPAozPignicus/exec'" class="btn btn-danger">Bejelentkezés a Google-be</a>
-		</p>
-		<p>
-			Ezt a gombot meg kell nyomni egyszer, mielőtt el tudnád kezdeni használni a KAPA-t. Kérni fog, hogy engedélyezd a hozzáférést, aztan kiír egy hibát. Utána gyere vissza ide, és minden jó lesz. Sok sikert. :)
-		</p>
-    </div>
+	<div ng-controller="GoogleLoginDialogController">
+		<div class="modal-header">
+			<h3 class="modal-title">Az első használat előtt</h3>
+		</div>
+		<div class="modal-body">
+			<p>
+				<a href="javascript:window.location.href='{{loginLink}}'" class="btn btn-danger">Bejelentkezés a Google-be</a>
+			</p>
+			<p>
+				Ezt a gombot meg kell nyomni egyszer, mielőtt el tudnád kezdeni használni a KAPA-t. Kérni fog, hogy engedélyezd a hozzáférést, aztan kiír egy hibát. Utána gyere vissza ide, és minden jó lesz. Sok sikert. :)
+			</p>
+		</div>
+	</div>
 </script>
 </head>
 <body>

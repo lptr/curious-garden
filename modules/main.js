@@ -41,7 +41,11 @@
 				keyboard: false
 			});
 		});
-	});	
+	});
+
+	app.controller("GoogleLoginDialogController", function ($scope, kapaServer) {
+		$scope.loginLink = kapaServer.getUrl() + "?method=login";
+	});
 
 	app.controller("NavLinksController", function ($scope, $location) {
 		$scope.isActive = function (viewLocation) {
