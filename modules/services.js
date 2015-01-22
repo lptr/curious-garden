@@ -46,9 +46,9 @@
 		var development = getQueryString()["dev"];
 		var serverUrl;
 		if (development) {
-			serverUrl = "https://script.google.com/macros/s/AKfycbzr__tdtQoB4Hg9mJOCaK8Y9AL8Fwx4uyIxHefJSis/dev";
+			serverUrl = "https://script.google.com/macros/s/AKfycbzPbRBwsQobbXzgbT52P0m4-09SS2KMNZOmR_8Vfz4/dev";
 		} else {
-			serverUrl = "https://script.google.com/macros/s/AKfycbwBGeZPzlmi-4wu23s3NyQP0T1rE71750FNYOFPAozPignicus/exec"
+			serverUrl = "https://script.google.com/macros/s/AKfycbw3K4PgqRNE6sstX6Z6Exy39cnpmLiIKWReTNUcN-4CRTcRbS8/exec"
 		}
 		return {
 			getUrl: function () {
