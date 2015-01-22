@@ -7,11 +7,11 @@
 		"ngRoute",
 		"ui.bootstrap.modal"
 	]);
-	app.config(function ($locationProvider) {
-		$locationProvider.html5Mode({
-			enabled: true
-		});
-	});
+	// app.config(function ($locationProvider) {
+	// 	$locationProvider.html5Mode({
+	// 		enabled: true
+	// 	});
+	// });
 
 	app.config(function ($routeProvider) {
 		$routeProvider
