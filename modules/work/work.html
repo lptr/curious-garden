@@ -6,9 +6,10 @@
 	<label class="col-md-4 control-label">Munkatárs</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<select name="employee" class="form-control" ng-model="employee" ng-options="employee.name for employee in employees" ng-required="true"></select>
+			<select name="employee" class="form-control" ng-model="employee" ng-options="employee.name for employee in employees" ng-required="true" ng-disabled="!employees.length"></select>
 			<span class="input-group-addon">
-				<span class="glyphicon glyphicon-user"></span>
+				<span ng-show="employees.length" class="glyphicon glyphicon-user"></span>
+				<span ng-hide="employees.length" class="glyphicon glyphicon-refresh"></span>
 			</span>
 		</div>
 	</div>
@@ -36,7 +37,8 @@
 		<div class="input-group">
 			<input name="category" type="text" ng-model="category" typeahead="category.hungarian for category in find(categories, $viewValue, 'hungarian')" typeahead-min-length="0" class="form-control clearable" placeholder="min dolgozott?" ng-required="true"/>
 			<span class="input-group-addon">
-				<span class="glyphicon glyphicon-tags"></span>
+				<span ng-show="categories.length" class="glyphicon glyphicon-tags"></span>
+				<span ng-hide="categories.length" class="glyphicon glyphicon-refresh"></span>
 			</span>
 		</div>
 	</div>
