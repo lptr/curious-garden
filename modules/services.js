@@ -54,17 +54,23 @@
 			getUrl: function () {
 				return serverUrl;
 			},
-			query: function (method, data) {
-				return $http.jsonp(serverUrl, {
+			query: function (method, data, ignoreErrors) {
+				var request = $http.jsonp(serverUrl, {
 					params: {
 						method: method,
 						data: JSON.stringify(data),
 						callback: "JSON_CALLBACK"
 					}
-				}).error(function(data, status, headers, config) {
-					console.log("Error", data, status, headers, config);
-					alert("Error: " + status);
-				});
+				})
+
+				if (!ignoreErrors) {
+					request.error(function(data, status, headers, config) {
+						console.log("Error", data, status, headers, config);
+						alert("Error: " + status);
+					});
+				}
+
+				return request;
 			}
 		};
 	});

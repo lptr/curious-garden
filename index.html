@@ -66,8 +66,24 @@
     	<button class="btn btn-primary" ng-click="close()">Bezár</button>
     </div>
 </script>
+
+<script type="text/ng-template" id="access-denied.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Az első használat előtt</h3>
+    </div>
+    <div class="modal-body">
+    	<p>
+			<a href="javascript:window.location.href='https://script.google.com/macros/s/AKfycbwBGeZPzlmi-4wu23s3NyQP0T1rE71750FNYOFPAozPignicus/exec'" class="btn btn-danger">Bejelentkezés a Google-be</a>
+		</p>
+		<p>
+			Ezt a gombot meg kell nyomni egyszer, mielőtt el tudnád kezdeni használni a KAPA-t. Kérni fog, hogy engedélyezd a hozzáférést, aztan kiír egy hibát. Utána gyere vissza ide, és minden jó lesz. Sok sikert. :)
+		</p>
+    </div>
+</script>
 </head>
 <body>
+
+<div ng-controller="GoogleLoginController"></div>
 
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 	<div class="container-fluid">
