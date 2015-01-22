@@ -69,59 +69,53 @@
 		};
 	});
 
-	services.factory("accountManager", function (kapaServer) {
+	var Loader = function(kapaServer, method) {
+		var cache = null;
 		return {
 			load: function (callback) {
-				kapaServer.query("getAccounts").success(function (accounts) {
-					console.log("Got accounts", accounts);
-					callback(accounts);
-				});
+				if (cache) {
+					callback(cache);
+				} else {
+					kapaServer.query(method).success(function (result) {
+						console.log(method + " received: ", result);
+						cache = result;
+						callback(result);
+					});
+				}
 			}
 		};
+	};
+
+	services.factory("userManager", function (kapaServer) {
+		return new Loader(kapaServer, "getUser");
+	});
+
+	services.factory("accountManager", function (kapaServer) {
+		return new Loader(kapaServer, "getAccounts");
 	});
 
 	services.factory("payeeManager", function (kapaServer) {
-		return {
-			load: function (callback) {
-				kapaServer.query("getPayees").success(function (payees) {
-					console.log("Got payees", payees);
-					callback(payees);
-				});
-			}
-		};
+		return new Loader(kapaServer, "getPayees");
 	});
 
 	services.factory("employeeManager", function (kapaServer) {
-		return {
-			load: function (callback) {
-				kapaServer.query("getEmployees").success(function (employees) {
-					console.log("Got employees", employees);
-					callback(employees);
-				});
-			}
-		};
+		return new Loader(kapaServer, "getEmployees");
 	});
 
 	services.factory("categoryManager", function (kapaServer) {
-		return {
-			load: function (callback) {
-				kapaServer.query("getCategories").success(function (categories) {
-					console.log("Got work categories", categories);
-					callback(categories);
-				});
-			},
-			convertCategory: function (categories, hungarian) {
-				// Try to find category in the given categories
-				// and translate from there
-				for (var i = 0; i < categories.length; i++) {
-					var category = categories[i];
-					if (category.hungarian == hungarian) {
-						return category.english;
-					}
+		var manager = new Loader(kapaServer, "getCategories");
+		manager.convertCategory = function (categories, hungarian) {
+			// Try to find category in the given categories
+			// and translate from there
+			for (var i = 0; i < categories.length; i++) {
+				var category = categories[i];
+				if (category.hungarian == hungarian) {
+					return category.english;
 				}
-				// Fall back to the original if not found
-				return hungarian;
 			}
+			// Fall back to the original if not found
+			return hungarian;
 		};
+		return manager;
 	});
 })();

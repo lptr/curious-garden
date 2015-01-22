@@ -6,7 +6,7 @@
 	<label class="col-md-4 control-label">Munkatárs</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<select name="employee" class="form-control" ng-model="employee" ng-options="employee for employee in employees" ng-required="true"></select>
+			<select name="employee" class="form-control" ng-model="employee" ng-options="employee.name for employee in employees" ng-required="true"></select>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-user"></span>
 			</span>
