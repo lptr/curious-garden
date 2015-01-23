@@ -33,14 +33,21 @@
 		});
 	});
 
-	app.controller("GoogleLoginController", function ($scope, $modal, kapaServer) {
-		kapaServer.query("getUser", null, true).error(function () {
-			$modal.open({
-				templateUrl: "access-denied.html",
-				backdrop: "static",
-				keyboard: false
+	app.controller("MainController", function ($scope, $modal, kapaServer) {
+		$scope.user = {
+			features: {}
+		};
+		kapaServer.query("getUser", null, true)
+			.success(function (user) {
+				$scope.user = user;
+			})
+			.error(function () {
+				$modal.open({
+					templateUrl: "access-denied.html",
+					backdrop: "static",
+					keyboard: false
+				});
 			});
-		});
 	});
 
 	app.controller("GoogleLoginDialogController", function ($scope, kapaServer) {

@@ -10,7 +10,7 @@
 <h1>Ezeket tudod csinálni</h1>
 
 <ul class="nav nav-pills nav-justified">
-	<li>
+	<li ng-show="user.access.transactions">
 		<dt>
 			<a href="#transactions" class="btn btn-lg btn-primary">
 				<span class="glyphicon glyphicon-euro"></span>
@@ -21,7 +21,7 @@
 			Itt lehet felvinni hogy mire költöttük a pénzünket.
 		</dd>
 	</li>
-	<li>
+	<li ng-show="user.access.transactions">
 		<dt>
 			<a href="#work" class="btn btn-lg btn-primary">
 				<span class="glyphicon glyphicon-grain"></span>
@@ -32,7 +32,7 @@
 			Itt lehet bejegyezni, hogy ki mikor mennyit dolgozott.
 		</dd>
 	</li>
-	<li>
+	<li ng-show="user.access.transactions">
 		<dt>
 			<a href="#import" class="btn btn-lg btn-primary">
 				<span class="glyphicon glyphicon-upload"></span>

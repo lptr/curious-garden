@@ -83,9 +83,7 @@
 	</div>
 </script>
 </head>
-<body>
-
-<div ng-controller="GoogleLoginController"></div>
+<body ng-controller="MainController">
 
 <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
 	<div class="container-fluid">
@@ -99,19 +97,30 @@
 			<a class="navbar-brand" href="#/">KAPA</a>
 		</div>
 		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav" ng-controller="NavLinksController">
-				<li ng-class="{ active: isActive('^/transactions')}"><a href="#transactions">
-					<span class="glyphicon glyphicon-euro"></span>
-					Tranzakciók
-				</a></li>
-				<li ng-class="{ active: isActive('^/work')}"><a href="#work">
-					<span class="glyphicon glyphicon-grain"></span>
-					Munka
-				</a></li>
-				<li ng-class="{ active: isActive('^/import')}"><a href="#import">
-					<span class="glyphicon glyphicon-upload"></span>
-					Adatok
-				</a></li>
+			<ul class="nav navbar-nav navbar-left" ng-controller="NavLinksController">
+				<li ng-class="{ active: isActive('^/transactions')}" ng-show="user.access.transactions">
+					<a href="#transactions">
+						<span class="glyphicon glyphicon-euro"></span>
+						Tranzakciók
+					</a>
+				</li>
+				<li ng-class="{ active: isActive('^/work')}" ng-show="user.access.work">
+					<a href="#work">
+						<span class="glyphicon glyphicon-grain"></span>
+						Munka
+					</a>
+				</li>
+				<li ng-class="{ active: isActive('^/import')}" ng-show="user.access.import">
+					<a href="#import">
+						<span class="glyphicon glyphicon-upload"></span>
+						Adatok
+					</a>
+				</li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li>
+					<p class="navbar-text">{{user.name}}</p>
+				</li>
 			</ul>
 		</div><!--/.nav-collapse -->
 	</div><!--/.container-fluid -->

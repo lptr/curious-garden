@@ -23,7 +23,7 @@
 			if ($scope.user && !$scope.employee && $scope.employees) {
 				for (var i = 0; i < $scope.employees.length; i++) {
 					var employee = $scope.employees[i];
-					if (employee.email === $scope.user) {
+					if (employee.email === $scope.user.email) {
 						$scope.employee = employee;
 						break;
 					}
