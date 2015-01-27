@@ -110,7 +110,7 @@
 
 	services.factory("categoryManager", function (kapaServer) {
 		var manager = new Loader(kapaServer, "getCategories");
-		manager.convertFromHunarianToEnglish = function (categories, hungarian) {
+		manager.convertFromHungarianToEnglish = function (categories, hungarian) {
 			// Try to find category in the given categories
 			// and translate from there
 			for (var i = 0; i < categories.length; i++) {
