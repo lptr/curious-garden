@@ -137,7 +137,7 @@
 		return manager;
 	});
 
-	app.filter('reverse', function() {
+	services.filter('reverse', function() {
 		return function(items) {
 			return items.slice().reverse();
 		};
