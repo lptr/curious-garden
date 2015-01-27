@@ -14,7 +14,7 @@
 			});
 	});
 
-	workModule.controller("WorkController", function ($scope, $filter, $modal, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
+	workModule.controller("WorkController", function ($scope, $modal, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
 		$scope.employees = [];
 		$scope.categories = [];
 
