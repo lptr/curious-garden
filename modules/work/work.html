@@ -86,3 +86,22 @@
 </div>
 </fieldset>
 </form>
+
+<table class="table table-stripped table-hover" ng-controller="RecentWorksController">
+	<tbody>
+	<tr ng-repeat="item in items">
+		<td>
+			{{item.employee}}
+		</td>
+		<td>
+			{{item.hours}}
+		</td>
+		<td>
+			{{convertCategory(item.category)}}
+		</td>
+		<td>
+			{{item.memo}}
+		</td>
+	</tr>
+	</tbody>
+</table>

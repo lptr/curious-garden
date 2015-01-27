@@ -99,4 +99,18 @@
 			});
 		}
 	});
+
+	workModule.controller("RecentWorksController", function ($scope, kapaServer, categoryManager) {
+		$scope.items = [];
+		$scope.convertCategory = function (category) {
+			return categoryManager.convertFromEnglishToHungarian($scope.categories, category);
+		};
+		var now = new Date();
+		var from = new Date(now.getFullYear(), now.getMonth() - 1, now.getDay());
+		var until = new Date(now.getFullYear(), now.getMonth(), now.getDay() + 1);
+		console.log("Querying works by active user between", from, until);
+		kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
+			$scope.items = items;
+		});
+	});
 })();
