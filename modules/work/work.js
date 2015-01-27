@@ -14,7 +14,7 @@
 			});
 	});
 
-	workModule.controller("WorkController", function ($scope, $modal, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
+	workModule.controller("WorkController", function ($scope, $modal, $filter, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
 		$scope.employees = [];
 		$scope.categories = [];
 
@@ -33,6 +33,26 @@
 
 		$scope.find = normalizer.find;
 
+		// Recent work items
+		$scope.recentItems = [];
+		$scope.convertCategoryFromEnglishToHungarian = function (category) {
+			return categoryManager.convertFromEnglishToHungarian($scope.categories, category);
+		};
+		$scope.formatTime = function (time) {
+			var hours = Math.floor(time);
+			var minutes = Math.round((time % 1) * 60);
+			return hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+		};
+		var reloadRecentWork = function () {
+			var now = new Date();
+			var from = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+			var until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+			console.log("Querying works by active user between", from, until);
+			kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
+				$scope.recentItems = items;
+			});
+		};
+
 		$scope.reset = function () {
 			$scope.employee = undefined;
 			$scope.hours = undefined;
@@ -41,6 +61,7 @@
 			$scope.memo = "";
 			$scope.date = new Date();
 			$scope.$broadcast('show-errors-reset');
+			reloadRecentWork();
 		}
 
 		$scope.reset();
@@ -98,19 +119,5 @@
 				popup.close();
 			});
 		}
-	});
-
-	workModule.controller("RecentWorksController", function ($scope, kapaServer, categoryManager) {
-		$scope.items = [];
-		$scope.convertCategory = function (category) {
-			return categoryManager.convertFromEnglishToHungarian($scope.categories, category);
-		};
-		var now = new Date();
-		var from = new Date(now.getFullYear(), now.getMonth() - 1, now.getDay());
-		var until = new Date(now.getFullYear(), now.getMonth(), now.getDay() + 1);
-		console.log("Querying works by active user between", from, until);
-		kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
-			$scope.items = items;
-		});
 	});
 })();

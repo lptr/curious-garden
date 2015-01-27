@@ -87,17 +87,17 @@
 </fieldset>
 </form>
 
-<table class="table table-stripped table-hover" ng-controller="RecentWorksController">
+<table class="table table-stripped table-hover">
 	<tbody>
-	<tr ng-repeat="item in items">
+	<tr ng-repeat="item in recentItems">
 		<td>
 			{{item.employee}}
 		</td>
 		<td>
-			{{item.hours}}
+			{{formatTime(item.hours)}}
 		</td>
 		<td>
-			{{convertCategory(item.category)}}
+			{{convertCategoryFromEnglishToHungarian(item.category)}}
 		</td>
 		<td>
 			{{item.memo}}
