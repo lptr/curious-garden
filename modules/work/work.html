@@ -88,7 +88,7 @@
 </form>
 
 <div class="container-fluid stripped">
-	<div class="row" ng-repeat="item in recentItems">
+	<div class="row" ng-repeat="item in recentItems | reverse">
 		<div class="col-xs-2 col-md-1">
 			{{item.employee}}
 		</div>
