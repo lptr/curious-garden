@@ -73,7 +73,7 @@
 				templateUrl: "save-dialog.html"
 			});
 
-			var category = categoryManager.convertCategory($scope.categories, $scope.category);
+			var category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
 
 			var hours = 0;
 			if ($scope.hours) {

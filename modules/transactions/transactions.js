@@ -62,7 +62,7 @@
 				templateUrl: "save-dialog.html"
 			});
 
-			var category = categoryManager.convertCategory($scope.categories, $scope.category);
+			var category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
 
 			var formData = {
 				payee: $scope.payee,
