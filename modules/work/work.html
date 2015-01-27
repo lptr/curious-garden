@@ -87,21 +87,19 @@
 </fieldset>
 </form>
 
-<table class="table table-stripped table-hover">
-	<tbody>
-	<tr ng-repeat="item in recentItems">
-		<td>
+<div class="container-fluid stripped">
+	<div class="row" ng-repeat="item in recentItems">
+		<div class="col-xs-2 col-md-1">
 			{{item.employee}}
-		</td>
-		<td>
+		</div>
+		<div class="col-xs-2 col-md-1">
 			{{formatTime(item.hours)}}
-		</td>
-		<td>
+		</div>
+		<div class="col-xs-8 col-md-5">
 			{{convertCategoryFromEnglishToHungarian(item.category)}}
-		</td>
-		<td>
+		</div>
+		<div class="col-xs-8 col-xs-offset-4 col-md-5 col-md-offset-0">
 			{{item.memo}}
-		</td>
-	</tr>
-	</tbody>
-</table>
+		</div>
+	</div>
+</div>

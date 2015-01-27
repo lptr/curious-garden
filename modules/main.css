@@ -14,3 +14,7 @@
 .clearable.onX {
 	cursor: pointer;
 }
+
+.stripped > .row:nth-of-type(even) {
+    background: #f0f0f0;
+}
