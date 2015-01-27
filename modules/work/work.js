@@ -45,7 +45,7 @@
 		};
 		var reloadRecentWork = function () {
 			var now = new Date();
-			var from = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+			var from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 			var until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 			console.log("Querying works by active user between", from, until);
 			kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
