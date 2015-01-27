@@ -87,7 +87,11 @@
 </fieldset>
 </form>
 
-<div class="container-fluid stripped">
+<div class="container-fluid stripped" ng-show="recentItems.length > 0">
+	<div class="row">
+		<h3>Ma felvett munkák</h3>
+	</div>
+
 	<div class="row" ng-repeat="item in recentItems | reverse">
 		<div class="col-xs-2 col-md-1">
 			{{item.employee}}
