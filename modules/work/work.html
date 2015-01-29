@@ -93,16 +93,19 @@
 	</div>
 
 	<div class="row" ng-repeat="item in recentItems | reverse">
+		<div class="col-xs-2 col-md-1 text-right">
+			{{formatTimestamp(item.timestamp)}}
+		</div>
 		<div class="col-xs-2 col-md-1">
 			{{item.employee}}
 		</div>
-		<div class="col-xs-2 col-md-1">
+		<div class="col-xs-2 col-md-1 text-right">
 			{{formatTime(item.hours)}}
 		</div>
-		<div class="col-xs-8 col-md-5">
+		<div class="col-xs-6 col-md-4">
 			{{convertCategoryFromEnglishToHungarian(item.category)}}
 		</div>
-		<div class="col-xs-8 col-xs-offset-4 col-md-5 col-md-offset-0">
+		<div class="col-xs-6 col-xs-offset-6 col-md-4 col-md-offset-0">
 			{{item.memo}}
 		</div>
 	</div>

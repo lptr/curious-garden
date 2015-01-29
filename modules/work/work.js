@@ -43,6 +43,12 @@
 			var minutes = Math.round((time % 1) * 60);
 			return hours + ":" + (minutes < 10 ? "0" : "") + minutes;
 		};
+		$scope.formatTimestamp = function (timestamp) {
+			var date = new Date(Date.parse(timestamp));
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			return hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+		};
 		var reloadRecentWork = function () {
 			var now = new Date();
 			var from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
