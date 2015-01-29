@@ -89,7 +89,7 @@
 
 <div class="container-fluid stripped" ng-show="recentItems.length > 0">
 	<div class="row">
-		<label>Ma felvett munkák</label>
+		<label>Mára felvett munkák (össz.: {{formatTime(sumRecentWorkTime)}})</label>
 	</div>
 
 	<div class="row" ng-repeat="item in recentItems | reverse">

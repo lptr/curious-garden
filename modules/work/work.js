@@ -56,6 +56,10 @@
 			console.log("Querying works by active user between", from, until);
 			kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
 				$scope.recentItems = items;
+				$scope.sumRecentWorkTime = 0;
+				items.forEach(function (item) {
+					$scope.sumRecentWorkTime += item.hours;
+				});
 			});
 		};
 
