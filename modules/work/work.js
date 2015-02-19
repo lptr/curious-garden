@@ -63,8 +63,8 @@
 			});
 		};
 
+		$scope.employee = undefined;
 		$scope.reset = function () {
-			$scope.employee = undefined;
 			$scope.hours = undefined;
 			$scope.minutes = undefined;
 			$scope.category = undefined;
