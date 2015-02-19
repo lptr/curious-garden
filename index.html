@@ -38,6 +38,9 @@
 	<link rel="stylesheet" href="modules/work/work.css" />
 	<script src="modules/work/work.js"></script>
 
+	<link rel="stylesheet" href="modules/plantation/plantation.css" />
+	<script src="modules/plantation/plantation.js"></script>
+
 	<link rel="stylesheet" href="modules/import/import.css" />
 	<script src="modules/import/import.js"></script>
 
@@ -108,6 +111,12 @@
 					<a href="#work">
 						<span class="glyphicon glyphicon-grain"></span>
 						Munka
+					</a>
+				</li>
+				<li ng-class="{ active: isActive('^/plantation')}" ng-show="user.access.plantation">
+					<a href="#plantation">
+						<span class="glyphicon glyphicon-leaf"></span>
+						Vetés
 					</a>
 				</li>
 				<li ng-class="{ active: isActive('^/import')}" ng-show="user.access.import">
