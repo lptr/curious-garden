@@ -108,6 +108,10 @@
 		return new Loader(kapaServer, "getEmployees");
 	});
 
+	services.factory("plantationManager", function (kapaServer) {
+		return new Loader(kapaServer, "getPlantations");
+	});
+
 	services.factory("categoryManager", function (kapaServer) {
 		var manager = new Loader(kapaServer, "getCategories");
 		manager.convertFromHungarianToEnglish = function (categories, hungarian) {
