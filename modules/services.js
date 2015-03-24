@@ -55,6 +55,7 @@
 				return serverUrl;
 			},
 			query: function (method, data, ignoreErrors) {
+				console.log("Sending request to " + method, data);
 				var request = $http.jsonp(serverUrl, {
 					params: {
 						method: method,
