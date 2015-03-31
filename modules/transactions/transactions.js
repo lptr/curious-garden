@@ -64,11 +64,12 @@
 				templateUrl: "save-dialog.html"
 			});
 
-			var categoryEnglish = $scope.category;
+			var category;
 			if ($scope.type == "transfer") {
-				categoryEnglish = "transfer";
+				category = "transfer";
+			} else {
+				category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
 			}
-			var category = categoryManager.convertFromHungarianToEnglish($scope.categories, categoryEnglish);
 
 			var formData = {
 				payee: $scope.payee,
