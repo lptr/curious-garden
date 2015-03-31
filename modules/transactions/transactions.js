@@ -40,7 +40,8 @@
 			$scope.status = "";
 			$scope.category = "";
 			$scope.memo = "";
-			$scope.date = new Date();
+			$scope.transactionDate = new Date();
+			$scope.paymentDate = new Date();
 			$scope.$broadcast('show-errors-reset');
 		}
 
@@ -74,8 +75,8 @@
 				status: $scope.status,
 				category: category,
 				memo: $scope.memo,
-				date: $filter("date")($scope.date, "yyyy-MM-dd"),
-				costMonth: $filter("date")($scope.date, "yyyy-MM")
+				transactionDate: $filter("date")($scope.transactionDate, "yyyy-MM-dd"),
+				paymentDate: $filter("date")($scope.paymentDate, "yyyy-MM-dd")
 			};
 
 			if ($scope.type == "withdrawal" || $scope.type == "transfer") {

@@ -128,12 +128,25 @@
 	</div>
 </div>
 
-<!-- Date -->
+<!-- Transaction Date -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label" for="date">Dátum</label>
+	<label class="col-md-4 control-label" for="transactionDate">Teljesítés dátuma</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="date" name="date" ng-model="date" type="date" placeholder="mikor történt a tranzakció?" class="form-control" ng-required="true"/>
+			<input id="transactionDate" name="transactionDate" ng-model="transactionDate" type="date" placeholder="mikor történt a teljesítés?" class="form-control" ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-calendar"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Payment Date -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label" for="paymentDate">Fizetés dátuma</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input id="paymentDate" name="paymentDate" ng-model="paymentDate" type="date" placeholder="mikor történt a kifizetés?" class="form-control" ng-required="true"/>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-calendar"></span>
 			</span>
