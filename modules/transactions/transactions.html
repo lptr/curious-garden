@@ -102,11 +102,11 @@
 </div>
 
 <!-- VAT -->
-<div class="form-group" show-errors>
+<div class="form-group" ng-show="type != 'transfer'" show-errors>
 	<label class="col-md-4 control-label" for="vat">ÁFÁs számla</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<select id="vat" name="vat" ng-model="vat" class="form-control" ng-required="true" ng-options="option.value as option.name for option in [{ name: 'igen', value: true }, { name: 'nem', value: false }]">
+			<select id="vat" name="vat" ng-model="vat" class="form-control" ng-required="type != 'transfer'" ng-options="option.value as option.name for option in [{ name: 'igen', value: true }, { name: 'nem', value: false }]">
 			</select>
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-check"></span>

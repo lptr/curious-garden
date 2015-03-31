@@ -65,17 +65,20 @@
 			});
 
 			var category;
+			var vat;
 			if ($scope.type == "transfer") {
 				category = "transfer";
+				vat = false;
 			} else {
 				category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
+				vat = $scope.vat;
 			}
 
 			var formData = {
 				payee: $scope.payee,
 				amount: $scope.amount,
 				status: $scope.status,
-				vat: $scope.vat,
+				vat: vat,
 				category: category,
 				memo: $scope.memo,
 				transactionDate: $filter("date")($scope.transactionDate, "yyyy-MM-dd"),
