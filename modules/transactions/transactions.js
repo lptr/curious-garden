@@ -38,6 +38,7 @@
 			$scope.sourceAccount = "";
 			$scope.targetAccount = "";
 			$scope.status = "";
+			$scope.vat = false;
 			$scope.category = "";
 			$scope.memo = "";
 			$scope.transactionDate = new Date();
@@ -73,6 +74,7 @@
 				payee: $scope.payee,
 				amount: $scope.amount,
 				status: $scope.status,
+				vat: $scope.vat,
 				category: category,
 				memo: $scope.memo,
 				transactionDate: $filter("date")($scope.transactionDate, "yyyy-MM-dd"),
