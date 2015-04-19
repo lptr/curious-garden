@@ -3,38 +3,48 @@
 <head>
 	<meta charset="utf-8">
 <style>
-@page {
-    size: auto;
-    margin: 0;
+@media print {
+	@page {
+		size: auto;
+		margin: 0;
+	}
+	.label {
+		page-break-inside: avoid;
+	}
+	.label:nth-child(12n) {
+		page-break-after: always;
+	}
 }
-
 html, body {
 	margin: 0;
-	width: 21.0cm;
-	font-family: "Helvetica Neue";
+	width: 210mm;
+	font-family: "Helvetica Neue", sans-serif;
+	font-size: 3.5mm;
 }
-
 .label {
 	float: left;
-	width: 4.7cm;
-	height: 2.47cm;
-	border-right: 0.025cm dashed black;
-	border-bottom: 0.025cm dashed black;
+	width: 43.3mm;
+	height: 20.6mm;
+	border-right: 0.5mm dashed gray;
+	border-bottom: 0.5mm dashed gray;
 	margin: 0;
 	overflow: hidden;
-	padding: 0.25cm;
-	page-break-inside: avoid;
+	padding: 4.5mm;
+	background-image: url("../../images/logo.png");
+	background-size: 15mm 15mm;
+	background-repeat: no-repeat;
+	background-position: 92% 80%;
 }
-
-.label:nth-child(12n) {
-	page-break-after: always;
+.label:nth-child(4n) {
+	border-right: 0;
 }
-
 .hu {
 	font-weight: bold;
 }
 .date {
-	font-size: small;
+	font-family: "American Typewriter", monospace;
+	margin-top: 1em;
+	font-size: 3mm;
 }
 </style>
 </head>
