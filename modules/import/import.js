@@ -174,10 +174,11 @@
 					}
 				}
 
-				$(printWindow).load(function() {
+				printWindow.onload = function() {
 					console.log("Entry");
 					var printBody = $(printWindow.document).contents().find("body");
 					console.log("Print body", printBody);
+					printBody.empty();
 					labels.forEach(function (label) {
 						var labelDiv = $('<div class="label"></div>');
 						console.log("labelDiv", labelDiv, label);
@@ -192,7 +193,7 @@
 					console.log("Printing");
 					printWindow.print();
 					console.log("Done");
-				});
+				};
 			};
 			reader.readAsText($scope.file, "iso-8859-2");
 		}
