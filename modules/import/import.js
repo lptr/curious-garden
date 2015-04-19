@@ -127,4 +127,77 @@
 			$scope.file = element.files[0];
 		}
 	});
+
+	importModule.controller("LabelPrinterController", function ($scope, $filter, productNameTranslationsManager) {
+		$scope.file = undefined;
+		$scope.productNameTranslations = null;
+
+		productNameTranslationsManager.load(function (productNameTranslations) {
+			$scope.productNameTranslations = productNameTranslations;
+		});
+
+		$scope.printLabels = function() {
+			var printWindow = window.open("modules/import/labels.html", "KAPA_PrintLabels", "width=800, height=600");
+			if (!printWindow) {
+				throw "Cannot open window for printing";
+			}
+			var reader = new FileReader();
+			reader.onload = function(event) {
+				var date = $filter("date")(new Date(), "yyyy-MM-dd");
+
+				// Parse CSV
+				CSV.COLUMN_SEPARATOR = ";";
+				var data = CSV.parse(reader.result);
+				console.log("Raw CSV data:", data);
+
+				// Skip first line
+				data.shift();
+
+				var labels = [];
+				while (data.length > 0) {
+					var row = data.shift();
+					// CSV format:
+					// Cikkszam;Nev;Darabszam;Netto ar;Brutto ar;Gyarto, Rendelesi azonosito(k)
+					var productNameHU = row[1];
+					var productNameEN = $scope.productNameTranslations[productNameHU];
+					// Fall back to Hungarian for now
+					if (!productNameEN) {
+						productNameEN = productNameHU;
+					}
+					var count = row[2];
+					for (var idx = 0; idx < count; idx++) {
+						labels.push({
+							en: productNameEN,
+							hu: productNameHU,
+							date: date
+						});
+					}
+				}
+
+				$(printWindow).load(function() {
+					console.log("Entry");
+					var printBody = $(printWindow.document).contents().find("body");
+					console.log("Print body", printBody);
+					labels.forEach(function (label) {
+						var labelDiv = $('<div class="label"></div>');
+						console.log("labelDiv", labelDiv, label);
+						labelDiv.append('<div class="hu">' + label.hu + '</div>');
+						labelDiv.append('<div class="en">' + label.en + '</div>');
+						labelDiv.append('<div class="date">' + label.date + '</div>');
+						printBody.append(labelDiv);
+						console.log("appended labelDiv", labelDiv);
+					});
+					console.log("Focusing");
+					printWindow.focus();
+					console.log("Printing");
+					printWindow.print();
+					console.log("Done");
+				});
+			};
+			reader.readAsText($scope.file, "iso-8859-2");
+		}
+		$scope.filePicked = function(element) {
+			$scope.file = element.files[0];
+		}
+	});
 })();

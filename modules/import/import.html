@@ -23,3 +23,29 @@
 </fieldset>
 </form>
 </div>
+
+<div ng-controller="LabelPrinterController">
+<form name="labelPrinter" class="form-horizontal" novalidate ng-submit="printLabels()">
+<fieldset>
+
+<div class="form-group">
+	<label class="col-md-2 control-label">Matrica nyomtatás</label>
+ 	<div class="col-md-4">
+		<div class="input-group">
+ 			<input name="file" type="file" class="form-control" ng-model="file" accept="text/csv" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" />
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-file"></span>
+			</span>
+		</div>
+	</div>
+ 	<div class="col-md-2">
+		<button type="submit" class="btn btn-primary" ng-disabled="!productNameTranslations">
+			<span class="glyphicon glyphicon-import"></span>
+			Nyomtat
+		</button>
+	</div>
+</div>
+
+</fieldset>
+</form>
+</div>

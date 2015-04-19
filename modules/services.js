@@ -142,6 +142,10 @@
 		return manager;
 	});
 
+	services.factory("productNameTranslationsManager", function (kapaServer) {
+		return new Loader(kapaServer, "getProductNameTranslations");
+	});
+
 	services.filter('reverse', function() {
 		return function(items) {
 			return items.slice().reverse();
