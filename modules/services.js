@@ -142,8 +142,8 @@
 		return manager;
 	});
 
-	services.factory("productNameTranslationsManager", function (kapaServer) {
-		return new Loader(kapaServer, "getProductNameTranslations");
+	services.factory("productManager", function (kapaServer) {
+		return new Loader(kapaServer, "getProducts");
 	});
 
 	services.filter('reverse', function() {

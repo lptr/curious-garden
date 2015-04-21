@@ -128,12 +128,12 @@
 		}
 	});
 
-	importModule.controller("LabelPrinterController", function ($scope, $filter, productNameTranslationsManager) {
+	importModule.controller("LabelPrinterController", function ($scope, $filter, productManager) {
 		$scope.file = undefined;
-		$scope.productNameTranslations = null;
+		$scope.products = null;
 
-		productNameTranslationsManager.load(function (productNameTranslations) {
-			$scope.productNameTranslations = productNameTranslations;
+		productManager.load(function (products) {
+			$scope.products = products;
 		});
 
 		$scope.printLabels = function() {
@@ -158,12 +158,22 @@
 					var row = data.shift();
 					// CSV format:
 					// Cikkszam;Nev;Darabszam;Netto ar;Brutto ar;Gyarto, Rendelesi azonosito(k)
-					var productNameHU = row[1];
-					var productNameEN = $scope.productNameTranslations[productNameHU];
-					// Fall back to Hungarian for now
-					if (!productNameEN) {
-						productNameEN = productNameHU;
+					var productSKU = row[0];
+					var productNameHU;
+					var productNameEN;
+					var product;
+					if (productSKU) {
+						product = $scope.products[productSKU];
 					}
+					if (product) {
+						productNameEN = product.en;
+						productNameHU = product.hu;
+					} else {
+						// Fall back to using Hungarian name for both
+						productNameEN = row[1];
+						productNameHU = row[1];
+					}
+
 					var count = row[2];
 					for (var idx = 0; idx < count; idx++) {
 						labels.push({
