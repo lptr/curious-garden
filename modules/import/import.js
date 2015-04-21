@@ -185,24 +185,19 @@
 				}
 
 				printWindow.onload = function() {
-					console.log("Entry");
-					var printBody = $(printWindow.document).contents().find("body");
-					console.log("Print body", printBody);
-					printBody.empty();
-					labels.forEach(function (label) {
-						var labelDiv = $('<div class="label"></div>');
-						console.log("labelDiv", labelDiv, label);
-						labelDiv.append('<div class="hu">' + label.hu + '</div>');
-						labelDiv.append('<div class="en">' + label.en + '</div>');
-						labelDiv.append('<div class="date">' + label.date + '</div>');
-						printBody.append(labelDiv);
-						console.log("appended labelDiv", labelDiv);
+					$(printWindow.document).ready(function () {
+						var printBody = $(printWindow.document).contents().find("body");
+						printBody.empty();
+						labels.forEach(function (label) {
+							var labelDiv = $('<div class="label"></div>');
+							labelDiv.append('<div class="hu">' + label.hu + '</div>');
+							labelDiv.append('<div class="en">' + label.en + '</div>');
+							labelDiv.append('<div class="date">' + label.date + '</div>');
+							printBody.append(labelDiv);
+						});
+						printWindow.focus();
+						printWindow.print();
 					});
-					console.log("Focusing");
-					printWindow.focus();
-					console.log("Printing");
-					printWindow.print();
-					console.log("Done");
 				};
 			};
 			reader.readAsText($scope.file, "iso-8859-2");
