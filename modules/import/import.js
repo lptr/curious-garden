@@ -184,21 +184,19 @@
 					}
 				}
 
-				printWindow.onload = function() {
-					$(printWindow.document).ready(function () {
-						var printBody = $(printWindow.document).contents().find("body");
-						printBody.empty();
-						labels.forEach(function (label) {
-							var labelDiv = $('<div class="label"></div>');
-							labelDiv.append('<div class="hu">' + label.hu + '</div>');
-							labelDiv.append('<div class="en">' + label.en + '</div>');
-							labelDiv.append('<div class="date">' + label.date + '</div>');
-							printBody.append(labelDiv);
-						});
-						printWindow.focus();
-						printWindow.print();
+				$(printWindow).load(function () {
+					var printBody = $(printWindow.document).contents().find("body");
+					printBody.empty();
+					labels.forEach(function (label) {
+						var labelDiv = $('<div class="label"></div>');
+						labelDiv.append('<div class="hu">' + label.hu + '</div>');
+						labelDiv.append('<div class="en">' + label.en + '</div>');
+						labelDiv.append('<div class="date">' + label.date + '</div>');
+						printBody.append(labelDiv);
 					});
-				};
+					printWindow.focus();
+					printWindow.print();
+				});
 			};
 			reader.readAsText($scope.file, "iso-8859-2");
 		}
