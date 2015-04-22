@@ -161,18 +161,12 @@
 					var productSKU = row[0];
 					var productNameHU;
 					var productNameEN;
-					var product;
-					if (productSKU) {
-						product = $scope.products[productSKU];
+					var product = $scope.products[productSKU];
+					if (!product) {
+						continue;
 					}
-					if (product) {
-						productNameEN = product.en;
-						productNameHU = product.hu;
-					} else {
-						// Fall back to using Hungarian name for both
-						productNameEN = row[1];
-						productNameHU = row[1];
-					}
+					productNameEN = product.en;
+					productNameHU = product.hu;
 
 					var count = row[2];
 					for (var idx = 0; idx < count; idx++) {
