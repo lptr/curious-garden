@@ -143,6 +143,7 @@
 		$scope.products = null;
 		$scope.labels = [];
 
+		log("Termékek betöltése... (amíg tölt, nem lehet matricát nyomtatni)");
 		productManager.load(function (products) {
 			$scope.products = products;
 			log("Termékek betöltve");
