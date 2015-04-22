@@ -203,7 +203,7 @@
 						var productNameEN;
 						var product = $scope.products[productSKU];
 						if (!product) {
-							log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU);
+							log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU + " (" + row[1] + ")");
 							numberOfMissingProducts++;
 							continue;
 						}
