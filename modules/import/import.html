@@ -32,14 +32,14 @@
 	<label class="col-md-2 control-label">Matrica nyomtatás</label>
  	<div class="col-md-4">
 		<div class="input-group">
- 			<input name="file" type="file" class="form-control" ng-model="file" accept="text/csv" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" />
+ 			<input name="file" type="file" class="form-control" ng-model="file" accept="text/csv" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" ng-disabled="!products" />
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-file"></span>
 			</span>
 		</div>
 	</div>
  	<div class="col-md-2">
-		<button type="submit" class="btn btn-primary" ng-disabled="!products">
+		<button type="submit" class="btn btn-primary" ng-disabled="labels.length == 0">
 			<img src="images/logo.png" style="width: 16px; height: 16px;"/>
 			Nyomtat
 		</button>

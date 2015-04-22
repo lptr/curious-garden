@@ -192,36 +192,38 @@
 				var numberOfProducts = data.length;
 				var numberOfMissingProducts = 0;
 
-				$scope.labels = [];
-				while (data.length > 0) {
-					var row = data.shift();
-					// CSV format:
-					// Cikkszam;Nev;Darabszam;Netto ar;Brutto ar;Gyarto, Rendelesi azonosito(k)
-					var productSKU = row[0];
-					var productNameHU;
-					var productNameEN;
-					var product = $scope.products[productSKU];
-					if (!product) {
-						log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU);
-						numberOfMissingProducts++;
-						continue;
-					}
-					productNameEN = product.en;
-					productNameHU = product.hu;
+				$scope.$apply (function() {
+					$scope.labels = [];
+					while (data.length > 0) {
+						var row = data.shift();
+						// CSV format:
+						// Cikkszam;Nev;Darabszam;Netto ar;Brutto ar;Gyarto, Rendelesi azonosito(k)
+						var productSKU = row[0];
+						var productNameHU;
+						var productNameEN;
+						var product = $scope.products[productSKU];
+						if (!product) {
+							log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU);
+							numberOfMissingProducts++;
+							continue;
+						}
+						productNameEN = product.en;
+						productNameHU = product.hu;
 
-					var count = row[2];
-					for (var idx = 0; idx < count; idx++) {
-						$scope.labels.push({
-							en: productNameEN,
-							hu: productNameHU,
-							date: date
-						});
+						var count = row[2];
+						for (var idx = 0; idx < count; idx++) {
+							$scope.labels.push({
+								en: productNameEN,
+								hu: productNameHU,
+								date: date
+							});
+						}
 					}
-				}
-				log("Matricák adatai betöltve, összesen " + numberOfProducts + " termék, " + $scope.labels.length + " matrica");
-				if (numberOfMissingProducts) {
-					log("Összesen " + numberOfMissingProducts + " termék nem szerepelt a KAPA-ban, ezekhez nem nyomtatunk matricát");
-				}
+					log("Matricák adatai betöltve, összesen " + numberOfProducts + " termék, " + $scope.labels.length + " matrica");
+					if (numberOfMissingProducts) {
+						log("Összesen " + numberOfMissingProducts + " termék nem szerepelt a KAPA-ban, ezekhez nem nyomtatunk matricát");
+					}
+				});
 			};
 			reader.readAsText(file, "iso-8859-2");
 		}
