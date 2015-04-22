@@ -1,0 +1,9 @@
+.log {
+	white-space: pre-wrap;
+	font-family: "Inconsolata", "Courier New", monospace;
+	background-color: #ffe;
+	border: 2px solid #eed;
+	padding: 0.5em 0.75em 0.5em 0.75em;
+	height: 8em;
+	overflow: scroll;
+}
