@@ -172,7 +172,6 @@
 				});
 				printWindow.focus();
 				printWindow.print();
-				printWindow.close();
 			});
 
 		}
