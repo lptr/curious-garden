@@ -5,6 +5,7 @@
 		"kapa.plantation",
 		"kapa.work",
 		"kapa.import",
+		"kapa.labels",
 		"ngRoute",
 		"ui.bootstrap.modal"
 	]);

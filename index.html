@@ -47,6 +47,9 @@
 	<link rel="stylesheet" href="modules/import/import.css" />
 	<script src="modules/import/import.js"></script>
 
+	<link rel="stylesheet" href="modules/labels/labels.css" />
+	<script src="modules/labels/labels.js"></script>
+
 <script type="text/ng-template" id="save-dialog.html">
 	<div class="modal-header">
 		<h3 class="modal-title">Adatok küldése</h3>
@@ -126,6 +129,12 @@
 					<a href="#import">
 						<span class="glyphicon glyphicon-upload"></span>
 						Adatok
+					</a>
+				</li>
+				<li ng-class="{ active: isActive('^/labels')}" ng-show="user.access.labels">
+					<a href="#labels">
+						<span class="glyphicon glyphicon-tag"></span>
+						Matricák
 					</a>
 				</li>
 			</ul>
