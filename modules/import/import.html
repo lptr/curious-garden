@@ -6,14 +6,14 @@
 	<label class="col-md-2 control-label">Magnet Import</label>
  	<div class="col-md-4">
 		<div class="input-group">
- 			<input name="file" type="file" class="form-control" ng-model="file" accept="application/xml" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" />
+ 			<input name="file" type="file" class="form-control" ng-model="file" accept="application/xml" ng-required="true" onchange="angular.element(this).scope().filePicked(this)" ng-disabled="uploading" />
 			<span class="input-group-addon">
 				<span class="glyphicon glyphicon-file"></span>
 			</span>
 		</div>
 	</div>
  	<div class="col-md-2">
-		<button type="submit" class="btn btn-primary">
+		<button type="submit" class="btn btn-primary" ng-disabled="transactions.length == 0 || uploading">
 			<span class="glyphicon glyphicon-import"></span>
 			Import Magnet
 		</button>

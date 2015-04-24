@@ -24,9 +24,32 @@
 		};
 	});
 
-	importModule.controller("ImportMagnetController", function($scope, $filter, $modal, kapaServer) {
-		$scope.file = undefined;
+	importModule.controller("ImportMagnetController", function($scope, $filter, $modal, kapaServer, log) {
+		$scope.transactions = [];
+		$scope.uploading = false;
 		$scope.import = function() {
+			var submitTransactions = function (start) {
+				if (start < $scope.transactions.length) {
+					var end = Math.min(start + 5, $scope.transactions.length);
+					log("Tranzakciók feltöltése: " + (start + 1) + "-" + end + " / " + $scope.transactions.length);
+					kapaServer
+						.query("submitTransactions", $scope.transactions.slice(start, end))
+						.success(function (id) {
+							submitTransactions(end);
+						})
+						.error(function (error) {
+							$scope.uploading = false;
+							log("HIBA a tranzakciók feltöltése közben: " + error);
+						});
+				} else {
+					log("Tranzakciók feltöltése kész");
+					$scope.uploading = false;
+				}
+			}
+			$scope.uploading = true;
+			submitTransactions(0);
+		};
+		$scope.filePicked = function(element) {
 			var reader = new FileReader();
 			reader.onload = function(event) {
 				console.log("File data", reader.result);
@@ -40,11 +63,9 @@
 					return elements.length == 0 ? null : elements[0].textContent;
 				};
 
-				var imported = [];
+				$scope.transactions = [];
 
 				for (var transaction = transactions.iterateNext(); transaction; transaction = transactions.iterateNext()) {
-					console.log("Transaction", transaction);
-
 					// XML Format:
 					// <Tranzakcio NBID="764934324">
 					// 	<Tranzakcioszam>54574584</Tranzakcioszam>
@@ -104,38 +125,22 @@
 						category: "imported",
 						memo: memo,
 						status: "paid",
-						date: $filter("date")(date, "yyyy-MM-dd"),
-						costMonth: $filter("date")(date, "yyyy-MM")
+						vat: null,
+						transactionDate: $filter("date")(date, "yyyy-MM-dd"),
+						paymentDate: $filter("date")(date, "yyyy-MM-dd")
 					}
 
-					console.log("Transaction", item);
+					console.log("Transaction parsed", item);
 
-					imported.push(item);
+					$scope.$apply (function() {
+						$scope.transactions.push(item);
+					});
 				}
 
-				console.log("Parsed transactions", imported.length, imported);
-
-				var submitTransaction = function (index) {
-					if (index < imported.length) {
-						kapaServer
-							.query("submitTransaction", imported[index])
-							.success(function (id) {
-								console.log("Uploaded transaction " + (index + 1) + "/" + imported.length);
-								submitTransaction(index + 1);
-							})
-							.error(function (error) {
-								alert("Upload failed: " + error + " at " + index + " out of " + imported.length);
-							});
-					} else {
-						alert("Finished uploading");
-					}
-				}
-				submitTransaction(0);
+				log("Összesen " + $scope.transactions.length + " tranzakció betöltve");
 			};
-			reader.readAsText($scope.file);
-		}
-		$scope.filePicked = function(element) {
-			$scope.file = element.files[0];
+			log("Tranzakciók betöltése: " + element.files[0].name);
+			reader.readAsText(element.files[0]);
 		}
 	});
 
