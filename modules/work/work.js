@@ -55,6 +55,7 @@
 			var until = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 			console.log("Querying works by active user between", from, until);
 			kapaServer.query("getWorksByActiveUser", { from: from, until: until }).success(function (items) {
+				console.log("getWorksByActiveUser received: ", items);
 				$scope.recentItems = items;
 				$scope.sumRecentWorkTime = 0;
 				items.forEach(function (item) {
