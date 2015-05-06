@@ -105,6 +105,9 @@
 							});
 						}
 					}
+					$scope.labels.sort(function (a, b) {
+						return a.hu.localeCompare(b.hu, "hu");
+					});
 					log("Matricák adatai betöltve, összesen " + numberOfProducts + " termék, " + $scope.labels.length + " matrica");
 					if (numberOfMissingProducts) {
 						log("Összesen " + numberOfMissingProducts + " termék nem szerepelt a KAPA-ban, ezekhez nem nyomtatunk matricát");
