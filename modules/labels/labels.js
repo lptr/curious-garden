@@ -24,6 +24,10 @@
 		};
 	});
 
+	labelsModule.controller("BrowserController", function ($scope) {
+		$scope.notChrome = navigator.userAgent.indexOf('Chrome/') == -1;
+	});
+
 	labelsModule.controller("LabelPrinterController", function ($scope, $filter, productManager, log) {
 		$scope.products = null;
 		$scope.labels = [];
