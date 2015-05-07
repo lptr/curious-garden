@@ -40,7 +40,7 @@
 				return;
 			}
 
-			var printWindow = window.open("modules/labels/print.html", "KAPA_PrintLabels", "width=800, height=600");
+			var printWindow = window.open("modules/labels/print-labels.html", "KAPA_PrintLabels", "width=800, height=600");
 			if (!printWindow) {
 				alert("Nem tudom megnyitni a nyomtatási ablakot");
 				return;
