@@ -20,6 +20,33 @@
 		</button>
 	</div>
 </div>
+
+</fieldset>
+</form>
+</div>
+
+<div ng-controller="PriceTagPrinterController">
+<form name="pricetagPrinter" class="form-horizontal" novalidate ng-submit="printPriceTags()">
+<fieldset>
+<div class="form-group">
+	<label class="col-md-2 control-label">Árcímkék nyomtatás</label>
+	<div class="col-md-4">
+		<a href="https://docs.google.com/spreadsheets/d/1cevdnj2MpVhT8wNpn9_iQkvWnv-EPg7qzZ-1x2hjuiY/edit#gid=0" target="_blank" class="btn btn-warning">
+			Adatok szerkesztése
+			<span class="glyphicon glyphicon-new-window"></span>
+		</a>
+		<br/>
+		KAPÁ-t újratölteni szerkesztetés után!
+	</div>
+ 	<div class="col-md-2">
+		<button type="submit" class="btn btn-primary" ng-disabled="priceTags.length == 0">
+			<img src="images/logo-hu-small.png" style="width: 16px; height: 16px;"/>
+			Nyomtat
+			<img src="images/logo-en-small.png" style="width: 16px; height: 16px;"/>
+		</button>
+	</div>
+</div>
+
 </fieldset>
 </form>
 </div>

@@ -2,25 +2,21 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<link rel="stylesheet" href="../main.css" />
 <style>
-@font-face {
-	font-family: "League Spartan";
-	font-weight: bold;
-	src: url("../../fonts/LeagueSpartan-Bold.otf");
-}
 @media print {
 	@page {
-		size: landscape;
+		size: portrait;
 		margin: 0;
 	}
 }
 html, body {
 	margin: 0;
-	width: 297mm;
+	width: 210mm;
 }
 .tag {
 	float: left;
-	width: 148.25mm;
+	width: 104.75mm;
 	border-right: 0.5mm dashed #CCC;
 	border-bottom: 0.5mm dashed #CCC;
 }
@@ -40,36 +36,50 @@ p {
 	border-bottom: 0.5mm solid #CCC;
 }
 .name {
-	height: 20mm;
-	font-size: 32pt;
+	height: 25mm;
+	font-size: 28pt;
 }
 .name > p {
 	top: 100%;
 	transform: translateY(-100%);
 }
 .price {
-	height: 15mm;
-	font-size: 22pt;
+	height: 20mm;
+	font-size: 20pt;
 }
 .translations {
 	font-family: "Helvetica Neue";
-	font-weight: bold;
-	font-size: 14pt;
+	background-color: #EEE;
+	text-align: center;
+	font-size: 24pt;
+	font-weight: 200;
+	height: 28.75mm;
+	padding-left: 5mm;
+	padding-right: 5mm;
 }
 .translations p {
-	top: 50%;
-	transform: translateY(-50%);
+	display: inline;
+	font-size: 16pt;
+	font-weight: bold;
+	white-space: nowrap;
 }
 .translations > div {
-	float: left;
-	width: 50%;
-	height: 8.5mm;
-	font-size: 18pt;
-	background-color: #EEE;
+	display: inline;
+}
+.translations > div:before {
+	content: " / ";
+}
+.translations > div:nth-child(2n+3):before {
+	content: "\a";
+	white-space: pre;
+}
+.translations > div:first-child:before {
+	content: "\a";
 }
 </style>
 </head>
 <body>
+<!--
 <div class="tag">
 	<div class="main">
 		<div class="name"><p>Zsázsa</p></div>
@@ -77,8 +87,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Cress</p></div>
-		<div lang="fr"><p>Cresson</p></div>
 		<div lang="de"><p>Kresse</p></div>
+		<div lang="fr"><p>Cresson</p></div>
 		<div lang="ru"><p>Кресс-салат</p></div>
 	</div>
 </div>
@@ -89,8 +99,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Basil</p></div>
-		<div lang="fr"><p>Basilic</p></div>
 		<div lang="de"><p>Basilikum</p></div>
+		<div lang="fr"><p>Basilic</p></div>
 		<div lang="ru"><p>Базилик душистый</p></div>
 	</div>
 </div>
@@ -101,8 +111,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Kale</p></div>
-		<div lang="fr"><p>Chou frisé</p></div>
 		<div lang="de"><p>Grünkohl</p></div>
+		<div lang="fr"><p>Chou frisé</p></div>
 		<div lang="ru"><p>Кудрявая капуста</p></div>
 	</div>
 </div>
@@ -113,8 +123,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Mizuna</p></div>
-		<div lang="fr"><p>Mizuna</p></div>
 		<div lang="de"><p>Mizuna</p></div>
+		<div lang="fr"><p>Mizuna</p></div>
 		<div lang="ru"><p>Мизуна</p></div>
 	</div>
 </div>
@@ -125,8 +135,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Baby spinach</p></div>
-		<div lang="fr"><p>Baby épinard</p></div>
 		<div lang="de"><p>Baby Spinat</p></div>
+		<div lang="fr"><p>Baby épinard</p></div>
 		<div lang="ru"><p>Малыш шпинат</p></div>
 	</div>
 </div>
@@ -137,8 +147,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Spinach</p></div>
-		<div lang="fr"><p>Épinard</p></div>
 		<div lang="de"><p>Spinat</p></div>
+		<div lang="fr"><p>Épinard</p></div>
 		<div lang="ru"><p>Шпинат</p></div>
 	</div>
 </div>
@@ -149,8 +159,8 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Kale</p></div>
-		<div lang="fr"><p>Chou frisé</p></div>
 		<div lang="de"><p>Grünkohl</p></div>
+		<div lang="fr"><p>Chou frisé</p></div>
 		<div lang="ru"><p>Кудрявая капуста</p></div>
 	</div>
 </div>
@@ -161,10 +171,11 @@ p {
 	</div>
 	<div class="translations">
 		<div lang="en"><p>Mizuna</p></div>
-		<div lang="fr"><p>Mizuna</p></div>
 		<div lang="de"><p>Mizuna</p></div>
+		<div lang="fr"><p>Mizuna</p></div>
 		<div lang="ru"><p>Мизуна</p></div>
 	</div>
 </div>
+-->
 </body>
 </html>

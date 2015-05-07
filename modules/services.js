@@ -146,6 +146,10 @@
 		return new Loader(kapaServer, "getProducts");
 	});
 
+	services.factory("priceTagManager", function (kapaServer) {
+		return new Loader(kapaServer, "getPriceTags");
+	});
+
 	services.filter('reverse', function() {
 		return function(items) {
 			return items.slice().reverse();

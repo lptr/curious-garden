@@ -1,3 +1,9 @@
+@font-face {
+	font-family: "League Spartan";
+	font-weight: bold;
+	src: url("../../fonts/LeagueSpartan-Bold.otf");
+}
+
 .nav, .pagination, .carousel, .panel-title a {
 	cursor: pointer;
 }

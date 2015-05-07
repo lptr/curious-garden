@@ -117,4 +117,53 @@
 			reader.readAsText(file, "iso-8859-2");
 		}
 	});
+
+	labelsModule.controller("PriceTagPrinterController", function ($scope, $filter, priceTagManager, log) {
+		$scope.priceTags = [];
+
+		log("Árcímkék betöltése... (amíg tölt, nem lehet árcímkét nyomtatni)");
+		priceTagManager.load(function (priceTags) {
+			$scope.priceTags = priceTags;
+			log("Árcímkék betöltve");
+		});
+
+		$scope.printPriceTags = function() {
+			if (!$scope.priceTags) {
+				alert("Nincs betöltve árcímke adat");
+				return;
+			}
+
+			var printWindow = window.open("modules/labels/print-pricetags.html", "KAPA_PrintPriceTags", "width=800, height=600");
+			if (!printWindow) {
+				alert("Nem tudom megnyitni a nyomtatási ablakot");
+				return;
+			}
+
+			$(printWindow).load(function () {
+				var printBody = $(printWindow.document).contents().find("body");
+				printBody.empty();
+				$scope.priceTags.forEach(function (priceTag) {
+					var priceTagDiv = $('<div class="tag"></div>');
+					var mainDiv = $('<div class="main"></div>');
+					var translationsDiv = $('<div class="translations"></div>');
+					priceTagDiv.append(mainDiv);
+					priceTagDiv.append(translationsDiv);
+
+					mainDiv.append('<div class="name"><p>' + priceTag.hu + '</p></div>');
+					mainDiv.append('<div class="price"><p>' + priceTag.price + '</p></div>');
+
+					[priceTag.en, priceTag.de, priceTag.fr, priceTag.ru].forEach(function (translation) {
+						if (translation) {
+							translationsDiv.append('<div><p>' + translation + '</p></div>');
+						}
+					});
+					printBody.append(priceTagDiv);
+				});
+				printWindow.focus();
+				printWindow.setTimeout(function () {
+					printWindow.print();
+				}, 1000);
+			});
+		}
+	});
 })();
