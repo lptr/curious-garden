@@ -11,14 +11,18 @@
 		$routeProvider
 			.when('/planting', {
 				templateUrl: 'modules/planting/planting.html',
-				controller: 'plantingController'
+				controller: 'PlantingController'
 			});
 	});
 
-	transactionModule.controller("plantingController", function ($scope, kapaServer) {
+	transactionModule.controller("PlantingController", function ($scope, kapaServer) {
 		$scope.items = [
 			{ id: 1, name: "Zsázsa", color: "Blue" },
 			{ id: 2, name: "Mizuna", color: "Zöld" },
 		];
+		$scope.afterChange = function (event) {
+			console.log("Event", event);
+			alert("Event!");
+		}
 	});
 })();
