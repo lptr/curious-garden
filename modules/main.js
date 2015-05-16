@@ -2,7 +2,7 @@
 	var app = angular.module("kapa", [
 		"kapa.services",
 		"kapa.transactions",
-		"kapa.plantation",
+		"kapa.planting",
 		"kapa.work",
 		"kapa.import",
 		"kapa.labels",

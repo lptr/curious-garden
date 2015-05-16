@@ -1,0 +1,15 @@
+<h1>Planting!</h1>
+
+<div controller="plantingController">
+    <hot-table
+		settings="{colHeaders: true, contextMenu: ['row_above', 'row_below', 'remove_row'], afterChange: afterChange }"
+		rowHeaders="false"
+		minSpareRows="1"
+		datarows="items"
+		height="300"
+		width="700">
+        <hot-column data="id" title="'ID'" type="grayedOut" readOnly></hot-column>
+        <hot-column data="name" title="'Terménynév'" type="grayedOut" readOnly></hot-column>
+        <hot-column data="color" title="'Szín'"></hot-column>
+    </hot-table>
+</div>

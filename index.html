@@ -41,14 +41,19 @@
 	<link rel="stylesheet" href="modules/work/work.css" />
 	<script src="modules/work/work.js"></script>
 
-	<link rel="stylesheet" href="modules/plantation/plantation.css" />
-	<script src="modules/plantation/plantation.js"></script>
+	<link rel="stylesheet" href="modules/planting/planting.css" />
+	<script src="modules/planting/planting.js"></script>
 
 	<link rel="stylesheet" href="modules/import/import.css" />
 	<script src="modules/import/import.js"></script>
 
 	<link rel="stylesheet" href="modules/labels/labels.css" />
 	<script src="modules/labels/labels.js"></script>
+	
+	<!-- Handsontable -->
+	<script src="http://handsontable.com/dist/handsontable.full.js"></script>
+	<script src="lib/ngHandsontable.js"></script>
+	<link rel="stylesheet" media="screen" href="https://handsontable.com/dist/handsontable.full.css">
 
 <script type="text/ng-template" id="save-dialog.html">
 	<div class="modal-header">
@@ -119,8 +124,8 @@
 						Munka
 					</a>
 				</li>
-				<li ng-class="{ active: isActive('^/plantation')}" ng-show="user.access.plantation">
-					<a href="#plantation">
+				<li ng-class="{ active: isActive('^/planting')}" ng-show="user.access.planting">
+					<a href="#planting">
 						<span class="glyphicon glyphicon-leaf"></span>
 						Vetés
 					</a>
