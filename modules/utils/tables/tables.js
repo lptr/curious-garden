@@ -218,6 +218,33 @@
                 self.recalculate(this);
             };
             this.Item.prototype = Object.create(Item.prototype);
+
+            var afterChange = function (changes, source) {
+                console.log("Event", arguments);
+				self.invalidate();
+                // Don't do stuff when loading
+                if (source === "loadData") {
+                    return;
+                }
+                var rows = {};
+                changes.forEach(function (change) {
+                    var rowNo = change[0];
+                    if (!rows[rowNo]) {
+                        rows[rowNo] = true;
+                        var row = self.data[rowNo];
+                        self.recalculate(row);
+                    }
+                });
+                this.render();
+            };
+
+            this.settings = $.extend({}, this.settings, {
+                data: this.data,
+                dataSchema: function () { return new this.Item({}); }.bind(this),
+				afterInit: function () { self.hot = this; },
+                afterChange: [afterChange],
+                columns: this.properties.map(function (property) { return property.toColumn(); })
+            });
         };
         Table.prototype.recalculate = function (item) {
             this.recalculateProps.forEach(function (recalculateProp) {
@@ -260,34 +287,15 @@
 			console.log("Get all names", this.allNames);
 			return this.allNames;
 		};
-        Table.prototype.toSettings = function () {
-            var self = this;
-            var afterChange = function (changes, source) {
-                console.log("Event", arguments);
-				self.invalidate();
-                // Don't do stuff when loading
-                if (source === "loadData") {
-                    return;
-                }
-                var rows = {};
-                changes.forEach(function (change) {
-                    var rowNo = change[0];
-                    if (!rows[rowNo]) {
-                        rows[rowNo] = true;
-                        var row = self.data[rowNo];
-                        self.recalculate(row);
-                    }
-                });
-                this.render();
-            };
-
-            return $.extend({}, this.settings, {
-                data: this.data,
-                dataSchema: function () { return new this.Item({}); }.bind(this),
-                afterChange: afterChange,
-                columns: this.properties.map(function (property) { return property.toColumn(); })
-            });
+        Table.prototype.getSettings = function () {
+			return this.settings;
         };
+		Table.prototype.updateSettings = function (settings) {
+			this.settings = settings;
+			if (this.hot) {
+				this.hot.updateSettings(settings);
+			}
+		};
         Table.prototype.load = function (itemsJson) {
             // Clear the array
             this.data.length = 0;

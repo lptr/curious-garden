@@ -120,7 +120,7 @@
 	
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {		
 		$scope.items = producesTable.data;
-		$scope.settings = producesTable.toSettings();
+		$scope.settings = producesTable.getSettings();
 		$scope.dump = function () {
 			console.log("Data:", producesTable.data);
 		};
@@ -128,7 +128,7 @@
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {		
 		$scope.items = plantingTable.data;
-		$scope.settings = plantingTable.toSettings();
+		$scope.settings = plantingTable.getSettings();
 		$scope.dump = function () {
 			console.log("Data:", plantingTable.data);
 		};
