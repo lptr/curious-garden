@@ -32,21 +32,17 @@
 		var Property = function (options) {
 			$.extend(this, options);
 		};
-		Property.prototype.name = function () {
-			return this.property;
-		};
 		Property.prototype.value = function (item) {
 			return item[this.property];
 		};
 		Property.prototype.toProperty = function () {
-			var self = this;
 			return function (item, value) {
 				if (typeof value === 'undefined') {
-					return self.get(item);
+					return this.get(item);
 				} else {
-					return self.set(item, value);
+					return this.set(item, value);
 				}
-			};
+			}.bind(this);
 		};
 		
 		var SimpleProperty = function (options) {
@@ -82,13 +78,12 @@
 			});
 			this.idLookup = {};
 			this.nameLookup = {};
-			var self = this;
 			this.data.forEach (function (datum) {
-				var id = datum[self.idField];
-				var name = datum[self.nameField];
-				self.idLookup[id] = datum;
-				self.nameLookup[name] = datum;
-			});
+				var id = datum[this.idField];
+				var name = datum[this.nameField];
+				this.idLookup[id] = datum;
+				this.nameLookup[name] = datum;
+			}.bind(this));
 		};
 		ReferenceProperty.prototype = Object.create(Property.prototype);
 		ReferenceProperty.renderer = function (instance, td, row, col, prop, displayValue, cellProperties) {
@@ -161,7 +156,7 @@
 		var properties = [ idProp, produceProp, seedProp, timeProp, seedCountProp ];
 		var dataSchema = {};
 		properties.forEach(function (property) {
-			dataSchema[property] = property.name();
+			dataSchema[property] = property.property;
 		});
 		var columns = properties.map(function (property) { return property.toColumn(); });
 
