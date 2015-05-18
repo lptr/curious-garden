@@ -15,19 +15,13 @@
 				controller: 'PlantingController'
 			});
 	});
-
-	plantingModule.controller("PlantingController", function ($scope, kapaServer, tables, suffixRenderer) {
-		$scope.items = [];
-		
+	
+	plantingModule.factory("producesTable", function (tables) {
 		var produces = [
 			{ id: 1, name: "Zsázsa", rowWidth: 15 },
 			{ id: 2, name: "Mizuna", rowWidth: 12 },
 		];
-		var plantations = [
-			{ id: 1, produce: 1, seed: "Zsázsamag", time: "2015-05-13", seedsPerGramm: 4 },
-			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
-		];
-		
+
 		var producesTable = new tables.Table({
 			name: "produces",
 			properties: [
@@ -43,10 +37,13 @@
 			]
 		});
 		producesTable.load(produces);
-		
+
+		return producesTable;
+	});
+	
+	plantingModule.factory("plantingTable", function (tables, producesTable, suffixRenderer) {
 		var plantingTable = new tables.Table({
 			name: "planting",
-			data: $scope.items,
 			properties: [
 			    new tables.ReferenceProperty({
 			        property: "produce",
@@ -100,11 +97,21 @@
 				width: 700,				
 			}
 		});
-		$scope.settings = plantingTable.toSettings();
-
-		var reload = function () {
+		var plantations = [
+			{ id: 1, produce: 1, seed: "Zsázsamag", time: "2015-05-13", seedsPerGramm: 4 },
+			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
+		];
+		
+		plantingTable.reload = function () {
 			plantingTable.load(plantations);
 		};
-		reload();
+		plantingTable.reload();
+
+		return plantingTable;
+	});
+
+	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {		
+		$scope.items = plantingTable.data;
+		$scope.settings = plantingTable.toSettings();
 	});
 })();
