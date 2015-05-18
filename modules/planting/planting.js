@@ -174,7 +174,11 @@
 				var hasId = item.hasValue(this.id);
 				var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property); });
 				if (!hasId && hasSomeValues) {
-					this.id.set(item, 123);
+					var maxId = 0;
+					this.data.forEach(function (item) {
+						maxId = Math.max(item.asNumber(this.id), maxId);
+					}, this);
+					this.id.set(item, maxId + 1);
 				} else if (hasId && !hasSomeValues) {
 					this.id.set(item, null);
 				}
