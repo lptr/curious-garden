@@ -143,7 +143,7 @@
 			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
 		];
 		
-		var idProp = new SimpleProperty({ property: "id", title: "ID", readOnly: true });
+		var idProp = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" } });
 		var produceProp = new ReferenceProperty({ property: "produce", title: "Termény", data: produces });
 		var seedProp = new SimpleProperty({ property: "seed", title: "Mag" });
 		var timeProp = new SimpleProperty({ property: "time", title: "Dátum", type: "date", column: { dateFormat: "YYYY-MM-DD" } });
