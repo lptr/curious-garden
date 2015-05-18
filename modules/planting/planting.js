@@ -1,5 +1,5 @@
 (function () {
-	var transactionModule = angular.module("kapa.planting", [
+	var plantingModule = angular.module("kapa.planting", [
 		"kapa.services",
 		"kapa.utils.tables",
 		"ngRoute",
@@ -8,7 +8,7 @@
 		"ui.bootstrap.showErrors"
 	]);
 
-	transactionModule.config(function ($routeProvider) {
+	plantingModule.config(function ($routeProvider) {
 		$routeProvider
 			.when('/planting', {
 				templateUrl: 'modules/planting/planting.html',
@@ -16,7 +16,7 @@
 			});
 	});
 
-	transactionModule.controller("PlantingController", function ($scope, kapaServer, tables, suffixRenderer) {
+	plantingModule.controller("PlantingController", function ($scope, kapaServer, tables, suffixRenderer) {
 		$scope.items = [];
 		
 		var produces = [
