@@ -25,11 +25,11 @@
 			name: "produces",
 			properties: [
 				new tables.SimpleProperty({
-			        property: "name",
+			        name: "name",
 			        title: "Név",
 			    }),
 				new tables.SimpleProperty({
-					property: "rowWidth",
+					name: "rowWidth",
 					title: "Sorköz",
 					type: "numeric"
 				})
@@ -53,16 +53,16 @@
 			name: "planting",
 			properties: [
 			    new tables.ReferenceProperty({
-			        property: "produce",
+					name: "produce",
 			        title: "Termény",
 			        target: producesTable
 			    }),
 			    new tables.SimpleProperty({
-			        property: "seed",
+					name: "seed",
 			        title: "Mag"
 			    }),
 			    new tables.SimpleProperty({
-			        property: "time",
+					name: "time",
 			        title: "Dátum",
 			        type: "date",
 			        column: {
@@ -70,7 +70,7 @@
 			        }
 			    }),
 			    new tables.SimpleProperty({
-			        property: "seedsPerGramm",
+					name: "seedsPerGramm",
 			        title: "Magok száma",
 			        type: "numeric",
 			        column: {
@@ -79,7 +79,7 @@
 			        }
 			    }),
 			    new tables.SimpleProperty({
-			        property: "seedsPerGrammPlus1",
+					name: "seedsPerGrammPlus1",
 			        title: "Magok száma + 1",
 			        type: "numeric",
 			        column: {
@@ -95,11 +95,11 @@
 			        }
 			    }),
 				new tables.SimpleProperty({
-			        property: "produceSorkoz",
+					name: "produceSorkoz",
 			        title: "Sorkoz",
 					type: "numeric",
 					column: { format: "0.00" },
-			        recalculate: function(produce) {
+			        recalculate: function (produce) {
 			            if (produce.hasValue()) {
 			                return produce.value().rowWidth;
 			            } else {
@@ -108,9 +108,9 @@
 			        }
 			    }),
 				new tables.SimpleProperty({
-			        property: "produceUpper",
+					name: "produceUpper",
 			        title: "TERMÉNY",
-			        recalculate: function(produce) {
+			        recalculate: function (produce) {
 			            if (produce.hasValue()) {
 			                return produce.value().name.toUpperCase();
 			            } else {

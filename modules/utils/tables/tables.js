@@ -20,10 +20,10 @@
             $.extend(this, { readOnly: !!options.recalculate }, options);
         };
         Property.prototype.value = function (item) {
-            return item[this.property];
+            return item[this.name];
         };
         Property.prototype.hasValue = function (item) {
-            return !!item[this.property];
+            return !!item[this.name];
         };
         Property.prototype.asNumber = function (item) {
             var value = this.value(item);
@@ -49,16 +49,16 @@
         }
         SimpleProperty.prototype = Object.create(Property.prototype);
         SimpleProperty.prototype.get = function (item) {
-            return item[this.property];
+            return item[this.name];
         };
         SimpleProperty.prototype.set = function (item, value) {
-            item[this.property] = value;
+            item[this.name] = value;
         }
         SimpleProperty.prototype.toJson = function (item, json) {
-            json[this.property] = this.get(item);
+            json[this.name] = this.get(item);
         };
         SimpleProperty.prototype.fromJson = function (item, json) {
-            this.set(item, json ? json[this.property] : null);
+            this.set(item, json ? json[this.name] : null);
         };
         SimpleProperty.prototype.toColumn = function () {
             return $.extend({}, this.column, {
@@ -88,7 +88,7 @@
             return td;
         };
         ReferenceProperty.prototype.get = function (item) {
-            var value = item[this.property];
+            var value = item[this.name];
             // console.log("Item: ", item, " value: ", value);
             return value ? value["name"] : null;
         };
@@ -107,13 +107,13 @@
                 ref = value;
             }
             // console.log(">>> SET", item, ref);
-            item[this.property] = ref;
+            item[this.name] = ref;
         };
         ReferenceProperty.prototype.toJson = function (item, json) {
-            json[this.property] = this.get(item);
+            json[this.name] = this.get(item);
         };
         ReferenceProperty.prototype.fromJson = function (item, json) {
-            var value = json ? json[this.property] : null;
+            var value = json ? json[this.name] : null;
             this.set(item, value ? this.target.getIdLookup()[value] : null);
         };
         ReferenceProperty.prototype.toColumn = function () {
@@ -183,12 +183,12 @@
                     return item.value(self.id);
                 }
             };
-            this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalculate: assignId });
+            this.id = new SimpleProperty({ name: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalculate: assignId });
             this.properties.unshift(this.id);
 
             this.propertiesMap = {};
             this.properties.forEach(function (property) {
-                this.propertiesMap[property.property] = property;
+                this.propertiesMap[property.name] = property;
             }, this);
             this.recalculateProps = this.properties.map(function (property) {
                 if (typeof property.recalculate !== 'function') {
