@@ -27,7 +27,7 @@
 		};
 		
 		var Property = function (options) {
-			$.extend(this, { readOnly: !!options.recalcuate }, options);
+			$.extend(this, { readOnly: !!options.recalculate }, options);
 		};
 		Property.prototype.value = function (item) {
 			return item[this.property];
@@ -52,7 +52,6 @@
 				}
 			}.bind(this);
 		};
-		Property.prototype.recalcuate = function () {};
 
 		var SimpleProperty = function (options) {
 			Property.apply(this, arguments);
@@ -146,11 +145,7 @@
 			});
 		};
 		
-		var Item = function (table, options) {
-			$.extend(this, {}, options);
-			table.properties.forEach(function (property) {
-				property.recalcuate(this);
-			}, this);
+		var Item = function () {
 		};
 		Item.prototype.value = function (property) {
 			return property.value(this);
@@ -160,40 +155,90 @@
 		};
 		Item.prototype.asNumber = function (property) {
 			return property.asNumber(this);
-		}
+		};
 		Item.prototype.asText = function (property) {
 			return property.asText(this);
-		}
+		};
+		
+		var ItemProperty = function (item, property) {
+			this.item = item;
+			this.property = property;
+		};
+		ItemProperty.prototype.value = function () {
+			return this.property.value(this.item);
+		};
+		ItemProperty.prototype.hasValue = function () {
+			return this.property.hasValue(this.item);
+		};
+		ItemProperty.prototype.asNumber = function () {
+			return this.property.asNumber(this.item);
+		};
+		ItemProperty.prototype.asText = function () {
+			return this.property.asText(this.item);
+		};
+		
 		var Table = function (options) {
 			$.extend(this, {
 				data: [],
 				properties: []
 			}, options);
 			var dataProperties = this.properties.slice();
+			var self = this;
 			var assignId = function (item) {
-				var hasId = item.hasValue(this.id);
+				var hasId = item.hasValue(self.id);
 				var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property); });
 				if (!hasId && hasSomeValues) {
 					var maxId = 0;
-					this.data.forEach(function (item) {
-						maxId = Math.max(item.asNumber(this.id), maxId);
-					}, this);
-					this.id.set(item, maxId + 1);
+					self.data.forEach(function (item) {
+						maxId = Math.max(item.asNumber(self.id), maxId);
+					}, self);
+					return maxId + 1;
 				} else if (hasId && !hasSomeValues) {
-					this.id.set(item, null);
+					return null;
+				} else {
+					return item.value(self.id);
 				}
-			}.bind(this);
-			this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalcuate: assignId });
+			};
+			this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalculate: assignId });
 			this.properties.unshift(this.id);
-			var table = this;
+			
+			this.propertiesMap = {};
+			this.properties.forEach(function (property) {
+				this.propertiesMap[property.property] = property;
+			}, this);
+			this.recalculateProps = this.properties.map(function (property) {
+				if (typeof property.recalculate !== 'function') {
+					return function (item) {};
+				}
+				return function (item) {
+					var parameterNames = angular.injector.$$annotate(property.recalculate);
+					var parameters = parameterNames.map(function (name) {
+						if (name === "item") {
+							return item;
+						}
+						var dependentProperty = this.propertiesMap[name];
+						if (!dependentProperty) {
+							throw new Error("Unknown property '" + name + "' for table '" + this.name + "'");
+						}
+						return new ItemProperty(item, dependentProperty);
+					}, this);
+					property.set(item, property.recalculate.apply(item, parameters));
+				}.bind(this);
+			}, this);
+			
 			this.Item = function (json) {
-				var values = {};
-				table.properties.forEach(function (property) {
-					property.fromJson(values, json);
-				});
-				Item.apply(this, [table, values]);
+				Item.apply(this);
+				self.properties.forEach(function (property) {
+					property.fromJson(this, json);
+				}, this);
+				self.recalculate(this);
 			};
 			this.Item.prototype = Object.create(Item.prototype);
+		};
+		Table.prototype.recalculate = function (item) {
+			this.recalculateProps.forEach(function (recalculateProp) {
+				recalculateProp(item);
+			});
 		};
 		Table.prototype.toSettings = function () {
 			var self = this;
@@ -209,12 +254,7 @@
 					if (!rows[rowNo]) {
 						rows[rowNo] = true;
 						var row = self.data[rowNo];
-						if (row) {
-							self.properties.forEach(function (property) {
-								property.recalcuate(row);
-							});
-						}
-					}
+						self.recalculate(row);					}
 				});
 				this.render();
 			};
@@ -247,11 +287,11 @@
 		var seedProp = new SimpleProperty({ property: "seed", title: "Mag" });
 		var timeProp = new SimpleProperty({ property: "time", title: "Dátum", type: "date", column: { dateFormat: "YYYY-MM-DD" } });
 		var seedCountProp = new SimpleProperty({ property: "seedsPerGramm", title: "Magok száma", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") } });
-		var seedCountPropPlus1 = new SimpleProperty({ property: "seedsPerGrammPlus1", title: "Magok száma + 1", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") }, recalcuate: function (item) {
-			if (item.hasValue(seedCountProp)) {
-				this.set(item, item.asNumber(seedCountProp) + 1);
+		var seedCountPropPlus1 = new SimpleProperty({ property: "seedsPerGrammPlus1", title: "Magok száma + 1", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") }, recalculate: function (seedsPerGramm) {
+			if (seedsPerGramm.hasValue()) {
+				return seedsPerGramm.asNumber() + 1;
 			} else {
-				this.set(item, null);
+				return null;
 			}
 		} });
 		
