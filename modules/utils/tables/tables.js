@@ -206,7 +206,7 @@
                         }
                         return new ItemProperty(item, dependentProperty);
                     }, this);
-                    property.set(item, property.recalculate.apply(item, parameters));
+                    property.set(item, property.recalculate.apply(property, parameters));
                 }.bind(this);
             }, this);
 
