@@ -219,24 +219,46 @@
             };
             this.Item.prototype = Object.create(Item.prototype);
 
+			this.changeListeners = [];
             var afterChange = function (changes, source) {
                 console.log("Event", arguments);
 				self.invalidate();
                 // Don't do stuff when loading
-                if (source === "loadData") {
+                if (source === "loadData" || !changes) {
                     return;
                 }
-                var rows = {};
+                var changed = {};
                 changes.forEach(function (change) {
                     var rowNo = change[0];
-                    if (!rows[rowNo]) {
-                        rows[rowNo] = true;
-                        var row = self.data[rowNo];
+					var row = self.data[rowNo];
+					var changedId = row["id"];
+                    if (!changed[changedId]) {
+                        changed[changedId] = row;
                         self.recalculate(row);
                     }
                 });
                 this.render();
+				self.changeListeners.forEach(function (changeListener) {
+					changeListener(self, changed);
+				});
             };
+			
+			this.properties.forEach(function (property) {
+				if (property instanceof ReferenceProperty) {
+					property.target.addChangeListener(function (source, changed) {
+						this.data.forEach(function (item) {
+							var ref = property.value(item);
+							var refId = ref ? ref.id : null;
+							if (changed[refId]) {
+								this.recalculate(item);
+							}
+						}, this);
+						if (this.hot) {
+							this.hot.render();
+						}
+					}.bind(this));
+				}
+			}, this);
 
             this.settings = $.extend({}, this.settings, {
                 data: this.data,
@@ -246,6 +268,9 @@
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
+		Table.prototype.addChangeListener = function (listener) {
+			this.changeListeners.push(listener);
+		};
         Table.prototype.recalculate = function (item) {
             this.recalculateProps.forEach(function (recalculateProp) {
                 recalculateProp(item);

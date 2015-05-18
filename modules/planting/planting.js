@@ -94,6 +94,30 @@
 			                return null;
 			            }
 			        }
+			    }),
+				new tables.SimpleProperty({
+			        property: "produceSorkoz",
+			        title: "Sorkoz",
+					type: "numeric",
+					column: { format: "0.00" },
+			        recalculate: function(produce) {
+			            if (produce.hasValue()) {
+			                return produce.value().rowWidth;
+			            } else {
+			                return null;
+			            }
+			        }
+			    }),
+				new tables.SimpleProperty({
+			        property: "produceUpper",
+			        title: "TERMÉNY",
+			        recalculate: function(produce) {
+			            if (produce.hasValue()) {
+			                return produce.value().name.toUpperCase();
+			            } else {
+			                return null;
+			            }
+			        }
 			    })
 			],
 			settings: {
