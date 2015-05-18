@@ -78,7 +78,7 @@
             });
             this.idLookup = {};
             this.nameLookup = {};
-            this.data.forEach (function (datum) {
+            this.target.data.forEach (function (datum) {
                 var id = datum[this.idField];
                 var name = datum[this.nameField];
                 this.idLookup[id] = datum;
@@ -130,7 +130,7 @@
         ReferenceProperty.prototype.toColumn = function () {
             return $.extend({}, this.column, {
                 type: "dropdown",
-                source: this.data.map(function (datum) { return datum.name; }),
+                source: this.target.data.map(function (datum) { return datum.name; }),
                 title: this.title,
                 data: this.toProperty(),
                 renderer: ReferenceProperty.renderer.bind(this)
@@ -249,7 +249,8 @@
                     if (!rows[rowNo]) {
                         rows[rowNo] = true;
                         var row = self.data[rowNo];
-                        self.recalculate(row);					}
+                        self.recalculate(row);
+                    }
                 });
                 this.render();
             };
