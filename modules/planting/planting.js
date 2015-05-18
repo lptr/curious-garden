@@ -16,10 +16,6 @@
 	});
 
 	transactionModule.controller("PlantingController", function ($scope, kapaServer) {
-		var afterChange = function (event) {
-			console.log("Event", event);
-		}
-
 		var suffixRenderer = function (suffix) {
 			return function (instance, td, row, col, prop, value, cellProperties) {
 				Handsontable.renderers.NumericRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
@@ -30,7 +26,7 @@
 		};
 		
 		var Property = function (options) {
-			$.extend(this, options);
+			$.extend(this, options, { readOnly: !!options.recalcuate });
 		};
 		Property.prototype.value = function (item) {
 			return item[this.property];
@@ -44,7 +40,8 @@
 				}
 			}.bind(this);
 		};
-		
+		Property.prototype.recalcuate = function () {};
+
 		var SimpleProperty = function (options) {
 			Property.apply(this, arguments);
 		}
@@ -89,7 +86,6 @@
 		ReferenceProperty.renderer = function (instance, td, row, col, prop, displayValue, cellProperties) {
 			Handsontable.renderers.NumericRenderer.apply(null, [instance, td, row, col, prop, displayValue, cellProperties]);
 			var value = this.value(row);
-			console.log("Value:", value, "display value:", displayValue);
 			if (value) {
 				if (!value.id) {
 					td.color = "red";
@@ -152,32 +148,65 @@
 		var seedProp = new SimpleProperty({ property: "seed", title: "Mag" });
 		var timeProp = new SimpleProperty({ property: "time", title: "Dátum", type: "date", column: { dateFormat: "YYYY-MM-DD" } });
 		var seedCountProp = new SimpleProperty({ property: "seedsPerGramm", title: "Magok száma", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") } });
+		var seedCountPropPlus1 = new SimpleProperty({ property: "seedsPerGrammPlus1", title: "Magok száma + 1", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") }, recalcuate: function (item) {
+			item[this.property] = seedCountProp.value(item) + 1;
+		} });
 
-		var properties = [ idProp, produceProp, seedProp, timeProp, seedCountProp ];
+		var properties = [ idProp, produceProp, seedProp, timeProp, seedCountProp, seedCountPropPlus1 ];
 		var dataSchema = {};
 		properties.forEach(function (property) {
 			dataSchema[property] = property.property;
 		});
 		var columns = properties.map(function (property) { return property.toColumn(); });
 
+		var afterChange = function (changes, source) {
+			// Don't do stuff when loading
+			if (source === "loadData") {
+				return;
+			}
+			var rows = {};
+			changes.forEach(function (change) {
+				var rowNo = change[0];
+				if (!rows[rowNo]) {
+					rows[rowNo] = true;
+					var row = $scope.items[rowNo];
+					if (row) {
+						properties.forEach(function (property) {
+							property.recalcuate(row);
+						});
+					}
+				}
+			});
+			console.log("Event", arguments);
+			if ($scope.hot) {
+				$scope.hot.render();
+			}
+		}
+
 		$scope.settings = {
 			colHeaders: true,
 			rowHeaders: false,
 			contextMenu: ['row_above', 'row_below', 'remove_row'],
 			afterChange: afterChange,
+			afterInit: function () {
+				$scope.hot = this;
+			},
 			minSpareRows: 1,
 			height: 300,
 			width: 700,
 			columns: columns,
 			dataSchema: dataSchema
 		};
-
+		
 		var reload = function () {
 			$scope.items = [];
 			plantations.forEach(function (plantation) {
 				item = {};
 				properties.forEach(function (property) {
-					return property.fromJson(item, plantation);
+					property.fromJson(item, plantation);
+				});
+				properties.forEach(function (property) {
+					property.recalcuate(item);
 				});
 				$scope.items.push(item);
 			});
