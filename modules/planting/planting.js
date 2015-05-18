@@ -26,7 +26,7 @@
 		};
 		
 		var Property = function (options) {
-			$.extend(this, options, { readOnly: !!options.recalcuate });
+			$.extend(this, { readOnly: !!options.recalcuate }, options);
 		};
 		Property.prototype.value = function (item) {
 			return item[this.property];
