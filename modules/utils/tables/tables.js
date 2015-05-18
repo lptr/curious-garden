@@ -5,7 +5,7 @@
     tablesModule.factory("suffixRenderer", function () {
         return function (suffix) {
             return function (instance, td, row, col, prop, value, cellProperties) {
-                Handsontable.renderers.NumericRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
+                Handsontable.renderers.NumericRenderer.apply(this, arguments);
                 if (td.textContent) {
                     td.textContent += suffix;
                 }
