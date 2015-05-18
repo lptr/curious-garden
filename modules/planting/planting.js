@@ -215,15 +215,10 @@
 				this.render();
 			};
 			
-			var afterCreateRow = function (index, amount) {
-				console.log("afterCreateRow", arguments);
-			};
-
 			return $.extend({}, this.settings, {
 				data: this.data,
 				dataSchema: function () { return new this.Item({}); }.bind(this),
 				afterChange: afterChange,
-				afterCreateRow: afterCreateRow,
 				columns: this.properties.map(function (property) { return property.toColumn(); })
 			});
 		};
