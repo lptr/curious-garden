@@ -5,12 +5,12 @@
     tablesModule.factory("suffixRenderer", function () {
         return function (suffix) {
             return function (instance, td, row, col, prop, value, cellProperties) {
-                Handsontable.renderers.NumericRenderer.apply(this, arguments);
+                Handsontable.renderers.NumericRenderer.apply(null, arguments);
                 if (td.textContent) {
                     td.textContent += suffix;
                 }
             };
-        };                
+        };
     });
 
     tablesModule.factory("tables", function () {
@@ -19,10 +19,22 @@
         var Property = function (options) {
             $.extend(this, { readOnly: !!options.recalculate }, options);
         };
+		Property.prototype.defaultValue = function (item) {
+			return item[this.name + ".default"];
+		};
+		Property.prototype.setDefaultValue = function (item, value) {
+			item[this.name + ".default"] = value;
+		};
         Property.prototype.value = function (item) {
-            return item[this.name];
+            return item[this.name] || this.defaultValue(item);
         };
-        Property.prototype.hasValue = function (item) {
+		Property.prototype.setValue = function (item, value) {
+			item[this.name] = value;
+		};
+		Property.prototype.hasValue = function (item) {
+            return !!this.value(item);
+        };
+		Property.prototype.hasExplicitValue = function (item) {
             return !!item[this.name];
         };
         Property.prototype.asNumber = function (item) {
@@ -49,16 +61,16 @@
         };
         SimpleProperty.prototype = Object.create(Property.prototype);
         SimpleProperty.prototype.get = function (item) {
-            return item[this.name];
+            return this.value(item);
         };
         SimpleProperty.prototype.set = function (item, value) {
-            item[this.name] = value;
+            this.setValue(item, value);
         };
         SimpleProperty.prototype.toJson = function (item, json) {
-            json[this.name] = this.get(item);
+            json[this.name] = item[this.name];
         };
         SimpleProperty.prototype.fromJson = function (item, json) {
-            this.set(item, json ? json[this.name] : null);
+            this.setValue(item, json ? json[this.name] : null);
         };
         SimpleProperty.prototype.toColumn = function () {
             return $.extend({}, this.column, {
@@ -88,7 +100,7 @@
             return td;
         };
         ReferenceProperty.prototype.get = function (item) {
-            var value = item[this.name];
+            var value = this.value(item);
             // console.log("Item: ", item, " value: ", value);
             return value ? value["name"] : null;
         };
@@ -107,14 +119,15 @@
                 ref = value;
             }
             // console.log(">>> SET", item, ref);
-            item[this.name] = ref;
+            this.setValue(item, ref);
         };
         ReferenceProperty.prototype.toJson = function (item, json) {
-            json[this.name] = this.get(item);
+			var value = item[this.name];
+            json[this.name] = value ? value.id : null;
         };
         ReferenceProperty.prototype.fromJson = function (item, json) {
             var value = json ? json[this.name] : null;
-            this.set(item, value ? this.target.getIdLookup()[value] : null);
+            this.setValue(item, value ? this.target.getIdLookup()[value] : null);
         };
         ReferenceProperty.prototype.toColumn = function () {
             return $.extend({}, this.column, {
@@ -132,8 +145,11 @@
         Item.prototype.value = function (property) {
             return property.value(this);
         };
-        Item.prototype.hasValue = function (property) {
+		Item.prototype.hasValue = function (property) {
             return property.hasValue(this);
+        };
+		Item.prototype.hasExplicitValue = function (property) {
+            return property.hasExplicitValue(this);
         };
         Item.prototype.asNumber = function (property) {
             return property.asNumber(this);
@@ -150,8 +166,11 @@
         ItemProperty.prototype.value = function () {
             return this.property.value(this.item);
         };
-        ItemProperty.prototype.hasValue = function () {
+		ItemProperty.prototype.hasValue = function () {
             return this.property.hasValue(this.item);
+        };
+		ItemProperty.prototype.hasExplicitValue = function () {
+            return this.property.hasExplicitValue(this.item);
         };
         ItemProperty.prototype.asNumber = function () {
             return this.property.asNumber(this.item);
@@ -191,13 +210,17 @@
                 this.propertiesMap[property.name] = property;
             }, this);
             this.recalculateProps = this.properties.map(function (property) {
-                if (typeof property.recalculate !== 'function') {
-                    return function (item) {};
-                }
+				var executeRecalculation = function (item, calc, set) {
+					if (typeof calc !== 'function') {
+	                    return;
+	                }
+					var parameters = this.injectParameters(calc, item);
+                    set.apply(property, [item, calc.apply(property, parameters)]);
+				}.bind(this);
 				return function (item) {
-					var parameters = this.injectParameters(property.recalculate, item);
-                    property.set(item, property.recalculate.apply(property, parameters));
-                }.bind(this);
+					executeRecalculation(item, property.recalculate, property.setValue);
+					executeRecalculation(item, property.recalculateDefault, property.setDefaultValue);
+				};
             }, this);
 
             this.Item = function (json) {

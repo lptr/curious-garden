@@ -99,7 +99,7 @@
 			        title: "Sorkoz",
 					type: "numeric",
 					column: { format: "0.00" },
-			        recalculate: function (produce) {
+			        recalculateDefault: function (produce) {
 			            if (produce.hasValue()) {
 			                return produce.value().rowWidth;
 			            } else {
