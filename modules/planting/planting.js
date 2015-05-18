@@ -35,6 +35,14 @@
 		Property.prototype.hasValue = function (item) {
 			return !!item[this.property];
 		};
+		Property.prototype.asNumber = function (item) {
+			var value = this.value(item);
+			return typeof value === 'number' ? value : 0;
+		};
+		Property.prototype.asText = function (item) {
+			var value = this.value(item);
+			return typeof value === 'string' ? value : "";
+		};
 		Property.prototype.toProperty = function () {
 			return function (item, value) {
 				if (typeof value === 'undefined') {
@@ -106,7 +114,7 @@
 		};
 		ReferenceProperty.prototype.set = function (item, value) {
 			var ref;
-			if (value === null) {
+			if (value === null || value === "") {
 				ref = null;
 			} else if (typeof value === 'string') {
 				ref = this.nameLookup[value];
@@ -150,12 +158,28 @@
 		Item.prototype.hasValue = function (property) {
 			return property.hasValue(this);
 		};
+		Item.prototype.asNumber = function (property) {
+			return property.asNumber(this);
+		}
+		Item.prototype.asText = function (property) {
+			return property.asText(this);
+		}
 		var Table = function (options) {
 			$.extend(this, {
 				data: [],
 				properties: []
 			}, options);
-			this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" } });
+			var dataProperties = this.properties.slice();
+			var assignId = function (item) {
+				var hasId = item.hasValue(this.id);
+				var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property); });
+				if (!hasId && hasSomeValues) {
+					this.id.set(item, 123);
+				} else if (hasId && !hasSomeValues) {
+					this.id.set(item, null);
+				}
+			}.bind(this);
+			this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalcuate: assignId });
 			this.properties.unshift(this.id);
 			var table = this;
 			this.Item = function (json) {
@@ -190,13 +214,16 @@
 				});
 				this.render();
 			};
+			
+			var afterCreateRow = function (index, amount) {
+				console.log("afterCreateRow", arguments);
+			};
 
 			return $.extend({}, this.settings, {
 				data: this.data,
-				dataSchema: function () {
-					return new this.Item({});
-				}.bind(this),
+				dataSchema: function () { return new this.Item({}); }.bind(this),
 				afterChange: afterChange,
+				afterCreateRow: afterCreateRow,
 				columns: this.properties.map(function (property) { return property.toColumn(); })
 			});
 		};
@@ -223,7 +250,7 @@
 		var seedCountProp = new SimpleProperty({ property: "seedsPerGramm", title: "Magok száma", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") } });
 		var seedCountPropPlus1 = new SimpleProperty({ property: "seedsPerGrammPlus1", title: "Magok száma + 1", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") }, recalcuate: function (item) {
 			if (item.hasValue(seedCountProp)) {
-				this.set(item, seedCountProp.value(item) + 1);
+				this.set(item, item.asNumber(seedCountProp) + 1);
 			} else {
 				this.set(item, null);
 			}
