@@ -46,14 +46,14 @@
 
         var SimpleProperty = function (options) {
             Property.apply(this, arguments);
-        }
+        };
         SimpleProperty.prototype = Object.create(Property.prototype);
         SimpleProperty.prototype.get = function (item) {
             return item[this.name];
         };
         SimpleProperty.prototype.set = function (item, value) {
             item[this.name] = value;
-        }
+        };
         SimpleProperty.prototype.toJson = function (item, json) {
             json[this.name] = this.get(item);
         };
@@ -160,7 +160,7 @@
             return this.property.asText(this.item);
         };
         tables.ItemProperty = ItemProperty;
-
+		
         var Table = function (options) {
             $.extend(this, {
                 data: [],
@@ -194,18 +194,8 @@
                 if (typeof property.recalculate !== 'function') {
                     return function (item) {};
                 }
-                return function (item) {
-                    var parameterNames = angular.injector.$$annotate(property.recalculate);
-                    var parameters = parameterNames.map(function (name) {
-                        if (name === "item") {
-                            return item;
-                        }
-                        var dependentProperty = this.propertiesMap[name];
-                        if (!dependentProperty) {
-                            throw new Error("Unknown property '" + name + "' for table '" + this.name + "'");
-                        }
-                        return new ItemProperty(item, dependentProperty);
-                    }, this);
+				return function (item) {
+					var parameters = this.injectParameters(property.recalculate, item);
                     property.set(item, property.recalculate.apply(property, parameters));
                 }.bind(this);
             }, this);
@@ -268,6 +258,20 @@
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
+		Table.prototype.injectParameters = function (fun, item) {
+			var parameterNames = angular.injector.$$annotate(fun);
+			var parameters = parameterNames.map(function (name) {
+				if (name === "item") {
+					return item;
+				}
+				var dependentProperty = this.propertiesMap[name];
+				if (!dependentProperty) {
+					throw new Error("Unknown property '" + name + "' for table '" + this.name + "'");
+				}
+				return new ItemProperty(item, dependentProperty);
+			}, this);
+			return parameters;
+		};
 		Table.prototype.addChangeListener = function (listener) {
 			this.changeListeners.push(listener);
 		};
