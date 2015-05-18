@@ -328,6 +328,9 @@
                 this.data.push(new this.Item(itemJson));
             }, this);
         };
+		Table.prototype.link = function (element) {
+			element.handsontable(this.getSettings());
+		};
         tables.Table = Table;
         
         return tables;

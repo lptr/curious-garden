@@ -3,7 +3,6 @@
 		"kapa.services",
 		"kapa.utils.tables",
 		"ngRoute",
-		"ngHandsontable",
 		"ui.bootstrap",
 		"ui.bootstrap.showErrors"
 	]);
@@ -143,16 +142,14 @@
 	});
 	
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {		
-		$scope.items = producesTable.data;
-		$scope.settings = producesTable.getSettings();
+		producesTable.link($("#producesTable"));
 		$scope.dump = function () {
 			console.log("Data:", producesTable.data);
 		};
 	});
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {		
-		$scope.items = plantingTable.data;
-		$scope.settings = plantingTable.getSettings();
+		plantingTable.link($("#plantingTable"));
 		$scope.dump = function () {
 			console.log("Data:", plantingTable.data);
 		};
