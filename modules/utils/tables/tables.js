@@ -72,18 +72,7 @@
 
         var ReferenceProperty = function (options) {
             Property.apply(this, arguments);
-            $.extend(this, {
-                idField: "id",
-                nameField: "name"
-            });
-            this.idLookup = {};
-            this.nameLookup = {};
-            this.target.data.forEach (function (datum) {
-                var id = datum[this.idField];
-                var name = datum[this.nameField];
-                this.idLookup[id] = datum;
-                this.nameLookup[name] = datum;
-            }, this);
+            $.extend(this, {});
         };
         ReferenceProperty.prototype = Object.create(Property.prototype);
         ReferenceProperty.renderer = function (instance, td, row, col, prop, displayValue, cellProperties) {
@@ -101,18 +90,18 @@
         ReferenceProperty.prototype.get = function (item) {
             var value = item[this.property];
             // console.log("Item: ", item, " value: ", value);
-            return value ? value[this.nameField] : null;
+            return value ? value["name"] : null;
         };
         ReferenceProperty.prototype.set = function (item, value) {
             var ref;
             if (value === null || value === "") {
                 ref = null;
             } else if (typeof value === 'string') {
-                ref = this.nameLookup[value];
+                ref = this.target.getNameLookup()[value];
                 if (!ref) {
                     ref = {};
-                    ref[this.idField] = null;
-                    ref[this.nameField] = value;
+                    ref["id"] = null;
+                    ref["name"] = value;
                 }
             } else {
                 ref = value;
@@ -125,12 +114,12 @@
         };
         ReferenceProperty.prototype.fromJson = function (item, json) {
             var value = json ? json[this.property] : null;
-            this.set(item, value ? this.idLookup[value] : null);
+            this.set(item, value ? this.target.getIdLookup()[value] : null);
         };
         ReferenceProperty.prototype.toColumn = function () {
             return $.extend({}, this.column, {
                 type: "dropdown",
-                source: this.target.data.map(function (datum) { return datum.name; }),
+                source: function (query, process) { process(this.target.getAllNames()); }.bind(this),
                 title: this.title,
                 data: this.toProperty(),
                 renderer: ReferenceProperty.renderer.bind(this)
@@ -235,10 +224,47 @@
                 recalculateProp(item);
             });
         };
+		Table.prototype.invalidate = function () {
+			this.idLookup = null;
+			this.nameLookup = null;
+			this.allNames = null;
+			console.log("Invalidated");
+		};
+		Table.prototype.createLookups = function () {
+			if (this.idLookup && this.nameLookup && this.names) {
+				return;
+			}
+			this.idLookup = {};
+			this.nameLookup = {};
+			this.allNames = [];
+			this.data.forEach (function (datum) {
+                var id = datum["id"];
+                var name = datum["name"];
+				if (id) {
+	                this.idLookup[id] = datum;
+	                this.nameLookup[name] = datum;
+					this.allNames.push(name);
+				}
+            }, this);
+		};
+		Table.prototype.getIdLookup = function () {
+			this.createLookups();
+			return this.idLookup;
+		};
+		Table.prototype.getNameLookup = function () {
+			this.createLookups();
+			return this.nameLookup;
+		};
+		Table.prototype.getAllNames = function () {
+			this.createLookups();
+			console.log("Get all names", this.allNames);
+			return this.allNames;
+		};
         Table.prototype.toSettings = function () {
             var self = this;
             var afterChange = function (changes, source) {
                 console.log("Event", arguments);
+				self.invalidate();
                 // Don't do stuff when loading
                 if (source === "loadData") {
                     return;

@@ -1,1 +1,8 @@
-<hot-table settings="settings" datarows="items"></hot-table>
+<div ng-controller="ProducesController">
+    <button ng-click="dump()">Dump</button>
+    <hot-table id="produces" settings="settings" datarows="items"></hot-table>
+</div>
+<div ng-controller="PlantingController">
+    <button ng-click="dump()">Dump</button>
+    <hot-table id="planting" settings="settings" datarows="items"></hot-table>
+</div>

@@ -34,7 +34,15 @@
 					title: "Sorköz",
 					type: "numeric"
 				})
-			]
+			],
+			settings: {
+				colHeaders: true,
+				rowHeaders: false,
+				contextMenu: ['row_above', 'row_below', 'remove_row'],
+				minSpareRows: 1,
+				height: 300,
+				width: 700,				
+			}
 		});
 		producesTable.load(produces);
 
@@ -109,9 +117,20 @@
 
 		return plantingTable;
 	});
+	
+	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {		
+		$scope.items = producesTable.data;
+		$scope.settings = producesTable.toSettings();
+		$scope.dump = function () {
+			console.log("Data:", producesTable.data);
+		};
+	});
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {		
 		$scope.items = plantingTable.data;
 		$scope.settings = plantingTable.toSettings();
+		$scope.dump = function () {
+			console.log("Data:", plantingTable.data);
+		};
 	});
 })();
