@@ -16,6 +16,7 @@
 	});
 
 	transactionModule.controller("PlantingController", function ($scope, kapaServer) {
+		$scope.items = [];
 		var suffixRenderer = function (suffix) {
 			return function (instance, td, row, col, prop, value, cellProperties) {
 				Handsontable.renderers.NumericRenderer.apply(this, [instance, td, row, col, prop, value, cellProperties]);
@@ -30,6 +31,9 @@
 		};
 		Property.prototype.value = function (item) {
 			return item[this.property];
+		};
+		Property.prototype.hasValue = function (item) {
+			return !!item[this.property];
 		};
 		Property.prototype.toProperty = function () {
 			return function (item, value) {
@@ -56,7 +60,7 @@
 			json[this.property] = this.get(item);
 		};
 		SimpleProperty.prototype.fromJson = function (item, json) {
-			this.set(item, json[this.property]);
+			this.set(item, json ? json[this.property] : null);
 		};
 		SimpleProperty.prototype.toColumn = function () {
 			return $.extend({}, this.column, {
@@ -121,7 +125,7 @@
 			json[this.property] = this.get(item);
 		};
 		ReferenceProperty.prototype.fromJson = function (item, json) {
-			var value = json[this.property];
+			var value = json ? json[this.property] : null;
 			this.set(item, value ? this.idLookup[value] : null);
 		};
 		ReferenceProperty.prototype.toColumn = function () {
@@ -134,6 +138,76 @@
 			});
 		};
 		
+		var Item = function (table, options) {
+			$.extend(this, {}, options);
+			table.properties.forEach(function (property) {
+				property.recalcuate(this);
+			}.bind(this));
+		};
+		Item.prototype.value = function (property) {
+			return property.value(this);
+		};
+		Item.prototype.hasValue = function (property) {
+			return property.hasValue(this);
+		};
+		var Table = function (options) {
+			$.extend(this, {
+				data: [],
+				properties: []
+			}, options);
+			this.id = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" } });
+			this.properties.unshift(this.id);
+			var table = this;
+			this.Item = function (json) {
+				var values = {};
+				table.properties.forEach(function (property) {
+					property.fromJson(values, json);
+				});
+				Item.apply(this, [table, values]);
+			};
+			this.Item.prototype = Object.create(Item.prototype);
+		};
+		Table.prototype.toSettings = function () {
+			var self = this;
+			var afterChange = function (changes, source) {
+				console.log("Event", arguments);
+				// Don't do stuff when loading
+				if (source === "loadData") {
+					return;
+				}
+				var rows = {};
+				changes.forEach(function (change) {
+					var rowNo = change[0];
+					if (!rows[rowNo]) {
+						rows[rowNo] = true;
+						var row = self.data[rowNo];
+						if (row) {
+							self.properties.forEach(function (property) {
+								property.recalcuate(row);
+							});
+						}
+					}
+				});
+				this.render();
+			};
+
+			return $.extend({}, this.settings, {
+				data: this.data,
+				dataSchema: function () {
+					return new this.Item({});
+				}.bind(this),
+				afterChange: afterChange,
+				columns: this.properties.map(function (property) { return property.toColumn(); })
+			});
+		};
+		Table.prototype.load = function (itemsJson) {
+			// Clear the array
+			this.data.length = 0;
+			itemsJson.forEach(function (itemJson) {
+				this.data.push(new this.Item(itemJson));
+			}.bind(this));
+		};
+		
 		var produces = [
 			{ id: 1, name: "Zsázsa", rowWidth: 15 },
 			{ id: 2, name: "Mizuna", rowWidth: 12 },
@@ -143,73 +217,35 @@
 			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
 		];
 		
-		var idProp = new SimpleProperty({ property: "id", title: "ID", readOnly: true, column: { className: "htCenter" } });
 		var produceProp = new ReferenceProperty({ property: "produce", title: "Termény", data: produces });
 		var seedProp = new SimpleProperty({ property: "seed", title: "Mag" });
 		var timeProp = new SimpleProperty({ property: "time", title: "Dátum", type: "date", column: { dateFormat: "YYYY-MM-DD" } });
 		var seedCountProp = new SimpleProperty({ property: "seedsPerGramm", title: "Magok száma", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") } });
 		var seedCountPropPlus1 = new SimpleProperty({ property: "seedsPerGrammPlus1", title: "Magok száma + 1", type: "numeric", column: { format: "0.00", renderer: suffixRenderer(" db/g") }, recalcuate: function (item) {
-			item[this.property] = seedCountProp.value(item) + 1;
+			if (item.hasValue(seedCountProp)) {
+				this.set(item, seedCountProp.value(item) + 1);
+			} else {
+				this.set(item, null);
+			}
 		} });
-
-		var properties = [ idProp, produceProp, seedProp, timeProp, seedCountProp, seedCountPropPlus1 ];
-		var dataSchema = {};
-		properties.forEach(function (property) {
-			dataSchema[property] = property.property;
-		});
-		var columns = properties.map(function (property) { return property.toColumn(); });
-
-		var afterChange = function (changes, source) {
-			// Don't do stuff when loading
-			if (source === "loadData") {
-				return;
-			}
-			var rows = {};
-			changes.forEach(function (change) {
-				var rowNo = change[0];
-				if (!rows[rowNo]) {
-					rows[rowNo] = true;
-					var row = $scope.items[rowNo];
-					if (row) {
-						properties.forEach(function (property) {
-							property.recalcuate(row);
-						});
-					}
-				}
-			});
-			console.log("Event", arguments);
-			if ($scope.hot) {
-				$scope.hot.render();
-			}
-		}
-
-		$scope.settings = {
-			colHeaders: true,
-			rowHeaders: false,
-			contextMenu: ['row_above', 'row_below', 'remove_row'],
-			afterChange: afterChange,
-			afterInit: function () {
-				$scope.hot = this;
-			},
-			minSpareRows: 1,
-			height: 300,
-			width: 700,
-			columns: columns,
-			dataSchema: dataSchema
-		};
 		
+		var plantingTable = new Table({
+			name: "planting",
+			data: $scope.items,
+			properties: [ produceProp, seedProp, timeProp, seedCountProp, seedCountPropPlus1 ],
+			settings: {
+				colHeaders: true,
+				rowHeaders: false,
+				contextMenu: ['row_above', 'row_below', 'remove_row'],
+				minSpareRows: 1,
+				height: 300,
+				width: 700,				
+			}
+		});
+		$scope.settings = plantingTable.toSettings();
+
 		var reload = function () {
-			$scope.items = [];
-			plantations.forEach(function (plantation) {
-				item = {};
-				properties.forEach(function (property) {
-					property.fromJson(item, plantation);
-				});
-				properties.forEach(function (property) {
-					property.recalcuate(item);
-				});
-				$scope.items.push(item);
-			});
+			plantingTable.load(plantations);
 		};
 		reload();
 	});
