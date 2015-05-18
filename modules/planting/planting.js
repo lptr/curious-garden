@@ -92,7 +92,7 @@
 				var name = datum[this.nameField];
 				this.idLookup[id] = datum;
 				this.nameLookup[name] = datum;
-			}.bind(this));
+			}, this);
 		};
 		ReferenceProperty.prototype = Object.create(Property.prototype);
 		ReferenceProperty.renderer = function (instance, td, row, col, prop, displayValue, cellProperties) {
@@ -150,7 +150,7 @@
 			$.extend(this, {}, options);
 			table.properties.forEach(function (property) {
 				property.recalcuate(this);
-			}.bind(this));
+			}, this);
 		};
 		Item.prototype.value = function (property) {
 			return property.value(this);
@@ -232,7 +232,7 @@
 			this.data.length = 0;
 			itemsJson.forEach(function (itemJson) {
 				this.data.push(new this.Item(itemJson));
-			}.bind(this));
+			}, this);
 		};
 		
 		var produces = [
