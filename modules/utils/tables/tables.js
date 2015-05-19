@@ -233,12 +233,13 @@
             this.Item.prototype = Object.create(Item.prototype);
 
 			this.changeListeners = [];
+			this.removeListeners = [];
             var afterChange = function (changes, source) {
 				// Do not process events for other tables
 				if (this !== self.hot) {
 					return;
 				}
-                console.log("Event in " + self.name + ":", source, changes);
+                console.log("Edit in " + self.name + ":", source, changes);
 				self.invalidate();
                 // Don't do stuff when loading
                 if (source === "loadData" || !changes) {
@@ -259,6 +260,23 @@
 					changeListener(self, changed);
 				});
             };
+			var beforeRemoveRow = function (index, amount) {
+				// Do not process events for other tables
+				if (this !== self.hot) {
+					return;
+				}
+				console.log("Remove in " + self.name + ":", index, amount);
+				self.invalidate();
+				var removed = {};
+				for (var rowNo = index; rowNo < index + amount; rowNo++) {
+					var row = self.data[rowNo];
+					var removedId = row["id"];
+                    removed[removedId] = row;
+				}
+				self.removeListeners.forEach(function (removeListener) {
+					removeListener(self, removed)
+				});
+			};
 			
 			this.properties.forEach(function (property) {
 				if (property instanceof ReferenceProperty) {
@@ -266,7 +284,20 @@
 						this.data.forEach(function (item) {
 							var ref = property.value(item);
 							var refId = ref ? ref.id : null;
-							if (changed[refId]) {
+							if (refId in changed) {
+								this.recalculate(item);
+							}
+						}, this);
+						if (this.hot) {
+							this.hot.render();
+						}
+					}.bind(this));
+					property.target.addRemoveListener(function (source, removed) {
+						this.data.forEach(function (item) {
+							var ref = property.value(item);
+							var refId = ref ? ref.id : null;
+							if (refId in removed) {
+								property.setValue(item, null);
 								this.recalculate(item);
 							}
 						}, this);
@@ -281,7 +312,8 @@
                 data: this.data,
                 dataSchema: function () { return new this.Item({}); }.bind(this),
 				afterInit: function () { self.hot = this; },
-                afterChange: [afterChange],
+                afterChange: afterChange,
+				beforeRemoveRow: beforeRemoveRow,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
@@ -302,7 +334,11 @@
 		Table.prototype.addChangeListener = function (listener) {
 			this.changeListeners.push(listener);
 		};
+		Table.prototype.addRemoveListener = function (listener) {
+			this.removeListeners.push(listener);
+		};
         Table.prototype.recalculate = function (item) {
+			console.log("Recalculating", this.name, item);
             this.recalculateProps.forEach(function (recalculateProp) {
                 recalculateProp(item);
             });
