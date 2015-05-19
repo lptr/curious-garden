@@ -234,7 +234,11 @@
 
 			this.changeListeners = [];
             var afterChange = function (changes, source) {
-                console.log("Event", arguments);
+				// Do not process events for other tables
+				if (this !== self.hot) {
+					return;
+				}
+                console.log("Event in", self.name, arguments);
 				self.invalidate();
                 // Don't do stuff when loading
                 if (source === "loadData" || !changes) {
