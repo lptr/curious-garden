@@ -238,7 +238,7 @@
 				if (this !== self.hot) {
 					return;
 				}
-                console.log("Event in", self.name, arguments);
+                console.log("Event in " + self.name + ":", source, changes);
 				self.invalidate();
                 // Don't do stuff when loading
                 if (source === "loadData" || !changes) {
@@ -311,7 +311,7 @@
 			this.idLookup = null;
 			this.nameLookup = null;
 			this.allNames = null;
-			console.log("Invalidated");
+			console.log("Invalidated", this.name);
 		};
 		Table.prototype.createLookups = function () {
 			if (this.idLookup && this.nameLookup && this.names) {
@@ -329,6 +329,7 @@
 					this.allNames.push(name);
 				}
             }, this);
+			console.log("Created lookups for", this.name);
 		};
 		Table.prototype.getIdLookup = function () {
 			this.createLookups();
