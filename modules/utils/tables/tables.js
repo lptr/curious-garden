@@ -311,10 +311,10 @@
 			this.idLookup = null;
 			this.nameLookup = null;
 			this.allNames = null;
-			console.log("Invalidated", this.name);
+			// console.log("Invalidated", this.name);
 		};
 		Table.prototype.createLookups = function () {
-			if (this.idLookup && this.nameLookup && this.names) {
+			if (this.idLookup && this.nameLookup && this.allNames) {
 				return;
 			}
 			this.idLookup = {};
