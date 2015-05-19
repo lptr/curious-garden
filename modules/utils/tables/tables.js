@@ -310,6 +310,7 @@
 
             this.settings = $.extend({}, this.settings, {
                 data: this.data,
+				columnSorting: true,
                 dataSchema: function () { return new this.Item({}); }.bind(this),
 				afterInit: function () { self.hot = this; },
                 afterChange: afterChange,
