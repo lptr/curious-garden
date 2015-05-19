@@ -48,13 +48,10 @@
 
 		Backbone.sync = function (method, model, options) {
 			console.log("Sync called with ", method, model, options);
-			if (!model.collection) {
-				throw new Error("Model does not belong to a collection: " + JSON.stringify(model.toJSON()));
-			}
 			var request = $http.jsonp(serverUrl, {
 				params: {
 					method: method,
-					table: model.collection.table,
+					table: model.getTableName(),
 					id: model.id,
 					item: model.toJSON(),
 					callback: "JSON_CALLBACK"
@@ -66,14 +63,15 @@
 		};
 
 		var Produce = window.Produce = Backbone.RelationalModel.extend({
+			getTableName: function () { return "produces"; }
 		});
 		var Produces = window.Produces = Backbone.Collection.extend({
-			table: "produces",
 			fetch: fetch("produces")
 		});
 		var produces = window.produces = new Produces();
 		produces.fetch().success(function (data) {
 			var Planting = window.Planting = Backbone.RelationalModel.extend({
+				getTableName: function () { return "plantings"; },
 				relations: [{
 					type: Backbone.HasOne,
 					key: "produce",
@@ -81,7 +79,6 @@
 				}]
 			});
 			var Plantings = window.Plantings = Backbone.Collection.extend({
-				table: "plantings",
 				model: Planting,
 				fetch: fetch("plantings")
 			});
