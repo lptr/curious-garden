@@ -48,6 +48,9 @@
 
 		Backbone.sync = function (method, model, options) {
 			console.log("Sync called with ", method, model, options);
+			if (!model.collection) {
+				throw new Error("Model does not belong to a collection: " + JSON.stringify(model.toJSON()));
+			}
 			var request = $http.jsonp(serverUrl, {
 				params: {
 					method: method,
@@ -63,9 +66,6 @@
 		};
 
 		var Produce = window.Produce = Backbone.RelationalModel.extend({
-			getId2: function () {
-				return this.id;
-			}
 		});
 		var Produces = window.Produces = Backbone.Collection.extend({
 			table: "produces",
