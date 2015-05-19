@@ -66,6 +66,7 @@
 			getTableName: function () { return "produces"; }
 		});
 		var Produces = window.Produces = Backbone.Collection.extend({
+			model: Produce,
 			fetch: fetch("produces")
 		});
 		var produces = window.produces = new Produces();
