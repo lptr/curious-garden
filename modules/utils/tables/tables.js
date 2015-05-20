@@ -87,11 +87,11 @@
 		}
 		
         var SimpleProperty = function (options) {
-            Property.apply(this, arguments);
+            Property.call(this, _.extend({}, { type: "text" }, options));
 			_.extend(this, {
 				toColumn: function () {
 					return _.extend({}, this.column, {
-		                type: this.type || "text",
+		                type: this.type,
 		                title: this.title,
 		                data: this.toProperty(),
 		                readOnly: this.readOnly ? true : false
