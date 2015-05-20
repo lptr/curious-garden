@@ -57,8 +57,43 @@
             };
         };
     });
+	
+	tablesModule.factory("changeTracking", function () {
+		var changeTracking = {};
+		
+		var pendingChanges = null;
+		changeTracking.start = function () {
+			console.log(">>> Started change tracking");
+			pendingChanges = {};
+		};
+		changeTracking.registerChange = function (changed) {
+			console.log("--- Storing changed", changed);
+			if (pendingChanges !== null) {
+				var changedId = changed.getTableName() + ":" + changed.id;
+				pendingChanges[changedId] = changed;
+			} else {
+				throw new Error("Not tracking changes when changed: " + JSON.stringify(changed.toJSON()));
+			}
+		};
+		changeTracking.finish = function () {
+			if (pendingChanges === null) {
+				return;
+			}
+			console.log("<<< Finished change tracking", pendingChanges);
+			try {
+				console.log("=== Changes to save", pendingChanges);
+				_.values(pendingChanges).forEach(function (item) {
+					item.save();
+				});
+			} finally {
+				pendingChanges = null;
+			}
+		};
 
-    tablesModule.factory("tables", function (backboneFetch, backboneSync) {
+		return changeTracking;
+	});
+
+    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -288,33 +323,6 @@
 				self.hot = this;
 			};
 			
-			var pendingChanges = null;
-			var beforeChange = function (changes, source) {
-				console.log(">>> Before change", self.name, arguments);
-				pendingChanges = {};
-			};
-			this.items.on("change", function (changed, options) {
-				console.log("--- Storing changed", self.name, changed, pendingChanges);
-				if (pendingChanges !== null) {
-					var changedId = changed.getTableName() + ":" + changed.id;
-					pendingChanges[changedId] = changed;
-				}
-			});
-            var afterChange = function (changes, source) {
-				console.log("<<< After change", self.name, arguments);
-				if (pendingChanges === null) {
-					return;
-				}
-				try {
-					console.log("=== Changes to save", self.name, pendingChanges);
-					_.values(pendingChanges).forEach(function (item) {
-						item.save();
-					});
-				} finally {
-					pendingChanges = null;
-				}
-            };
-
 			this.properties.forEach(function (property) {
 				if (property instanceof ReferenceProperty) {
 					property.target.items.on("change", function (changed, options) {
@@ -328,23 +336,12 @@
 						}, this);
 						this.render();
 					}.bind(this));
-					// property.target.addRemoveListener(function (source, removed) {
-					// 	this.data.forEach(function (item) {
-					// 		var ref = property.value(item);
-					// 		var refId = ref ? ref.id : null;
-					// 		if (refId in removed) {
-					// 			property.setValue(item, null);
-					// 			this.recalculate(item);
-					// 		}
-					// 	}, this);
-					// 	if (this.hot) {
-					// 		this.hot.render();
-					// 	}
-					// }.bind(this));
 				}
 			}, this);
+
 			this.items.on("change", function (changed, options) {
 				this.recalculate(changed);
+				changeTracking.registerChange(changed);
 			}.bind(this));
 
             this.settings = $.extend({}, this.settings, {
@@ -353,8 +350,8 @@
 				// columnSorting: true,
                 dataSchema: function () { return new self.BackboneModel(); },
 				afterInit: afterInit,
-				beforeChange: beforeChange,
-				afterChange: afterChange,
+				beforeChange: changeTracking.start,
+				afterChange: changeTracking.finish,
                 // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
