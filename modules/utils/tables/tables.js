@@ -209,7 +209,7 @@
 			var self = this;
 			this.BackboneModel = Item.extend({
 				getTableName: function () {
-					return this.name;
+					return self.name;
 				},
 				relations: options.properties.filter(function (property) {
 						return property instanceof ReferenceProperty;
