@@ -220,7 +220,8 @@
 						return {
 							type: Backbone.HasOne,
 							key: property.name,
-							relatedModel: property.target.BackboneModel
+							relatedModel: property.target.BackboneModel,
+							includeInJSON: "id"
 						}
 					})
 			});
