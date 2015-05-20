@@ -101,7 +101,7 @@
 					column: { format: "0.00" },
 			        recalculateDefault: function (produce) {
 			            if (produce.hasValue()) {
-			                return produce.value().rowWidth;
+			                return produce.value().get("rowWidth");
 			            } else {
 			                return null;
 			            }
@@ -112,7 +112,7 @@
 			        title: "TERMÉNY",
 			        recalculate: function (produce) {
 			            if (produce.hasValue()) {
-			                return produce.value().name.toUpperCase();
+			                return produce.value().get("name").toUpperCase();
 			            } else {
 			                return null;
 			            }
@@ -145,7 +145,7 @@
 		producesTable.link($("#producesTable"));
 		producesTable.fetch();
 		$scope.dump = function () {
-			console.log("Data:", producesTable.data);
+			console.log("Data:", producesTable.items);
 		};
 	});
 
@@ -153,7 +153,7 @@
 		plantingTable.link($("#plantingTable"));
 		plantingTable.fetch();
 		$scope.dump = function () {
-			console.log("Data:", plantingTable.data);
+			console.log("Data:", plantingTable.items);
 		};
 	});
 })();

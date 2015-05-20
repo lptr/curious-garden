@@ -39,7 +39,6 @@
 					console.log("Data fetched for ", table.name, data);
 					// set collection data (assuming you have retrieved a json object)
 					collection.reset(data);
-					// table.render();
 				});
 				return request;
 			};			
@@ -66,7 +65,7 @@
 					var name = this.name;
 					return function (item, value) {
 		                if (typeof value === 'undefined') {
-		                    return item.get(name);
+		                    return item.value(name);
 		                } else {
 		                    return item.set(name, value);
 		                }
@@ -120,7 +119,7 @@
 					var name = this.name;
 					return function (item, value) {
 		                if (typeof value === 'undefined') {
-		                    return item.get(name);
+		                    return item.value(name);
 		                } else {
 							var ref = value.item;
 		                    return item.set(name, ref);
@@ -137,28 +136,31 @@
 		};
 
 		var Item = Backbone.RelationalModel.extend({
-			defaultValues: {},
+			constructor: function () {
+				this.defaultValues = {};
+				Backbone.RelationalModel.apply(this, arguments);
+			},
 			defaultValue: function (property) {
-				return defaultValues[property];
+				return this.defaultValues[property];
 			},
 			setDefaultValue: function (property, value, options) {
-				defaultValues[property] = value;
+				this.defaultValues[property] = value;
 			},
 			value: function (property) {
 				var value = this.get(property);
-				if (value === null) {
-					value = this.getDefaultValue(property);
+				if (!value) {
+					value = this.defaultValue(property);
 				}
 	            return value;
 	        },
 			hasExplicit: function (property) {
-				return defaultValues[property] !== null;
+				return this.defaultValues[property] !== null;
 			},
-			number: function (property) {
+			asNumber: function (property) {
 				var value = this.value(property);
 	            return typeof value === 'number' ? value : 0;
 			},
-			text: function (property) {
+			asText: function (property) {
 				var value = this.value(property);
 	            return typeof value === 'string' ? value : "";
 			},
@@ -183,8 +185,11 @@
         ItemProperty.prototype.value = function () {
             return this.item.value(this.property);
         };
-		ItemProperty.prototype.has = function () {
+		ItemProperty.prototype.hasValue = function () {
             return this.item.has(this.property);
+        };
+		ItemProperty.prototype.isEmpty = function () {
+            return !!this.item.has(this.property);
         };
 		ItemProperty.prototype.hasExplicit = function () {
             return this.item.hasExplicit(this.property);
@@ -228,15 +233,20 @@
 			});
 			this.items = new BackboneCollection();
 			
-			this.items.on('all', this.render.bind(this));
-
-			// this.data = this.items;
-			// this.dataSchema = function () { return new this.BackboneModel() };
+			this.items.on("all", function () {
+				console.log("Backbone event", self.name, arguments);
+			});
+			this.items.on("reset", function () {
+				self.items.forEach(function (item) {
+					self.recalculate(item);
+				});
+				self.render.bind(self);
+			});
 
             var dataProperties = this.properties.slice();
             var assignId = function (item) {
-                var hasId = item.hasValue(self.id.name);
-                var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property.name); });
+                var hasId = item.has(self.id.name);
+                var hasSomeValues = dataProperties.some(function (property) { return item.has(property.name); });
                 if (!hasId && hasSomeValues) {
                     var maxId = 0;
                     self.data.forEach(function (item) {
@@ -262,32 +272,18 @@
 	                    return;
 	                }
 					var parameters = this.injectParameters(calc, item);
-                    set.apply(property, [item, calc.apply(property, parameters)]);
+                    set.apply(property, [property.name, calc.apply(property, parameters)]);
 				}.bind(this);
 				return function (item) {
-					executeRecalculation(item, property.recalculate, property.setValue);
-					executeRecalculation(item, property.recalculateDefault, property.setDefaultValue);
+					executeRecalculation(item, property.recalculate, item.set.bind(item));
+					executeRecalculation(item, property.recalculateDefault, item.setDefaultValue.bind(item));
 				};
             }, this);
 
-            this.Item = function (json) {
-                Item.apply(this);
-                self.properties.forEach(function (property) {
-                    property.fromJson(this, json);
-                }, this);
-                self.recalculate(this);
-            };
-            this.Item.prototype = Object.create(Item.prototype);
-
-			this.changeListeners = [];
-			this.removeListeners = [];
 			var afterInit = function () {
 				self.hot = this;
-				self.items.on("all", function () {
-					console.log("Changed", arguments);
-					self.hot.render();
-				});
 			};
+			
             var afterChange = function (changes, source) {
 				// Do not process events for other tables
 				if (this !== self.hot) {
@@ -310,40 +306,41 @@
                     }
                 });
                 this.render();
-				self.changeListeners.forEach(function (changeListener) {
-					changeListener(self, changed);
-				});
             };
 
-			// this.properties.forEach(function (property) {
-			// 	if (property instanceof ReferenceProperty) {
-			// 		property.target.addChangeListener(function (source, changed) {
-			// 			this.data.forEach(function (item) {
-			// 				var ref = property.value(item);
-			// 				var refId = ref ? ref.id : null;
-			// 				if (refId in changed) {
-			// 					this.recalculate(item);
-			// 				}
-			// 			}, this);
-			// 			if (this.hot) {
-			// 				this.hot.render();
-			// 			}
-			// 		}.bind(this));
-			// 		property.target.addRemoveListener(function (source, removed) {
-			// 			this.data.forEach(function (item) {
-			// 				var ref = property.value(item);
-			// 				var refId = ref ? ref.id : null;
-			// 				if (refId in removed) {
-			// 					property.setValue(item, null);
-			// 					this.recalculate(item);
-			// 				}
-			// 			}, this);
-			// 			if (this.hot) {
-			// 				this.hot.render();
-			// 			}
-			// 		}.bind(this));
-			// 	}
-			// }, this);
+			this.properties.forEach(function (property) {
+				if (property instanceof ReferenceProperty) {
+					property.target.items.on("change", function (changed, options) {
+						var changedId = changed.id;
+						this.items.forEach(function (item) {
+							var ref = item.value(property.name);
+							var refId = ref ? ref.id : null;
+							if (refId === changedId) {
+								this.recalculate(item);
+							}
+						}, this);
+						if (this.hot) {
+							this.hot.render();
+						}
+					}.bind(this));
+					// property.target.addRemoveListener(function (source, removed) {
+					// 	this.data.forEach(function (item) {
+					// 		var ref = property.value(item);
+					// 		var refId = ref ? ref.id : null;
+					// 		if (refId in removed) {
+					// 			property.setValue(item, null);
+					// 			this.recalculate(item);
+					// 		}
+					// 	}, this);
+					// 	if (this.hot) {
+					// 		this.hot.render();
+					// 	}
+					// }.bind(this));
+				}
+			}, this);
+			this.items.on("change", function (changed, options) {
+				this.recalculate(changed);
+			}.bind(this));
 
             this.settings = $.extend({}, this.settings, {
                 data: this.items,
@@ -351,13 +348,19 @@
 				// columnSorting: true,
                 dataSchema: function () { return new self.BackboneModel(); },
 				afterInit: afterInit,
+				beforeChange: function () {
+					console.log(">>> Before change", self.name, arguments);
+				},
+				afterChange: function () {
+					console.log("<<< After change", self.name, arguments);
+				},
                 // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
 		Table.prototype.render = function () {
 			console.log("Render requested", this.name, this.items);
-			if (this.hot) {
+			if (self.hot) {
 				console.log("Re-rendering");
 				this.hot.render();
 			}
@@ -375,15 +378,9 @@
 				if (!dependentProperty) {
 					throw new Error("Unknown property '" + name + "' for table '" + this.name + "'");
 				}
-				return new ItemProperty(item, dependentProperty);
+				return new ItemProperty(item, dependentProperty.name);
 			}, this);
 			return parameters;
-		};
-		Table.prototype.addChangeListener = function (listener) {
-			this.changeListeners.push(listener);
-		};
-		Table.prototype.addRemoveListener = function (listener) {
-			this.removeListeners.push(listener);
 		};
         Table.prototype.recalculate = function (item) {
 			console.log("Recalculating", this.name, item);
