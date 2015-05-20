@@ -137,7 +137,11 @@
         var tables = {};
 		
 		var Property = function (options) {
-            _.extend(this, { readOnly: !!options.recalculate }, options, {
+            _.extend(this, {
+					hidden: false,
+					readOnly: !!options.recalculate
+				},
+				options, {
 				toProperty: function () {
 					var name = this.name;
 					return function (item, value) {
@@ -350,7 +354,13 @@
                     return item.value(self.id.name);
                 }
             };
-            this.id = new IdProperty({ name: "id", title: "ID", column: { className: "htCenter" }, recalculate: assignId });
+            this.id = new IdProperty({
+				name: "id",
+				title: "ID",
+				hidden: options.hideId,
+				column: { className: "htCenter" },
+				recalculate: assignId
+			});
             this.properties.unshift(this.id);
 
             this.propertiesMap = {};
@@ -406,7 +416,9 @@
 				afterInit: afterInit,
 				beforeChange: changeTracking.start,
 				afterChange: changeTracking.finish,
-                columns: this.properties.map(function (property) { return property.toColumn(); })
+                columns: this.properties
+					.filter(function (property) { return !property.hidden })
+					.map(function (property) { return property.toColumn(); })
             });
         };
 		Table.prototype.render = function () {

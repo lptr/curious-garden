@@ -51,6 +51,7 @@
 	plantingModule.factory("plantingTable", function (tables, producesTable, suffixRenderer) {
 		var plantingTable = new tables.Table({
 			name: "plantings",
+			hideId: true,
 			properties: [
 			    new tables.ReferenceProperty({
 					name: "produce",
