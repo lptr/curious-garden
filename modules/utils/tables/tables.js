@@ -72,12 +72,13 @@
 			pendingChanges = {};
 		};
 		changeTracking.registerChange = function (changed) {
-			console.log("--- Storing changed", changed);
 			if (pendingChanges !== null) {
+				console.log("--- Storing changed", changed);
 				var changedId = changed.getTableName() + ":" + changed.id;
 				pendingChanges[changedId] = changed;
 			} else {
-				throw new Error("Not tracking changes when changed: " + JSON.stringify(changed.toJSON()));
+				console.log("--! Ignoring change", changed);
+				// throw new Error("Not tracking changes when changed: " + JSON.stringify(changed.toJSON()));
 			}
 		};
 		changeTracking.finish = function () {
@@ -306,7 +307,7 @@
                 var hasSomeValues = dataProperties.some(function (property) { return item.has(property.name); });
                 if (!hasId && hasSomeValues) {
                     var maxId = 0;
-                    self.data.forEach(function (item) {
+                    self.items.forEach(function (item) {
                         maxId = Math.max(item.asNumber(self.id.name), maxId);
                     }, self);
                     return maxId + 1;
@@ -413,6 +414,17 @@
 				this.settings = hot.getSettings();
 			}
 		};
+		Table.prototype.addItem = function (attributes) {
+			changeTracking.start();
+			try {
+				var item = new this.BackboneModel(attributes);
+				this.items.add(item);
+				this.recalculate(item);
+				this.render();
+			} finally {
+				changeTracking.finish();
+			}
+		},
 		Table.prototype.link = function (element) {
 			element.handsontable(this.getSettings());
 		};

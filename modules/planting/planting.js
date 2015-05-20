@@ -130,6 +130,9 @@
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {
 		producesTable.link($("#producesTable"));
 		producesTable.fetch();
+		$scope.add = function () {
+			producesTable.addItem();
+		};
 		$scope.dump = function () {
 			console.log("Data:", producesTable.items);
 		};
