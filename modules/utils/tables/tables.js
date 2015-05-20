@@ -119,13 +119,11 @@
 
 			var items = this.cellProperties.items;
 			if (typeof items == 'function') {
-				this.items = items(this.row, this.col, this.prop);
-			} else {
-				this.items = items;
+				items = items(this.row, this.col, this.prop);
 			}
 
 			Handsontable.Dom.empty(this.select);
-			this.items.forEach(function (item) {
+			items.forEach(function (item) {
 				var optionElement = document.createElement('OPTION');
 				optionElement.value = item.id;
 				Handsontable.Dom.fastInnerHTML(optionElement, item.toString());
