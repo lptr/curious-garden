@@ -152,16 +152,6 @@
         };
         tables.Property = Property;
 
-		var propName = function (property) {
-			if (typeof property === "string") {
-				return property;
-			} else if (property instanceof Property) {
-				return property.name;
-			} else {
-				throw new Error("Unknown property: " + property);
-			}
-		}
-		
         var SimpleProperty = function (options) {
             Property.call(this, _.extend({}, { type: "text" }, options));
 			_.extend(this, {
