@@ -1,5 +1,6 @@
 (function () {
 	var tablesModule = angular.module("kapa.utils.tables", [
+		"ui.bootstrap",
 	]);
 
 	var serverUrl = "https://script.google.com/macros/s/AKfycbw5ogvZt6Gt-h8cjd2y0a8HHD8FLfItErvspkaop6o/dev";
@@ -59,7 +60,11 @@
     });
 	
 	tablesModule.factory("changeTracking", function () {
-		var changeTracking = {};
+		var changeTracking = {
+			operationStartListeners: [],
+			operationSuccessListeners: [],
+			operationFailureListeners: []
+		};
 		
 		var pendingChanges = null;
 		changeTracking.start = function () {
@@ -83,7 +88,20 @@
 			try {
 				console.log("=== Changes to save", pendingChanges);
 				_.values(pendingChanges).forEach(function (item) {
-					item.save();
+					changeTracking.operationStartListeners.forEach(function (listener) {
+						listener(item);
+					});
+					item.save().then(function () {
+						console.log("Successfully saved", item);
+						changeTracking.operationSuccessListeners.forEach(function (listener) {
+							listener(item);
+						});
+					}, function (reason) {
+						console.log("Failed to save", item, reason);
+						changeTracking.operationFailureListeners.forEach(function (listener) {
+							listener(item);
+						});
+					});					
 				});
 			} finally {
 				pendingChanges = null;
@@ -340,9 +358,9 @@
 			}, this);
 
 			this.items.on("change", function (changed, options) {
-				this.recalculate(changed);
+				self.recalculate(changed);
 				changeTracking.registerChange(changed);
-			}.bind(this));
+			});
 
             this.settings = $.extend({}, this.settings, {
                 data: this.items,

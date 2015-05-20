@@ -142,4 +142,17 @@
 			console.log("Data:", plantingTable.items);
 		};
 	});
+	
+	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
+		$scope.pending = 0;
+		changeTracking.operationStartListeners.push(function () {
+			$scope.pending++;
+		});
+		changeTracking.operationSuccessListeners.push(function () {
+			$scope.pending--;
+		});
+		changeTracking.operationFailureListeners.push(function () {
+			$scope.pending--;
+		});
+	});
 })();
