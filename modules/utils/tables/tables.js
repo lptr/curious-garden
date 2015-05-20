@@ -103,35 +103,38 @@
         tables.SimpleProperty = SimpleProperty;
 
         var ReferenceProperty = function (options) {
+			var self = this;
             Property.apply(this, arguments);
 			_.extend(this, {
-				renderer: function (instance, td, row, col, prop, value, cellProperties) {
-					// var displayValue = value ? value.get("name") : null;
-					var displayValue = value;
-					Handsontable.renderers.TextRenderer.apply(null, [instance, td, row, col, prop, displayValue, cellProperties]);
-					// var value = this.value(row);
-					// if (value) {
-					//	 if (!value.id) {
-					//		 td.color = "red";
-					//	 } else {
-					//		 td.title = "ID: " + value.id;
-					//	 }
-					// }
-					return td;
-				},
 				toColumn: function () {
 					return _.extend({}, this.column, {
 		                type: "dropdown",
-		                source: function (query, process) { process(this.target.backboneCollection); }.bind(this),
+						source: function (query, process) {
+							process(self.target.items.models);
+						},
 		                title: this.title,
-		                data: this.toProperty(),
-		                renderer: this.renderer.bind(this)
+		                data: this.toProperty()
 		            });
+				},
+				toProperty: function () {
+					var name = this.name;
+					return function (item, value) {
+		                if (typeof value === 'undefined') {
+		                    return item.get(name);
+		                } else {
+							var ref = value.item;
+		                    return item.set(name, ref);
+		                }
+		            };
 				}
 			});
         };
         ReferenceProperty.prototype = Object.create(Property.prototype);
         tables.ReferenceProperty = ReferenceProperty;
+
+		var delegate = function (type, fun) {
+			return function () { return type.prototype[fun].apply(this, arguments); };
+		};
 
 		var Item = Backbone.RelationalModel.extend({
 			defaultValues: {},
@@ -161,6 +164,15 @@
 			},
 			toString: function () {
 				return this.get("name");
+			},
+			toLowerCase: delegate(String, "toLowerCase"),
+			toUpperCase: delegate(String, "toLowerCase"),
+			substr: delegate(String, "toLowerCase"),
+			replace: delegate(String, "replace")
+		});
+		Object.defineProperty(Item.prototype, "length", {
+			get: function () {
+				return this.toString().length;
 			}
 		});
 
@@ -216,11 +228,7 @@
 			});
 			this.items = new BackboneCollection();
 			
-			this.items.on('all', function () {
-				if (self.hot) {
-					self.hot.render();
-				}
-			});
+			this.items.on('all', this.render.bind(this));
 
 			// this.data = this.items;
 			// this.dataSchema = function () { return new this.BackboneModel() };
@@ -348,7 +356,7 @@
             });
         };
 		Table.prototype.render = function () {
-			console.log("Render requested", this.items);
+			console.log("Render requested", this.name, this.items);
 			if (this.hot) {
 				console.log("Re-rendering");
 				this.hot.render();
