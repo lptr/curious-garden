@@ -112,21 +112,10 @@
 		return changeTracking;
 	});
 
-
-
-
-
 	tablesModule.factory("RefEditor", function () {
 		
 		var dom = Handsontable.Dom;
-		var RefEditor = Handsontable.editors.BaseEditor.prototype.extend();
-
-		RefEditor.prototype.init = function() {
-			this.select = document.createElement('SELECT');
-			dom.addClass(this.select, 'htSelectEditor');
-			this.select.style.display = 'none';
-			this.instance.rootElement.appendChild(this.select);
-		};
+		var RefEditor = Handsontable.editors.SelectEditor.prototype.extend();
 
 		RefEditor.prototype.prepare = function() {
 			Handsontable.editors.BaseEditor.prototype.prepare.apply(this, arguments);
@@ -158,119 +147,8 @@
 			return preparedOptions;
 		};
 
-		RefEditor.prototype.getValue = function() {
-			return this.select.value;
-		};
-
-		RefEditor.prototype.setValue = function(value) {
-			this.select.value = value;
-		};
-
-		var onBeforeKeyDown = function(event) {
-			var instance = this;
-			var editor = instance.getActiveEditor();
-
-			if (event != null && event.isImmediatePropagationEnabled == null) {
-				event.stopImmediatePropagation = function() {
-					this.isImmediatePropagationEnabled = false;
-				};
-				event.isImmediatePropagationEnabled = true;
-				event.isImmediatePropagationStopped = function() {
-					return !this.isImmediatePropagationEnabled;
-				};
-			}
-
-			switch (event.keyCode) {
-				case Handsontable.helper.keyCode.ARROW_UP:
-					var previousOptionIndex = editor.select.selectedIndex - 1;
-					if (previousOptionIndex >= 0) {
-						editor.select[previousOptionIndex].selected = true;
-					}
-
-					event.stopImmediatePropagation();
-					event.preventDefault();
-					break;
-
-				case Handsontable.helper.keyCode.ARROW_DOWN:
-					var nextOptionIndex = editor.select.selectedIndex + 1;
-					if (nextOptionIndex <= editor.select.length - 1) {
-						editor.select[nextOptionIndex].selected = true;
-					}
-
-					event.stopImmediatePropagation();
-					event.preventDefault();
-					break;
-			}
-		};
-
-		RefEditor.prototype.checkEditorSection = function() {
-			if (this.row < this.instance.getSettings().fixedRowsTop) {
-				if (this.col < this.instance.getSettings().fixedColumnsLeft) {
-					return 'corner';
-				} else {
-					return 'top';
-				}
-			} else {
-				if (this.col < this.instance.getSettings().fixedColumnsLeft) {
-					return 'left';
-				}
-			}
-		};
-
-		RefEditor.prototype.open = function() {
-			var width = dom.outerWidth(this.TD); //important - group layout reads together for better performance
-			var height = dom.outerHeight(this.TD);
-			var rootOffset = dom.offset(this.instance.rootElement);
-			var tdOffset = dom.offset(this.TD);
-			var editorSection = this.checkEditorSection();
-			var cssTransformOffset;
-
-			switch (editorSection) {
-				case 'top':
-					cssTransformOffset = dom.getCssTransform(this.instance.view.wt.wtOverlays.topOverlay.clone.wtTable.holder.parentNode);
-					break;
-				case 'left':
-					cssTransformOffset = dom.getCssTransform(this.instance.view.wt.wtOverlays.leftOverlay.clone.wtTable.holder.parentNode);
-					break;
-				case 'corner':
-					cssTransformOffset = dom.getCssTransform(this.instance.view.wt.wtOverlays.topLeftCornerOverlay.clone.wtTable.holder.parentNode);
-					break;
-			}
-
-			var selectStyle = this.select.style;
-
-			if (cssTransformOffset && cssTransformOffset != -1) {
-				selectStyle[cssTransformOffset[0]] = cssTransformOffset[1];
-			} else {
-				dom.resetCssTransform(this.select);
-			}
-
-			selectStyle.height = height + 'px';
-			selectStyle.minWidth = width + 'px';
-			selectStyle.top = tdOffset.top - rootOffset.top + 'px';
-			selectStyle.left = tdOffset.left - rootOffset.left + 'px';
-			selectStyle.margin = '0px';
-			selectStyle.display = '';
-
-			this.instance.addHook('beforeKeyDown', onBeforeKeyDown);
-		};
-
-		RefEditor.prototype.close = function() {
-			this.select.style.display = 'none';
-			this.instance.removeHook('beforeKeyDown', onBeforeKeyDown);
-		};
-
-		RefEditor.prototype.focus = function() {
-			this.select.focus();
-		};
-	
 		return RefEditor;
 	});
-
-
-
-
-
 
     tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, RefEditor) {
         var tables = {};
@@ -328,7 +206,7 @@
 				},
 				toColumn: function () {
 					return _.extend({}, this.column, {
-		                type: "text",
+		                type: "numeric",
 						editor: RefEditor,
 						items: function () {
 							return self.target.items;
