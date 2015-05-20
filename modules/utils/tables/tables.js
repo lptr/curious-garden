@@ -113,40 +113,26 @@
 	});
 
 	tablesModule.factory("RefEditor", function () {
-		
-		var dom = Handsontable.Dom;
 		var RefEditor = Handsontable.editors.SelectEditor.prototype.extend();
-
 		RefEditor.prototype.prepare = function() {
 			Handsontable.editors.BaseEditor.prototype.prepare.apply(this, arguments);
 
 			var items = this.cellProperties.items;
-
 			if (typeof items == 'function') {
 				this.items = items(this.row, this.col, this.prop);
 			} else {
 				this.items = items;
 			}
 
-			dom.empty(this.select);
-			
+			Handsontable.Dom.empty(this.select);
 			for (var idx = 0; idx < this.items.length; idx++) {
 				var item = this.items.at(idx);
 				var optionElement = document.createElement('OPTION');
 				optionElement.value = item.id;
-				dom.fastInnerHTML(optionElement, item.toString());
+				Handsontable.Dom.fastInnerHTML(optionElement, item.toString());
 				this.select.appendChild(optionElement);
 			}
 		};
-
-		RefEditor.prototype.prepareOptions = function(optionsToPrepare) {
-			var preparedOptions = {};
-			for (var i = 0, len = optionsToPrepare.length; i < len; i++) {
-				preparedOptions[optionsToPrepare[i].id] = optionsToPrepare[i];
-			}
-			return preparedOptions;
-		};
-
 		return RefEditor;
 	});
 
