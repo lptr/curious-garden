@@ -29,6 +29,11 @@
 					type: "numeric"
 				})
 			],
+			items: {
+				toString: function () {
+					return this.get("name");
+				}
+			},
 			settings: {
 				colHeaders: true,
 				rowHeaders: true,

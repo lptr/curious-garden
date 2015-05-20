@@ -153,20 +153,35 @@
         tables.Property = Property;
 
         var SimpleProperty = function (options) {
-            Property.call(this, _.extend({}, { type: "text" }, options));
-			_.extend(this, {
-				toColumn: function () {
-					return _.extend({}, this.column, {
-		                type: this.type,
-		                title: this.title,
-		                data: this.toProperty(),
-		                readOnly: this.readOnly ? true : false
-		            });
-				}
-			});
+            Property.call(this, _.extend({ type: "text" }, options));
         };
-        SimpleProperty.prototype = Object.create(Property.prototype);
+		SimpleProperty.prototype = Object.create(Property.prototype);
+		SimpleProperty.prototype.toColumn = function () {
+			return _.extend({}, this.column, {
+				type: this.type,
+				title: this.title,
+				data: this.toProperty(),
+				readOnly: this.readOnly ? true : false
+			});
+		};
         tables.SimpleProperty = SimpleProperty;
+
+		var IdProperty = function (options) {
+			SimpleProperty.call(this, _.extend({}, options, {
+				type: "numeric",
+				readOnly: true
+			}));
+		}
+		IdProperty.prototype = Object.create(SimpleProperty.prototype);
+		IdProperty.prototype.toColumn = function () {
+			return _.extend(SimpleProperty.prototype.toColumn.call(this), {
+				renderer: function (instance, td, row, col, prop, id, cellProperties) {
+					var value = id ? this.source.items.get(id) : null;
+					var displayValue = value ? value.toIdString() : id;
+					Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+				}.bind(this)
+			})
+		};
 
         var ReferenceProperty = function (options) {
 			var self = this;
@@ -239,13 +254,12 @@
 				var value = this.value(property);
 	            return typeof value === 'string' ? value : "";
 			},
-			toString: function () {
-				return this.get("name");
+			toIdString: function () {
+				return this.id ? this.id.toString() : null;
 			},
-			toLowerCase: delegate(String, "toLowerCase"),
-			toUpperCase: delegate(String, "toLowerCase"),
-			substr: delegate(String, "toLowerCase"),
-			replace: delegate(String, "replace")
+			toString: function () {
+				return this.toIdString();
+			}
 		});
 		Object.defineProperty(Item.prototype, "length", {
 			get: function () {
@@ -282,7 +296,7 @@
                 properties: []
             }, options);
 			var self = this;
-			this.BackboneModel = Item.extend({
+			this.BackboneModel = Item.extend(_.extend({
 				getTableName: function () {
 					return self.name;
 				},
@@ -297,7 +311,7 @@
 							includeInJSON: "id"
 						}
 					})
-			});
+			}, options.items));
 			var BackboneCollection = Backbone.Collection.extend({
 				model: this.BackboneModel,
 				fetch: backboneFetch(this),
@@ -336,12 +350,13 @@
                     return item.value(self.id.name);
                 }
             };
-            this.id = new SimpleProperty({ name: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalculate: assignId });
+            this.id = new IdProperty({ name: "id", title: "ID", column: { className: "htCenter" }, recalculate: assignId });
             this.properties.unshift(this.id);
 
             this.propertiesMap = {};
             this.properties.forEach(function (property) {
                 this.propertiesMap[property.name] = property;
+				property.source = this;
             }, this);
             this.recalculateProps = this.properties.map(function (property) {
 				var executeRecalculation = function (item, calc, set) {
