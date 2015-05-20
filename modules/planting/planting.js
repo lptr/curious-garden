@@ -21,71 +21,6 @@
 			{ id: 2, name: "Mizuna", rowWidth: 12 },
 		];
 
-		var serverUrl = "https://script.google.com/macros/s/AKfycbw5ogvZt6Gt-h8cjd2y0a8HHD8FLfItErvspkaop6o/dev";
-		var fetch = function (table) {
-			return function (options) {
-				console.log("Fetching", table);
-				var collection = this;
-				var request = $http.jsonp(serverUrl, {
-					params: {
-						method: "fetch",
-						table: table,
-						callback: "JSON_CALLBACK"
-					}
-				});
-				request.error(function(data, status, headers, config) {
-					console.log("Error", data, status, headers, config);
-					alert("Error: " + status);
-				})
-				.success(function (data) {
-					console.log(data);
-					// set collection data (assuming you have retrieved a json object)
-					collection.reset(data)
-				});
-				return request;
-			};
-		};
-
-		Backbone.sync = function (method, model, options) {
-			console.log("Sync called with ", method, model, options);
-			var request = $http.jsonp(serverUrl, {
-				params: {
-					method: method,
-					table: model.getTableName(),
-					id: model.id,
-					item: model.toJSON(),
-					callback: "JSON_CALLBACK"
-				}
-			});
-			request.success(options.success);
-			request.error(options.error)
-			return request;
-		};
-
-		var Produce = window.Produce = Backbone.RelationalModel.extend({
-			getTableName: function () { return "produces"; }
-		});
-		var Produces = window.Produces = Backbone.Collection.extend({
-			model: Produce,
-			fetch: fetch("produces")
-		});
-		var produces = window.produces = new Produces();
-		produces.fetch().success(function (data) {
-			var Planting = window.Planting = Backbone.RelationalModel.extend({
-				getTableName: function () { return "plantings"; },
-				relations: [{
-					type: Backbone.HasOne,
-					key: "produce",
-					relatedModel: "Produce",
-				}]
-			});
-			var Plantings = window.Plantings = Backbone.Collection.extend({
-				model: Planting,
-				fetch: fetch("plantings")
-			});
-			var plantings = window.plantings = new Plantings();
-			plantings.fetch();
-		});
 		var producesTable = new tables.Table({
 			name: "produces",
 			properties: [
@@ -108,14 +43,14 @@
 				width: 700,
 			}
 		});
-		producesTable.load(produces);
+		// producesTable.load(produces);
 
 		return producesTable;
 	});
 
 	plantingModule.factory("plantingTable", function (tables, producesTable, suffixRenderer) {
 		var plantingTable = new tables.Table({
-			name: "planting",
+			name: "plantings",
 			properties: [
 			    new tables.ReferenceProperty({
 					name: "produce",
@@ -198,16 +133,17 @@
 			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
 		];
 
-		plantingTable.reload = function () {
-			plantingTable.load(plantations);
-		};
-		plantingTable.reload();
+		// plantingTable.reload = function () {
+		// 	plantingTable.load(plantations);
+		// };
+		// plantingTable.reload();
 
 		return plantingTable;
 	});
 
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {
 		producesTable.link($("#producesTable"));
+		producesTable.fetch();
 		$scope.dump = function () {
 			console.log("Data:", producesTable.data);
 		};
@@ -215,6 +151,7 @@
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {
 		plantingTable.link($("#plantingTable"));
+		plantingTable.fetch();
 		$scope.dump = function () {
 			console.log("Data:", plantingTable.data);
 		};

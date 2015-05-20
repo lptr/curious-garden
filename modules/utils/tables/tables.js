@@ -2,6 +2,50 @@
 	var tablesModule = angular.module("kapa.utils.tables", [
 	]);
 
+	var serverUrl = "https://script.google.com/macros/s/AKfycbw5ogvZt6Gt-h8cjd2y0a8HHD8FLfItErvspkaop6o/dev";
+	Backbone.sync = function (method, model, options) {
+		console.log("Sync called with ", method, model, options);
+		var request = $http.jsonp(serverUrl, {
+			params: {
+				method: method,
+				table: model.getTableName(),
+				id: model.id,
+				item: model.toJSON(),
+				callback: "JSON_CALLBACK"
+			}
+		});
+		request.success(options.success);
+		request.error(options.error)
+		return request;
+	};
+	
+	tablesModule.factory("backboneFetch", function ($http) {
+		return function (table) {
+			return function (options) {
+				console.log("Fetching", table.name);
+				var collection = this;
+				var request = $http.jsonp(serverUrl, {
+					params: {
+						method: "fetch",
+						table: table.name,
+						callback: "JSON_CALLBACK"
+					}
+				});
+				request.error(function(data, status, headers, config) {
+					console.log("Error", data, status, headers, config);
+					alert("Error: " + status);
+				})
+				.success(function (data) {
+					console.log("Data fetched for ", table.name, data);
+					// set collection data (assuming you have retrieved a json object)
+					collection.reset(data);
+					// table.render();
+				});
+				return request;
+			};			
+		};
+	});
+
     tablesModule.factory("suffixRenderer", function () {
         return function (suffix) {
             return function (instance, td, row, col, prop, value, cellProperties) {
@@ -13,193 +57,188 @@
         };
     });
 
-    tablesModule.factory("tables", function () {
+    tablesModule.factory("tables", function (backboneFetch) {
         var tables = {};
-
-        var Property = function (options) {
-            $.extend(this, { readOnly: !!options.recalculate }, options);
-        };
-		Property.prototype.defaultValue = function (item) {
-			return item[this.name + ".default"];
-		};
-		Property.prototype.setDefaultValue = function (item, value) {
-			item[this.name + ".default"] = value;
-		};
-        Property.prototype.value = function (item) {
-            return item[this.name] || this.defaultValue(item);
-        };
-		Property.prototype.setValue = function (item, value) {
-			item[this.name] = value;
-		};
-		Property.prototype.hasValue = function (item) {
-            return !!this.value(item);
-        };
-		Property.prototype.hasExplicitValue = function (item) {
-            return !!item[this.name];
-        };
-        Property.prototype.asNumber = function (item) {
-            var value = this.value(item);
-            return typeof value === 'number' ? value : 0;
-        };
-        Property.prototype.asText = function (item) {
-            var value = this.value(item);
-            return typeof value === 'string' ? value : "";
-        };
-        Property.prototype.toProperty = function () {
-            return function (item, value) {
-                if (typeof value === 'undefined') {
-                    return this.get(item);
-                } else {
-                    return this.set(item, value);
-                }
-            }.bind(this);
+		
+		var Property = function (options) {
+            _.extend(this, { readOnly: !!options.recalculate }, options, {
+				toProperty: function () {
+					var name = this.name;
+					return function (item, value) {
+		                if (typeof value === 'undefined') {
+		                    return item.get(name);
+		                } else {
+		                    return item.set(name, value);
+		                }
+		            };
+				}
+			});
         };
         tables.Property = Property;
 
+		var propName = function (property) {
+			if (typeof property === "string") {
+				return property;
+			} else if (property instanceof Property) {
+				return property.name;
+			} else {
+				throw new Error("Unknown property: " + property);
+			}
+		}
+		
         var SimpleProperty = function (options) {
             Property.apply(this, arguments);
+			_.extend(this, {
+				toColumn: function () {
+					return _.extend({}, this.column, {
+		                type: this.type || "text",
+		                title: this.title,
+		                data: this.toProperty(),
+		                readOnly: this.readOnly ? true : false
+		            });
+				}
+			});
         };
         SimpleProperty.prototype = Object.create(Property.prototype);
-        SimpleProperty.prototype.get = function (item) {
-            return this.value(item);
-        };
-        SimpleProperty.prototype.set = function (item, value) {
-            this.setValue(item, value);
-        };
-        SimpleProperty.prototype.toJson = function (item, json) {
-            json[this.name] = item[this.name];
-        };
-        SimpleProperty.prototype.fromJson = function (item, json) {
-            this.setValue(item, json ? json[this.name] : null);
-        };
-        SimpleProperty.prototype.toColumn = function () {
-            return $.extend({}, this.column, {
-                type: this.type || "text",
-                title: this.title,
-                data: this.toProperty(),
-                readOnly: this.readOnly ? true : false
-            });
-        };
         tables.SimpleProperty = SimpleProperty;
 
         var ReferenceProperty = function (options) {
             Property.apply(this, arguments);
-            $.extend(this, {});
+			_.extend(this, {
+				renderer: function (instance, td, row, col, prop, value, cellProperties) {
+					// var displayValue = value ? value.get("name") : null;
+					var displayValue = value;
+					Handsontable.renderers.TextRenderer.apply(null, [instance, td, row, col, prop, displayValue, cellProperties]);
+					// var value = this.value(row);
+					// if (value) {
+					//	 if (!value.id) {
+					//		 td.color = "red";
+					//	 } else {
+					//		 td.title = "ID: " + value.id;
+					//	 }
+					// }
+					return td;
+				},
+				toColumn: function () {
+					return _.extend({}, this.column, {
+		                type: "dropdown",
+		                source: function (query, process) { process(this.target.backboneCollection); }.bind(this),
+		                title: this.title,
+		                data: this.toProperty(),
+		                renderer: this.renderer.bind(this)
+		            });
+				}
+			});
         };
         ReferenceProperty.prototype = Object.create(Property.prototype);
-        ReferenceProperty.renderer = function (instance, td, row, col, prop, displayValue, cellProperties) {
-            Handsontable.renderers.NumericRenderer.apply(null, [instance, td, row, col, prop, displayValue, cellProperties]);
-            var value = this.value(row);
-            if (value) {
-                if (!value.id) {
-                    td.color = "red";
-                } else {
-                    td.title = "ID: " + value.id;
-                }
-            }
-            return td;
-        };
-        ReferenceProperty.prototype.get = function (item) {
-            var value = this.value(item);
-            // console.log("Item: ", item, " value: ", value);
-            return value ? value["name"] : null;
-        };
-        ReferenceProperty.prototype.set = function (item, value) {
-            var ref;
-            if (value === null || value === "") {
-                ref = null;
-            } else if (typeof value === 'string') {
-                ref = this.target.getNameLookup()[value];
-                if (!ref) {
-                    ref = {};
-                    ref["id"] = null;
-                    ref["name"] = value;
-                }
-            } else {
-                ref = value;
-            }
-            // console.log(">>> SET", item, ref);
-            this.setValue(item, ref);
-        };
-        ReferenceProperty.prototype.toJson = function (item, json) {
-			var value = item[this.name];
-            json[this.name] = value ? value.id : null;
-        };
-        ReferenceProperty.prototype.fromJson = function (item, json) {
-            var value = json ? json[this.name] : null;
-            this.setValue(item, value ? this.target.getIdLookup()[value] : null);
-        };
-        ReferenceProperty.prototype.toColumn = function () {
-            return $.extend({}, this.column, {
-                type: "dropdown",
-                source: function (query, process) { process(this.target.getAllNames()); }.bind(this),
-                title: this.title,
-                data: this.toProperty(),
-                renderer: ReferenceProperty.renderer.bind(this)
-            });
-        };
         tables.ReferenceProperty = ReferenceProperty;
 
-        var Item = function () {
-        };
-        Item.prototype.value = function (property) {
-            return property.value(this);
-        };
-		Item.prototype.hasValue = function (property) {
-            return property.hasValue(this);
-        };
-		Item.prototype.hasExplicitValue = function (property) {
-            return property.hasExplicitValue(this);
-        };
-        Item.prototype.asNumber = function (property) {
-            return property.asNumber(this);
-        };
-        Item.prototype.asText = function (property) {
-            return property.asText(this);
-        };
-        tables.Item = Item;
+		var Item = Backbone.RelationalModel.extend({
+			defaultValues: {},
+			defaultValue: function (property) {
+				return defaultValues[property];
+			},
+			setDefaultValue: function (property, value, options) {
+				defaultValues[property] = value;
+			},
+			value: function (property) {
+				var value = this.get(property);
+				if (value === null) {
+					value = this.getDefaultValue(property);
+				}
+	            return value;
+	        },
+			hasExplicit: function (property) {
+				return defaultValues[property] !== null;
+			},
+			number: function (property) {
+				var value = this.value(property);
+	            return typeof value === 'number' ? value : 0;
+			},
+			text: function (property) {
+				var value = this.value(property);
+	            return typeof value === 'string' ? value : "";
+			},
+			toString: function () {
+				return this.get("name");
+			}
+		});
 
         var ItemProperty = function (item, property) {
             this.item = item;
             this.property = property;
         };
         ItemProperty.prototype.value = function () {
-            return this.property.value(this.item);
+            return this.item.value(this.property);
         };
-		ItemProperty.prototype.hasValue = function () {
-            return this.property.hasValue(this.item);
+		ItemProperty.prototype.has = function () {
+            return this.item.has(this.property);
         };
-		ItemProperty.prototype.hasExplicitValue = function () {
-            return this.property.hasExplicitValue(this.item);
+		ItemProperty.prototype.hasExplicit = function () {
+            return this.item.hasExplicit(this.property);
         };
         ItemProperty.prototype.asNumber = function () {
-            return this.property.asNumber(this.item);
+            return this.item.asNumber(this.property);
         };
         ItemProperty.prototype.asText = function () {
-            return this.property.asText(this.item);
+            return this.item.asText(this.property);
         };
         tables.ItemProperty = ItemProperty;
 		
         var Table = function (options) {
-            $.extend(this, {
-                data: [],
+			_.extend(this, {
                 properties: []
             }, options);
+			var self = this;
+			this.BackboneModel = Item.extend({
+				getTableName: function () {
+					return this.name;
+				},
+				relations: options.properties.filter(function (property) {
+						return property instanceof ReferenceProperty;
+					}).map(function (property) {
+						return {
+							type: Backbone.HasOne,
+							key: property.name,
+							relatedModel: property.target.BackboneModel
+						}
+					})
+			});
+			var BackboneCollection = Backbone.Collection.extend({
+				model: this.BackboneModel,
+				fetch: backboneFetch(this),
+				splice: function (index, howMany) {
+					var args = _.toArray(arguments).slice(2).concat({at: index}),
+					removed = this.models.slice(index, index + howMany);
+					this.remove(removed).add.apply(this, args);
+					return removed;
+				}
+			});
+			this.items = new BackboneCollection();
+			
+			this.items.on('all', function () {
+				if (self.hot) {
+					self.hot.render();
+				}
+			});
+
+			// this.data = this.items;
+			// this.dataSchema = function () { return new this.BackboneModel() };
+
             var dataProperties = this.properties.slice();
-            var self = this;
             var assignId = function (item) {
-                var hasId = item.hasValue(self.id);
-                var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property); });
+                var hasId = item.hasValue(self.id.name);
+                var hasSomeValues = dataProperties.some(function (property) { return item.hasValue(property.name); });
                 if (!hasId && hasSomeValues) {
                     var maxId = 0;
                     self.data.forEach(function (item) {
-                        maxId = Math.max(item.asNumber(self.id), maxId);
+                        maxId = Math.max(item.asNumber(self.id.name), maxId);
                     }, self);
                     return maxId + 1;
                 } else if (hasId && !hasSomeValues) {
                     return null;
                 } else {
-                    return item.value(self.id);
+                    return item.value(self.id.name);
                 }
             };
             this.id = new SimpleProperty({ name: "id", title: "ID", readOnly: true, column: { className: "htCenter" }, recalculate: assignId });
@@ -234,6 +273,13 @@
 
 			this.changeListeners = [];
 			this.removeListeners = [];
+			var afterInit = function () {
+				self.hot = this;
+				self.items.on("all", function () {
+					console.log("Changed", arguments);
+					self.hot.render();
+				});
+			};
             var afterChange = function (changes, source) {
 				// Do not process events for other tables
 				if (this !== self.hot) {
@@ -260,64 +306,57 @@
 					changeListener(self, changed);
 				});
             };
-			var beforeRemoveRow = function (index, amount) {
-				// Do not process events for other tables
-				if (this !== self.hot) {
-					return;
-				}
-				console.log("Remove in " + self.name + ":", index, amount);
-				self.invalidate();
-				var removed = {};
-				for (var rowNo = index; rowNo < index + amount; rowNo++) {
-					var row = self.data[rowNo];
-					var removedId = row["id"];
-                    removed[removedId] = row;
-				}
-				self.removeListeners.forEach(function (removeListener) {
-					removeListener(self, removed)
-				});
-			};
-			
-			this.properties.forEach(function (property) {
-				if (property instanceof ReferenceProperty) {
-					property.target.addChangeListener(function (source, changed) {
-						this.data.forEach(function (item) {
-							var ref = property.value(item);
-							var refId = ref ? ref.id : null;
-							if (refId in changed) {
-								this.recalculate(item);
-							}
-						}, this);
-						if (this.hot) {
-							this.hot.render();
-						}
-					}.bind(this));
-					property.target.addRemoveListener(function (source, removed) {
-						this.data.forEach(function (item) {
-							var ref = property.value(item);
-							var refId = ref ? ref.id : null;
-							if (refId in removed) {
-								property.setValue(item, null);
-								this.recalculate(item);
-							}
-						}, this);
-						if (this.hot) {
-							this.hot.render();
-						}
-					}.bind(this));
-				}
-			}, this);
+
+			// this.properties.forEach(function (property) {
+			// 	if (property instanceof ReferenceProperty) {
+			// 		property.target.addChangeListener(function (source, changed) {
+			// 			this.data.forEach(function (item) {
+			// 				var ref = property.value(item);
+			// 				var refId = ref ? ref.id : null;
+			// 				if (refId in changed) {
+			// 					this.recalculate(item);
+			// 				}
+			// 			}, this);
+			// 			if (this.hot) {
+			// 				this.hot.render();
+			// 			}
+			// 		}.bind(this));
+			// 		property.target.addRemoveListener(function (source, removed) {
+			// 			this.data.forEach(function (item) {
+			// 				var ref = property.value(item);
+			// 				var refId = ref ? ref.id : null;
+			// 				if (refId in removed) {
+			// 					property.setValue(item, null);
+			// 					this.recalculate(item);
+			// 				}
+			// 			}, this);
+			// 			if (this.hot) {
+			// 				this.hot.render();
+			// 			}
+			// 		}.bind(this));
+			// 	}
+			// }, this);
 
             this.settings = $.extend({}, this.settings, {
-                data: this.data,
-				columnSorting: true,
-                dataSchema: function () { return new this.Item({}); }.bind(this),
-				afterInit: function () { self.hot = this; },
-                afterChange: afterChange,
-				beforeRemoveRow: beforeRemoveRow,
+                data: this.items,
+				// TODO This causes RangeError when observing Backbone objects
+				// columnSorting: true,
+                dataSchema: function () { return new self.BackboneModel(); },
+				afterInit: afterInit,
+                // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
+		Table.prototype.render = function () {
+			console.log("Render requested", this.items);
+			if (this.hot) {
+				console.log("Re-rendering");
+				this.hot.render();
+			}
+		};
+		Table.prototype.fetch = function () {
+			this.items.fetch();
+		};
 		Table.prototype.injectParameters = function (fun, item) {
 			var parameterNames = angular.injector.$$annotate(fun);
 			var parameters = parameterNames.map(function (name) {
@@ -385,18 +424,11 @@
 			return this.settings;
         };
 		Table.prototype.updateSettings = function (settings) {
-			this.settings = settings;
 			if (this.hot) {
 				this.hot.updateSettings(settings);
+				this.settings = hot.getSettings();
 			}
 		};
-        Table.prototype.load = function (itemsJson) {
-            // Clear the array
-            this.data.length = 0;
-            itemsJson.forEach(function (itemJson) {
-                this.data.push(new this.Item(itemJson));
-            }, this);
-        };
 		Table.prototype.link = function (element) {
 			element.handsontable(this.getSettings());
 		};
