@@ -16,11 +16,6 @@
 	});
 
 	plantingModule.factory("producesTable", function (tables, $http) {
-		var produces = [
-			{ id: 1, name: "Zsázsa", rowWidth: 15 },
-			{ id: 2, name: "Mizuna", rowWidth: 12 },
-		];
-
 		var producesTable = new tables.Table({
 			name: "produces",
 			properties: [
@@ -128,15 +123,6 @@
 				width: 700,
 			}
 		});
-		var plantations = [
-			{ id: 1, produce: 1, seed: "Zsázsamag", time: "2015-05-13", seedsPerGramm: 4 },
-			{ id: 2, produce: 2, seed: "Mizunamag", time: "2015-05-17", seedsPerGramm: 0.25 },
-		];
-
-		// plantingTable.reload = function () {
-		// 	plantingTable.load(plantations);
-		// };
-		// plantingTable.reload();
 
 		return plantingTable;
 	});
