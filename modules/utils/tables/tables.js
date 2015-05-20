@@ -112,9 +112,9 @@
 		return changeTracking;
 	});
 
-	tablesModule.factory("RefEditor", function () {
-		var RefEditor = Handsontable.editors.SelectEditor.prototype.extend();
-		RefEditor.prototype.prepare = function() {
+	tablesModule.factory("ReferenceEditor", function () {
+		var ReferenceEditor = Handsontable.editors.SelectEditor.prototype.extend();
+		ReferenceEditor.prototype.prepare = function() {
 			Handsontable.editors.BaseEditor.prototype.prepare.apply(this, arguments);
 
 			var items = this.cellProperties.items;
@@ -130,10 +130,10 @@
 				this.select.appendChild(optionElement);
 			}, this);
 		};
-		return RefEditor;
+		return ReferenceEditor;
 	});
 
-    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, RefEditor) {
+    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, ReferenceEditor) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -190,7 +190,7 @@
 				toColumn: function () {
 					return _.extend({}, this.column, {
 		                type: "numeric",
-						editor: RefEditor,
+						editor: ReferenceEditor,
 						items: function () {
 							return self.target.items;
 						},
