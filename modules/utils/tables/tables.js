@@ -365,13 +365,13 @@
 
             this.settings = $.extend({}, this.settings, {
                 data: this.items,
-				// TODO This causes RangeError when observing Backbone objects
-				// columnSorting: true,
+				// TODO Without this a RangeError is thrown with columnSorting enabled
+				observeChanges: false,
+				columnSorting: true,
                 dataSchema: function () { return new self.BackboneModel(); },
 				afterInit: afterInit,
 				beforeChange: changeTracking.start,
 				afterChange: changeTracking.finish,
-                // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
