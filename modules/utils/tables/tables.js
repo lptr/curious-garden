@@ -125,13 +125,12 @@
 			}
 
 			Handsontable.Dom.empty(this.select);
-			for (var idx = 0; idx < this.items.length; idx++) {
-				var item = this.items.at(idx);
+			this.items.forEach(function (item) {
 				var optionElement = document.createElement('OPTION');
 				optionElement.value = item.id;
 				Handsontable.Dom.fastInnerHTML(optionElement, item.toString());
 				this.select.appendChild(optionElement);
-			}
+			}, this);
 		};
 		return RefEditor;
 	});
