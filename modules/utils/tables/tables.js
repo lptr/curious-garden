@@ -427,12 +427,6 @@
         Table.prototype.getSettings = function () {
 			return this.settings;
         };
-		Table.prototype.updateSettings = function (settings) {
-			if (this.hot) {
-				this.hot.updateSettings(settings);
-				this.settings = hot.getSettings();
-			}
-		};
 		Table.prototype.addItem = function (attributes) {
 			changeTracking.start();
 			try {
