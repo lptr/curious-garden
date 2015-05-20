@@ -240,7 +240,7 @@
 				self.items.forEach(function (item) {
 					self.recalculate(item);
 				});
-				self.render.bind(self);
+				self.render.bind(self)();
 			});
 
             var dataProperties = this.properties.slice();
