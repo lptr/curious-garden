@@ -3,22 +3,24 @@
 	]);
 
 	var serverUrl = "https://script.google.com/macros/s/AKfycbw5ogvZt6Gt-h8cjd2y0a8HHD8FLfItErvspkaop6o/dev";
-	Backbone.sync = function (method, model, options) {
-		console.log("Sync called with ", method, model, options);
-		var request = $http.jsonp(serverUrl, {
-			params: {
-				method: method,
-				table: model.getTableName(),
-				id: model.id,
-				item: model.toJSON(),
-				callback: "JSON_CALLBACK"
-			}
-		});
-		request.success(options.success);
-		request.error(options.error)
-		return request;
-	};
-	
+	tablesModule.factory("backboneSync", function ($http) {
+		return function (method, model, options) {
+			console.log("Sync called with ", method, model, options);
+			var request = $http.jsonp(serverUrl, {
+				params: {
+					method: method,
+					table: model.getTableName(),
+					id: model.id,
+					item: model.toJSON(),
+					callback: "JSON_CALLBACK"
+				}
+			});
+			request.success(options.success);
+			request.error(options.error)
+			return request;
+		};
+	});
+
 	tablesModule.factory("backboneFetch", function ($http) {
 		return function (table) {
 			return function (options) {
@@ -56,7 +58,7 @@
         };
     });
 
-    tablesModule.factory("tables", function (backboneFetch) {
+    tablesModule.factory("tables", function (backboneFetch, backboneSync) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -211,6 +213,7 @@
 				getTableName: function () {
 					return self.name;
 				},
+				sync: backboneSync,
 				relations: options.properties.filter(function (property) {
 						return property instanceof ReferenceProperty;
 					}).map(function (property) {
@@ -287,12 +290,25 @@
 			var pendingChanges = null;
 			var beforeChange = function (changes, source) {
 				console.log(">>> Before change", self.name, arguments);
-				pendingChanges = [];
+				pendingChanges = {};
 			};
+			this.items.on("change", function (changed, options) {
+				console.log("--- Storing changed", self.name, changed, pendingChanges);
+				if (pendingChanges !== null) {
+					var changedId = changed.getTableName() + ":" + changed.id;
+					pendingChanges[changedId] = changed;
+				}
+			});
             var afterChange = function (changes, source) {
 				console.log("<<< After change", self.name, arguments);
+				if (pendingChanges === null) {
+					return;
+				}
 				try {
-					
+					console.log("=== Changes to save", self.name, pendingChanges);
+					_.values(pendingChanges).forEach(function (item) {
+						item.save();
+					});
 				} finally {
 					pendingChanges = null;
 				}
@@ -336,9 +352,7 @@
 				// columnSorting: true,
                 dataSchema: function () { return new self.BackboneModel(); },
 				afterInit: afterInit,
-				beforeChange: function () {
-					console.log(">>> Before change", self.name, arguments);
-				},
+				beforeChange: beforeChange,
 				afterChange: afterChange,
                 // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
