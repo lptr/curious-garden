@@ -284,28 +284,18 @@
 				self.hot = this;
 			};
 			
+			var pendingChanges = null;
+			var beforeChange = function (changes, source) {
+				console.log(">>> Before change", self.name, arguments);
+				pendingChanges = [];
+			};
             var afterChange = function (changes, source) {
-				// Do not process events for other tables
-				if (this !== self.hot) {
-					return;
+				console.log("<<< After change", self.name, arguments);
+				try {
+					
+				} finally {
+					pendingChanges = null;
 				}
-                console.log("Edit in " + self.name + ":", source, changes);
-				self.invalidate();
-                // Don't do stuff when loading
-                if (source === "loadData" || !changes) {
-                    return;
-                }
-                var changed = {};
-                changes.forEach(function (change) {
-                    var rowNo = change[0];
-					var row = self.data[rowNo];
-					var changedId = row["id"];
-                    if (!changed[changedId]) {
-                        changed[changedId] = row;
-                        self.recalculate(row);
-                    }
-                });
-                this.render();
             };
 
 			this.properties.forEach(function (property) {
@@ -319,9 +309,7 @@
 								this.recalculate(item);
 							}
 						}, this);
-						if (this.hot) {
-							this.hot.render();
-						}
+						this.render();
 					}.bind(this));
 					// property.target.addRemoveListener(function (source, removed) {
 					// 	this.data.forEach(function (item) {
@@ -351,16 +339,14 @@
 				beforeChange: function () {
 					console.log(">>> Before change", self.name, arguments);
 				},
-				afterChange: function () {
-					console.log("<<< After change", self.name, arguments);
-				},
+				afterChange: afterChange,
                 // afterChange: afterChange,
                 columns: this.properties.map(function (property) { return property.toColumn(); })
             });
         };
 		Table.prototype.render = function () {
 			console.log("Render requested", this.name, this.items);
-			if (self.hot) {
+			if (this.hot) {
 				console.log("Re-rendering");
 				this.hot.render();
 			}
@@ -388,43 +374,6 @@
                 recalculateProp(item);
             });
         };
-		Table.prototype.invalidate = function () {
-			this.idLookup = null;
-			this.nameLookup = null;
-			this.allNames = null;
-			// console.log("Invalidated", this.name);
-		};
-		Table.prototype.createLookups = function () {
-			if (this.idLookup && this.nameLookup && this.allNames) {
-				return;
-			}
-			this.idLookup = {};
-			this.nameLookup = {};
-			this.allNames = [];
-			this.data.forEach (function (datum) {
-                var id = datum["id"];
-                var name = datum["name"];
-				if (id) {
-	                this.idLookup[id] = datum;
-	                this.nameLookup[name] = datum;
-					this.allNames.push(name);
-				}
-            }, this);
-			console.log("Created lookups for", this.name);
-		};
-		Table.prototype.getIdLookup = function () {
-			this.createLookups();
-			return this.idLookup;
-		};
-		Table.prototype.getNameLookup = function () {
-			this.createLookups();
-			return this.nameLookup;
-		};
-		Table.prototype.getAllNames = function () {
-			this.createLookups();
-			console.log("Get all names", this.allNames);
-			return this.allNames;
-		};
         Table.prototype.getSettings = function () {
 			return this.settings;
         };
