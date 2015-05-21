@@ -4,12 +4,26 @@
 </div>
 <tabset>
     <tab>
-        <tab-heading>
-            Fajok
-        </tab-heading>
+        <tab-heading>Fajok</tab-heading>
         <div class="panel-body">
             <div ng-controller="FajokController">
-                <backbone-table table="table" filter="name"></backbone-table>
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
+        <tab-heading>Magtípusok</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="MagtipusokController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
+        <tab-heading>Színek</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="SzinekController">
+                <backbone-table table="table" filter="nev"></backbone-table>
             </div>
         </div>
     </tab>
