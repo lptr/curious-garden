@@ -99,7 +99,7 @@
 				},
 				{ name: "faj", title: "Faj", target: Fajok, width: 120 },
 				{ name: "fajtanev", title: "Fajtanév" },
-				{ name: "gyarto", title: "Gyártó" },
+				{ name: "gyarto", title: "Gyártó", width: 200 },
 				{ name: "szin", title: "Szín", target: Szinek },
 				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
 				{ name: "kerteszetiHabitus", title: "Kertészeti habitus", type: "dropdown",
