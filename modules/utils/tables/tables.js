@@ -37,11 +37,13 @@
 				request.error(function(data, status, headers, config) {
 					console.log("Error", data, status, headers, config);
 					alert("Error: " + status);
-				})
-				.success(function (data) {
+					options.error.apply(this, arguments);
+				});
+				request.success(function (data) {
 					console.log("Data fetched for ", table.name, data);
 					// set collection data (assuming you have retrieved a json object)
 					collection.reset(data);
+					options.success.apply(this, arguments);
 				});
 				return request;
 			};			
@@ -384,10 +386,6 @@
 					executeRecalculation(item, property.recalculateDefault, item.setDefaultValue.bind(item));
 				};
             }, this);
-
-			var afterInit = function () {
-				self.hot = this;
-			};
 			
 			this.properties.forEach(function (property) {
 				if (property instanceof ReferenceProperty) {
@@ -410,6 +408,15 @@
 				changeTracking.registerChange(changed);
 			});
 
+			var hotResolved;
+			var hotInitialized = new Promise(function (resolve, reject) {
+				hotResolved = resolve;
+			});
+			var afterInit = function () {
+				self.hot = this;
+				hotResolved(this);
+			};
+			
             this.settings = $.extend({}, this.settings, {
                 data: this.items,
 				// TODO Without this a RangeError is thrown with columnSorting enabled
@@ -423,6 +430,35 @@
 					.filter(function (property) { return !property.hidden })
 					.map(function (property) { return property.toColumn(); })
             });
+			
+			this.loaded = false;
+			var dependencies = this.properties
+				.filter(function (property) { return property instanceof ReferenceProperty; })
+				.map(function (property) { return property.target; });
+			console.log(this.name, "depends on", dependencies);
+			var dependenciesFetched = Promise.all(_.pluck(dependencies, "ready"));
+			dependenciesFetched.then(function () {
+				console.log("Dependencies fetched for", self.name);
+			});
+			var itemsFetched = dependenciesFetched.then(function () {
+				return new Promise(function (resolve, reject) {
+					self.items.fetch({
+						success: resolve,
+						error: reject
+					});
+				});
+			});
+			itemsFetched.then(function () {
+				console.log("Items fetched for", self.name);
+			});
+
+			this.ready = Promise.all([hotInitialized, itemsFetched]);
+			this.ready.then(function () {
+				this.loaded = true;
+				console.log("Table initialized", self.name);
+			}, function () {
+				console.log("Table failed", self.name, arguments)
+			});
         };
 		Table.prototype.setFilter = function (filter) {
 			if (this.hot) {
@@ -436,9 +472,6 @@
 				console.log("Re-rendering");
 				this.hot.render();
 			}
-		};
-		Table.prototype.fetch = function () {
-			this.items.fetch();
 		};
 		Table.prototype.injectParameters = function (fun, item) {
 			var parameterNames = angular.injector.$$annotate(fun);
@@ -496,8 +529,7 @@
 
 		return {
 			link: function (scope, element, attrs) {
-				var hot = new Handsontable(element[0].children[1], scope.table.getSettings());
-				scope.table.fetch();
+				new Handsontable(element[0].children[1], scope.table.getSettings());
 			},
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
