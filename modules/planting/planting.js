@@ -194,6 +194,69 @@
 	plantingModule.controller("MagvasarlasokController", function ($scope, kapaServer, Magvasarlasok) {
 		$scope.table = Magvasarlasok;
 	});
+	
+	plantingModule.factory("Termenyek", function (tables, formulas, Egysegek, Fajok, Felhasznalasok, KereskedelmiJellegek, Szinek, Termekkategoriak) {
+		return new tables.Table({
+			name: "Termények",
+			properties: [
+				{ name: "nev", title: "Név", width: 240,
+					calculate: function (faj, felhasznalas, kereskedelmiJelleg, szin, meret) {
+						if (faj.value()) {
+							return faj.asText() + formulas.join([felhasznalas, kereskedelmiJelleg, szin, meret]);
+						} else {
+							return "NINCS FAJ: " + formulas.join(arguments);
+						}
+					}
+				},
+				{ name: "faj", title: "Faj", target: Fajok, width: 120 },
+				{ name: "elsodlegesKategoria", title: "Elsődleges kategória", target: Termekkategoriak },
+				{ name: "felhasznalas", title: "Felhasználás", target: Felhasznalasok },
+				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
+				{ name: "szin", title: "Szín", target: Szinek },
+				{ name: "meret", title: "Méret", width: 50, type: "dropdown", column: {
+					source: [ "XXS", "XS", "S", "M", "" ]
+				}},
+				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm" },
+				{ name: "novenykoz", title: "Vetési növényköz", unit: "cm" },
+				{ name: "termekcsoport", title: "Termékcsoport", width: 200,
+					calculate: function (faj, felhasznalas, meret) {
+						if (faj.value()) {
+							var value = faj.asText() + felhasznalas.asText();
+							if (meret.asText()) {
+								value += " " + meret.asText();
+							}
+							return value;
+						} else {
+							return "NINCS FAJ: " + formulas.join(arguments);
+						}
+					}
+				},
+				{ name: "statusz", title: "Státusz", type: "dropdown", column: {
+					source: [ "ismert", "félig ismert", "kísérleti", "" ]
+				}},
+				{ name: "teliTermeny", title: "Téli termény", type: "dropdown", column: {
+					source: [ "igen", "nem", "tárolva", "kis fagyig", "" ]
+				}},
+				{ name: "elsoSzuret", title: "Első szüret", unit: ". hét" },
+				{ name: "hanyHetenteSzuretelunk", title: "Hány hetente szüretelunk?", unit: "hetente" },
+				{ name: "hanyHetenAtSzuretelunk", title: "Hány heten át szüretelunk?", unit: "hét" },
+				{ name: "szuretekSzama", title: "Szüretek száma", type: "numeric",
+					calculate: function (hanyHetenAtSzuretelunk, hanyHetenteSzuretelunk) {
+						return Math.floor(hanyHetenAtSzuretelunk.asNumber() / hanyHetenteSzuretelunk.asNumber());
+					}
+				},
+				{ name: "kiszereles", title: "Kiszerelés", target: Egysegek },
+				{ name: "egysegPerSzuretPerM2", title: "Egység / szüret / m2", type: "numeric" },
+				{ name: "sulyPerDb", title: "Süly / db", unit: "g" },
+				{ name: "egysegar", title: "Egységár", unit: "Ft" },
+			],
+			titleProperty: "mag"
+		});
+	});
+
+	plantingModule.controller("TermenyekController", function ($scope, kapaServer, Termenyek) {
+		$scope.table = Termenyek;
+	});
 
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
 		$scope.pending = 0;

@@ -28,6 +28,14 @@
         </div>
     </tab>
     <tab>
+        <tab-heading>Termények</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="TermenyekController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
         <tab-heading>Színek</tab-heading>
         <div class="panel-body">
             <div ng-controller="SzinekController">
