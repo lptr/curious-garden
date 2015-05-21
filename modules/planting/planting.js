@@ -31,6 +31,23 @@
 		$scope.table = Szinek;
 	});
 	
+	plantingModule.factory("KereskedelmiJellegek", function (tables) {
+		return new tables.Table({
+			name: "Kereskedelmi jellegek",
+			properties: [
+				{ name: "nev", title: "Név" },
+				{ name: "name", title: "Name" },
+			],
+			items: {
+				toString: function () { return this.get("nev"); }
+			}
+		});
+	});
+
+	plantingModule.controller("KereskedelmiJellegekController", function ($scope, kapaServer, KereskedelmiJellegek) {
+		$scope.table = KereskedelmiJellegek;
+	});
+	
 	plantingModule.factory("Fajok", function (tables) {
 		return new tables.Table({
 			name: "Fajok",
@@ -47,10 +64,7 @@
 				{ name: "csirazas30c", title: "30℃", type: "numeric", width: 30 },
 				{ name: "csirazas35c", title: "35℃", type: "numeric", width: 30 },
 				{ name: "csirazas40c", title: "40℃", type: "numeric", width: 30 },
-				{
-					name: "optialisCsirazas",
-					title: "Optiomalis csírázás",
-					unit: "nap",
+				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "nap",
 					calculate: function (csirazas5c, csirazas10c, csirazas15c, csirazas20c, csirazas25c, csirazas30c, csirazas35c, csirazas40c) {
 						var values = _.filter(arguments, function (value) {
 							return !!value.value();
@@ -77,25 +91,44 @@
 		$scope.table = Fajok;
 	});
 	
-	plantingModule.factory("Magtipusok", function (tables, Fajok, Szinek) {
+	plantingModule.factory("Magtipusok", function (tables, Fajok, Szinek, KereskedelmiJellegek) {
 		return new tables.Table({
 			name: "Magtípusok",
 			properties: [
-				{
-					name: "nev",
-					title: "Név",
-					width: 240,
+				{ name: "nev", title: "Név", width: 240,
 					calculate: function (faj, fajtanev, gyarto) {
-						return _
+						if (faj.value()) {
+							return _
 							.map(arguments, function (value) { return value.value() ? value.value().toString() : null; })
 							.filter(function (value) { return !!value; })
 							.join(", ");
+						} else {
+							return null;
+						}
 					}
 				},
-				new tables.ReferenceProperty({ name: "faj", title: "Faj", target: Fajok, width: 120 }),
+				{ name: "faj", title: "Faj", target: Fajok, width: 120 },
 				{ name: "fajtanev", title: "Fajtanév" },
 				{ name: "gyarto", title: "Gyártó" },
-				new tables.ReferenceProperty({ name: "szin", title: "Szín", target: Szinek }),
+				{ name: "szin", title: "Szín", target: Szinek },
+				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
+				{ name: "kerteszetiHabitus", title: "Kertészeti habitus", type: "dropdown",
+					column: {
+						source: [
+							"alacsony", "bokor", "cornuta", "fejesedő", "fodroslevelű", "futó", "félfutó", "hajtatásra", "indátlan", "levél", "magas", "metélő", "nyári", "törpe", "wittrockiana", "óriás"
+						]
+					}
+				},
+				{ name: "forma", title: "Forma" },
+				{ name: "hetiVetes", title: "Heti vetés", type: "checkbox", width: 60, column: {
+					checkedTemplate: "igen",
+					uncheckedTemplate: "nem"
+				} },
+				{ name: "magPerGramm", title: "Magok száma", type: "numeric",
+					calculateDefault: function (faj) {
+						return faj.value() ? faj.value().get("magPerGramm") : null;
+					}
+				}
 			]
 		});
 	});
