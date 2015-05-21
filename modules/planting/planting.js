@@ -14,9 +14,34 @@
 				controller: 'PlantingController'
 			});
 	});
+	
+	plantingModule.factory("fajok", function (tables) {
+		return new tables.Table({
+			name: "Fajok",
+			properties: [
+				{ name: "nev", title: "Név" },
+				{ name: "name", title: "Name" },
+				{ name: "csoport", title: "Növénytani csoport" },
+				{ name: "optimalisHomerseklet", title: "Optimális hőmérséklet" },
+				{ name: "csirazas5c",  title: "5℃",  column: { width: 30 } },
+				{ name: "csirazas10c", title: "10℃", column: { width: 30 } },
+				{ name: "csirazas15c", title: "15℃", column: { width: 30 } },
+				{ name: "csirazas20c", title: "20℃", column: { width: 30 } },
+				{ name: "csirazas25c", title: "25℃", column: { width: 30 } },
+				{ name: "csirazas30c", title: "30℃", column: { width: 30 } },
+				{ name: "csirazas35c", title: "35℃", column: { width: 30 } },
+				{ name: "csirazas40c", title: "40℃", column: { width: 30 } },
+				{ name: "optialisCsirazas", title: "Optiomalis csírázás", recalculate: function () {
+					return 12;
+				}},
+				{ name: "magPerGramm", title: "Magok száma" },
+				{ name: "palantazasIdeje", title: "Palántázás ideje" }
+			]
+		});
+	});
 
-	plantingModule.factory("producesTable", function (tables, $http) {
-		var producesTable = new tables.Table({
+	plantingModule.factory("producesTable", function (tables) {
+		return new tables.Table({
 			name: "produces",
 			properties: [
 				new tables.SimpleProperty({
@@ -47,8 +72,6 @@
 				width: 700,
 			}
 		});
-
-		return producesTable;
 	});
 
 	plantingModule.factory("plantingTable", function (tables, producesTable, suffixRenderer) {
@@ -143,6 +166,10 @@
 		});
 
 		return plantingTable;
+	});
+
+	plantingModule.controller("FajokController", function ($scope, kapaServer, fajok) {
+		$scope.table = fajok;
 	});
 
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {

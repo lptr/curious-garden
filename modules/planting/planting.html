@@ -3,7 +3,7 @@
     <span>{{pending}}</span>
 </div>
 <tabset>
-    <tab>
+    <!-- <tab>
         <tab-heading>
             Termények
         </tab-heading>
@@ -20,6 +20,16 @@
         <div class="panel-body">
             <div ng-controller="PlantingController">
                 <backbone-table table="table" filter="produce"></backbone-table>
+            </div>
+        </div>
+    </tab> -->
+    <tab>
+        <tab-heading>
+            Fajok
+        </tab-heading>
+        <div class="panel-body">
+            <div ng-controller="FajokController">
+                <backbone-table table="table" filter="name"></backbone-table>
             </div>
         </div>
     </tab>
