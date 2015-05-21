@@ -55,18 +55,21 @@
 			    new tables.ReferenceProperty({
 					name: "produce",
 			        title: "Termény",
-			        target: producesTable
+			        target: producesTable,
+					column: { width: 200 }
 			    }),
 			    new tables.SimpleProperty({
 					name: "seed",
-			        title: "Mag"
+			        title: "Mag",
+					column: { width: 100 }
 			    }),
 			    new tables.SimpleProperty({
 					name: "time",
 			        title: "Dátum",
 			        type: "date",
 			        column: {
-			            dateFormat: "YYYY-MM-DD"
+			            dateFormat: "YYYY-MM-DD",
+						width: 120
 			        }
 			    }),
 			    new tables.SimpleProperty({
@@ -75,7 +78,8 @@
 			        type: "numeric",
 			        column: {
 			            format: "0.00",
-			            renderer: suffixRenderer(" db/g")
+			            renderer: suffixRenderer(" db/g"),
+						width: 100
 			        }
 			    }),
 			    new tables.SimpleProperty({
@@ -84,7 +88,8 @@
 			        type: "numeric",
 			        column: {
 			            format: "0.00",
-			            renderer: suffixRenderer(" db/g")
+			            renderer: suffixRenderer(" db/g"),
+						width: 100
 			        },
 			        recalculate: function(seedsPerGramm) {
 			            if (seedsPerGramm.hasValue()) {
@@ -98,7 +103,10 @@
 					name: "produceSorkoz",
 			        title: "Sorkoz",
 					type: "numeric",
-					column: { format: "0.00" },
+					column: {
+						format: "0.00",
+						width: 100
+					},
 			        recalculateDefault: function (produce) {
 			            if (produce.hasValue()) {
 			                return produce.value().get("rowWidth");
@@ -110,6 +118,9 @@
 				new tables.SimpleProperty({
 					name: "produceUpper",
 			        title: "TERMÉNY",
+					column: {
+						width: 200
+					},
 			        recalculate: function (produce) {
 			            if (produce.hasValue()) {
 			                return produce.value().get("name").toUpperCase();
