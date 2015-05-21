@@ -333,7 +333,11 @@
 				if (property instanceof Property) {
 					return property;
 				} else {
-					return new SimpleProperty(property);
+					if (property.target) {
+						return new ReferenceProperty(property);
+					} else {
+						return new SimpleProperty(property);
+					}
 				}
 			});
 			console.log("Options:", options);
