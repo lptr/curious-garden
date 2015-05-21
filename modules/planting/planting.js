@@ -38,7 +38,6 @@
 				colHeaders: true,
 				rowHeaders: true,
 				contextMenu: ['row_above', 'row_below', 'remove_row'],
-				minSpareRows: 1,
 				height: 300,
 				width: 700,
 			}
@@ -124,7 +123,6 @@
 				colHeaders: true,
 				rowHeaders: true,
 				contextMenu: ['row_above', 'row_below', 'remove_row'],
-				minSpareRows: 1,
 				height: 300,
 				width: 700,
 			}
