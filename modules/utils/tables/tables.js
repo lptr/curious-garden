@@ -431,7 +431,6 @@
 					.map(function (property) { return property.toColumn(); })
             });
 			
-			this.loaded = false;
 			var dependencies = this.properties
 				.filter(function (property) { return property instanceof ReferenceProperty; })
 				.map(function (property) { return property.target; });
@@ -454,10 +453,9 @@
 
 			this.ready = Promise.all([hotInitialized, itemsFetched]);
 			this.ready.then(function () {
-				this.loaded = true;
 				console.log("Table initialized", self.name);
 			}, function () {
-				console.log("Table failed", self.name, arguments)
+				console.log("Table failed to initialize", self.name, arguments)
 			});
         };
 		Table.prototype.setFilter = function (filter) {
@@ -537,10 +535,10 @@
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
 			controller: function ($scope) {
-				$scope.loaded = false;
+				$scope.ready = false;
 				$scope.table.ready.then(function () {
 					$scope.$apply(function () {
-						$scope.loaded = true;
+						$scope.ready = true;
 					});
 				});
 				$scope.filter = "";
