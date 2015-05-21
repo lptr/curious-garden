@@ -507,6 +507,9 @@
 				changeTracking.finish();
 			}
 		};
+		Table.prototype.toString = function () {
+			return this.name;
+		};
         tables.Table = Table;
         
         return tables;
@@ -534,6 +537,12 @@
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
 			controller: function ($scope) {
+				$scope.loaded = false;
+				$scope.table.ready.then(function () {
+					$scope.$apply(function () {
+						$scope.loaded = true;
+					});
+				});
 				$scope.filter = "";
 				if ($scope.filterProperty) {
 					$scope.$watch("filter", function (filter) {

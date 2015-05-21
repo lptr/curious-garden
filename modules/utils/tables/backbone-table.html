@@ -1,8 +1,10 @@
-<div>
-    <span ng-show="filterProperty">
-        <label>Filter:</label> <input ng-model="filter"></input>
-    </span>
-    <button class="btn btn-xs btn-success" ng-click="addItem()" ng-disabled="filter">+ Hozzáadás</button>
-    <button class="btn btn-xs btn-danger" ng-click="dump()">Dump</button>
-</div>
+<form>
+    <fieldset ng-disabled="!loaded">
+        <span ng-show="filterProperty">
+            <label>Filter:</label> <input ng-model="filter"></input>
+        </span>
+        <button class="btn btn-xs btn-success" ng-click="addItem()" ng-disabled="filter">+ Hozzáadás</button>
+        <button class="btn btn-xs btn-danger" ng-click="dump()">Dump</button>
+    </fieldset>
+</form>
 <div></div>
