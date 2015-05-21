@@ -43,4 +43,20 @@
             </div>
         </div>
     </tab>
+    <tab>
+        <tab-heading>Termékkategóriák</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="TermekkategoriakController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
+        <tab-heading>Felhasználások</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="FelhasznalasokController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
 </tabset>

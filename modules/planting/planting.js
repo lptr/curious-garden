@@ -33,8 +33,8 @@
 		return new tables.Table({
 			name: "Kereskedelmi jellegek",
 			properties: [
-				{ name: "nev", title: "Név" },
-				{ name: "name", title: "Name" },
+				{ name: "nev", title: "Kereskedelmi jelleg" },
+				{ name: "name", title: "Commercial type" },
 			],
 			titleProperty: "nev"
 		});
@@ -42,6 +42,36 @@
 
 	plantingModule.controller("KereskedelmiJellegekController", function ($scope, kapaServer, KereskedelmiJellegek) {
 		$scope.table = KereskedelmiJellegek;
+	});
+	
+	plantingModule.factory("Termekkategoriak", function (tables) {
+		return new tables.Table({
+			name: "Termékkategóriák",
+			properties: [
+				{ name: "nev", title: "Kategória" },
+				{ name: "name", title: "Category" },
+			],
+			titleProperty: "nev"
+		});
+	});
+
+	plantingModule.controller("TermekkategoriakController", function ($scope, kapaServer, Termekkategoriak) {
+		$scope.table = Termekkategoriak;
+	});
+	
+	plantingModule.factory("Felhasznalasok", function (tables) {
+		return new tables.Table({
+			name: "Felhasználások",
+			properties: [
+				{ name: "nev", title: "Felhasználás" },
+				{ name: "name", title: "Usage" },
+			],
+			titleProperty: "nev"
+		});
+	});
+
+	plantingModule.controller("FelhasznalasokController", function ($scope, kapaServer, Felhasznalasok) {
+		$scope.table = Felhasznalasok;
 	});
 	
 	plantingModule.factory("Fajok", function (tables, formulas) {
