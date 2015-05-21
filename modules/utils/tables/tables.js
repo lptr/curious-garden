@@ -314,9 +314,16 @@
         tables.ItemProperty = ItemProperty;
 		
         var Table = function (options) {
-			_.extend(this, {
-                properties: []
-            }, options);
+			options.properties = (options.properties || []).map(function (property) {
+				if (property instanceof Property) {
+					return property;
+				} else {
+					return new SimpleProperty(property);
+				}
+			});
+			console.log("Options:", options);
+
+			_.extend(this, options);
 			var self = this;
 			this.BackboneModel = Item.extend(_.extend({
 				getTableName: function () {
