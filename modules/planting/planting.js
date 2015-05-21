@@ -148,37 +148,8 @@
 		return plantingTable;
 	});
 
-	var normalize = function (string) {
-		if (!string) {
-			return string;
-		}
-		if (String.prototype.normalize) {
-			string = string.normalize("NFKD").replace(/[^\x00-\x7F]/g, "");
-		}
-		string = string.toLowerCase();
-		return string;
-	};
-
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {
 		$scope.table = producesTable;
-		$scope.filter = "";
-		$scope.$watch("filter", function (filter) {
-			if (!filter) {
-				producesTable.setFilter(null);
-			} else {
-				filter = normalize(filter);
-				$scope.table.setFilter(function (item) {
-					var name = normalize(item.get("name"));
-					if (!name) {
-						return false;
-					}
-					return name.indexOf(filter) !== -1;
-				});
-			}
-		});
-		$scope.add = function () {
-			producesTable.addItem();
-		};
 	});
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {

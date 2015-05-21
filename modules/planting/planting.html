@@ -9,9 +9,7 @@
         </tab-heading>
         <div class="panel-body">
             <div ng-controller="ProducesController">
-                Filter: <input ng-model="filter"></input>
-                <button ng-click="add()" ng-disabled="filter != ''">Add new</button>
-                <backbone-table table="table"></backbone-table>
+                <backbone-table table="table" filter="name"></backbone-table>
             </div>
         </div>
     </tab>
@@ -21,7 +19,7 @@
         </tab-heading>
         <div class="panel-body">
             <div ng-controller="PlantingController">
-                <backbone-table table="table"></backbone-table>
+                <backbone-table table="table" filter="produce"></backbone-table>
             </div>
         </div>
     </tab>
