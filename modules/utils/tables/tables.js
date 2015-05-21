@@ -276,7 +276,10 @@
 				}
 	            return value;
 	        },
-			hasExplicit: function (property) {
+			hasValue: function (property) {
+				return this.has(property) || this.hasDefaultValue(property);
+			},
+			hasDefaultValue: function (property) {
 				return this.defaultValues[property] !== null;
 			},
 			asNumber: function (property) {
