@@ -2,13 +2,29 @@
     <span>Pending operations:</span>
     <span>{{pending}}</span>
 </div>
-<div ng-controller="ProducesController">
-    Filter: <input ng-model="filter"></input>
-    <button ng-click="dump()">Dump</button>
-    <button ng-click="add()" ng-disabled="filter != ''">Add new</button>
-    <backbone-table table="table"></backbone-table>
-</div>
-<div ng-controller="PlantingController">
-    <button ng-click="dump()">Dump</button>
-    <backbone-table table="table"></backbone-table>
-</div>
+<tabset>
+    <tab>
+        <tab-heading>
+            Termények
+        </tab-heading>
+        <div class="panel-body">
+            <div ng-controller="ProducesController">
+                Filter: <input ng-model="filter"></input>
+                <button ng-click="dump()">Dump</button>
+                <button ng-click="add()" ng-disabled="filter != ''">Add new</button>
+                <backbone-table table="table"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
+        <tab-heading>
+            Vetéstervező
+        </tab-heading>
+        <div class="panel-body">
+            <div ng-controller="PlantingController">
+                <button ng-click="dump()">Dump</button>
+                <backbone-table table="table"></backbone-table>
+            </div>
+        </div>
+    </tab>
+</tabset>
