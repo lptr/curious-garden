@@ -109,7 +109,7 @@
 					operation: operation
 				};
 			} else {
-				console.log("--! Ignoring change", item);
+				// console.log("--! Ignoring change", item);
 			}
 		};
 		changeTracking.registerChange = function (item) {
