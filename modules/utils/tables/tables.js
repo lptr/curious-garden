@@ -177,7 +177,9 @@
         };
 		SimpleProperty.prototype = Object.create(Property.prototype);
 		SimpleProperty.prototype.toColumn = function () {
-			return _.extend({}, this.column, {
+			return _.extend({
+				width: 120,
+			}, this.column, {
 				type: this.type,
 				title: this.title,
 				data: this.toProperty(),
