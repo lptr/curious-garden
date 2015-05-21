@@ -124,7 +124,12 @@
 						return formulas.join(arguments);
 					}
 				},
-			]
+			],
+			items: {
+				toString: function () {
+					return this.get("nev");
+				}
+			}
 		});
 	});
 
