@@ -316,7 +316,10 @@
 			},
 			asText: function (property) {
 				var value = this.value(property);
-	            return typeof value === 'string' ? value : "";
+				if (!value) {
+					return "";
+				}
+	            return value.toString();
 			},
 			toIdString: function () {
 				return this.id ? this.id.toString() : null;
