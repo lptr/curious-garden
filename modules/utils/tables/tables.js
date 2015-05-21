@@ -2,6 +2,17 @@
 	var tablesModule = angular.module("kapa.utils.tables", [
 		"ui.bootstrap",
 	]);
+	
+	tablesModule.factory("formulas", function () {
+		return {
+			join: function (items, deliminator) {
+				return _
+					.map(items, function (value) { return value.value() ? value.value().toString() : null; })
+					.filter(function (value) { return !!value; })
+					.join(deliminator || ", ");
+			}
+		};
+	});
 
 	var serverUrl = "https://script.google.com/macros/s/AKfycbw5ogvZt6Gt-h8cjd2y0a8HHD8FLfItErvspkaop6o/dev";
 	tablesModule.factory("backboneSync", function ($http) {

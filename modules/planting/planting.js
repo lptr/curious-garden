@@ -91,19 +91,16 @@
 		$scope.table = Fajok;
 	});
 	
-	plantingModule.factory("Magtipusok", function (tables, Fajok, Szinek, KereskedelmiJellegek) {
+	plantingModule.factory("Magtipusok", function (tables, formulas, Fajok, Szinek, KereskedelmiJellegek) {
 		return new tables.Table({
 			name: "Magtípusok",
 			properties: [
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (faj, fajtanev, gyarto) {
 						if (faj.value()) {
-							return _
-							.map(arguments, function (value) { return value.value() ? value.value().toString() : null; })
-							.filter(function (value) { return !!value; })
-							.join(", ");
+							return formulas.join(arguments);
 						} else {
-							return null;
+							return "NINCS FAJ: " + formulas.join(arguments);
 						}
 					}
 				},
@@ -128,7 +125,12 @@
 					calculateDefault: function (faj) {
 						return faj.value() ? faj.value().get("magPerGramm") : null;
 					}
-				}
+				},
+				{ name: "egyszeruId", title: "Egyszerű ID",
+					calculate: function (fajtanev, gyarto) {
+						return formulas.join(arguments);
+					}
+				},
 			]
 		});
 	});
