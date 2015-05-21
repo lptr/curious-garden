@@ -414,6 +414,18 @@
 						}, this);
 						this.render();
 					}.bind(this));
+					property.target.items.on("relational:remove", function (removed, options) {
+						var removedId = removed.id;
+						this.items.forEach(function (item) {
+							var ref = item.value(property.name);
+							var refId = ref ? ref.id : null;
+							if (refId === removedId) {
+								item.set(property.name, null);
+								this.recalculate(item);
+							}
+						}, this);
+						this.render();
+					}.bind(this));
 				}
 			}, this);
 
