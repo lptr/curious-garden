@@ -73,15 +73,27 @@
 			console.log(">>> Started change tracking");
 			pendingChanges = {};
 		};
-		changeTracking.registerChange = function (changed) {
+		var register = function(item, operation) {
 			if (pendingChanges !== null) {
-				console.log("--- Storing changed", changed);
-				var changedId = changed.getTableName() + ":" + changed.id;
-				pendingChanges[changedId] = changed;
+				console.log("--- Storing changed", item);
+				var changedId = item.getTableName() + ":" + item.id;
+				pendingChanges[changedId] = {
+					item: item,
+					operation: operation
+				};
 			} else {
-				console.log("--! Ignoring change", changed);
-				// throw new Error("Not tracking changes when changed: " + JSON.stringify(changed.toJSON()));
+				console.log("--! Ignoring change", item);
 			}
+		};
+		changeTracking.registerChange = function (item) {
+			register(item, function () {
+				return item.save();
+			});
+		};
+		changeTracking.registerRemove = function (item) {
+			register(item, function () {
+				return item.destroy();
+			});
 		};
 		changeTracking.finish = function () {
 			if (pendingChanges === null) {
@@ -90,12 +102,14 @@
 			console.log("<<< Finished change tracking", pendingChanges);
 			try {
 				console.log("=== Changes to save", pendingChanges);
-				_.values(pendingChanges).forEach(function (item) {
+				_.values(pendingChanges).forEach(function (change) {
+					var item = change.item;
+					var operation = change.operation;
 					changeTracking.operationStartListeners.forEach(function (listener) {
 						listener(item);
 					});
-					item.save().then(function () {
-						console.log("Successfully saved", item);
+					operation().then(function (result) {
+						console.log("Successfully saved", item, result);
 						changeTracking.operationSuccessListeners.forEach(function (listener) {
 							listener(item);
 						});
@@ -407,6 +421,9 @@
 				self.recalculate(changed);
 				changeTracking.registerChange(changed);
 			});
+			this.items.on("remove", function (removed, options) {
+				changeTracking.registerRemove(removed);
+			});
 
 			var hotResolved;
 			var hotInitialized = new Promise(function (resolve, reject) {
@@ -419,9 +436,11 @@
 			
             this.settings = $.extend({}, this.settings, {
                 data: this.items,
-				// TODO Without this a RangeError is thrown with columnSorting enabled
+				// Without this a RangeError is thrown with columnSorting enabled
 				observeChanges: false,
 				columnSorting: true,
+				// Without this we cannot press "delete rows" button outside
+				outsideClickDeselects: false,
                 dataSchema: function () { return new self.BackboneModel(); },
 				afterInit: afterInit,
 				beforeChange: changeTracking.start,
@@ -505,6 +524,24 @@
 				changeTracking.finish();
 			}
 		};
+		Table.prototype.removeSelectedItems = function (attributes) {
+			changeTracking.start();
+			try {
+				var selected = this.hot.getSelectedRange();
+				if (!selected) {
+					return;
+				}
+				var startRow = selected.from.row;
+				var endRow = selected.to.row;
+				for (var rowNumber = startRow; rowNumber <= endRow; rowNumber++) {
+					var item = this.hot.getDataAtRow(rowNumber);
+					this.items.remove(item);
+				}
+				this.render();
+			} finally {
+				changeTracking.finish();
+			}
+		};
 		Table.prototype.toString = function () {
 			return this.name;
 		};
@@ -558,9 +595,6 @@
 						}
 					});
 				}
-				$scope.addItem = function () {
-					$scope.table.addItem();
-				};
 				$scope.dump = function () {
 					console.log("Dump", $scope.table.items);
 				};
