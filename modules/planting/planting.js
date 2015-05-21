@@ -22,7 +22,7 @@
 				{ name: "nev", title: "Név" },
 				{ name: "name", title: "Name" },
 				{ name: "csoport", title: "Növénytani csoport" },
-				{ name: "optimalisHomerseklet", title: "Optimális hőmérséklet", type: "numeric", unit: "℃" },
+				{ name: "optimalisHomerseklet", title: "Optimális hőmérséklet", unit: "℃" },
 				{ name: "csirazas5c",  title: "5℃",  column: { width: 30 } },
 				{ name: "csirazas10c", title: "10℃", column: { width: 30 } },
 				{ name: "csirazas15c", title: "15℃", column: { width: 30 } },
@@ -31,7 +31,7 @@
 				{ name: "csirazas30c", title: "30℃", column: { width: 30 } },
 				{ name: "csirazas35c", title: "35℃", column: { width: 30 } },
 				{ name: "csirazas40c", title: "40℃", column: { width: 30 } },
-				{ name: "optialisCsirazas", title: "Optiomalis csírázás", recalculate: function () {
+				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "hét", recalculate: function () {
 					return 12;
 				}},
 				{ name: "magPerGramm", title: "Magok száma" },

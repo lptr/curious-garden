@@ -187,7 +187,13 @@
 			});
 			if (this.unit) {
 				column.type = "numeric";
-				column.renderer = prefixSuffixRenderer("", "\xA0" + this.unit);
+				var unit = this.unit;
+				if (unit.indexOf(" ") == -1) {
+					unit = "\xA0" + unit;
+				} else {
+					unit = unit.replace(/\s/g, "\xA0");
+				}
+				column.renderer = prefixSuffixRenderer("", unit);
 			}
 			return column;
 		};
