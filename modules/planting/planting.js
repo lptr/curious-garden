@@ -22,7 +22,7 @@
 				{ name: "nev", title: "Név" },
 				{ name: "name", title: "Name" },
 				{ name: "csoport", title: "Növénytani csoport" },
-				{ name: "optimalisHomerseklet", title: "Optimális hőmérséklet" },
+				{ name: "optimalisHomerseklet", title: "Optimális hőmérséklet", type: "numeric", unit: "℃" },
 				{ name: "csirazas5c",  title: "5℃",  column: { width: 30 } },
 				{ name: "csirazas10c", title: "10℃", column: { width: 30 } },
 				{ name: "csirazas15c", title: "15℃", column: { width: 30 } },
@@ -74,7 +74,7 @@
 		});
 	});
 
-	plantingModule.factory("plantingTable", function (tables, producesTable, suffixRenderer) {
+	plantingModule.factory("plantingTable", function (tables, producesTable, prefixSuffixRenderer) {
 		var plantingTable = new tables.Table({
 			name: "plantings",
 			// hideId: true,
@@ -105,7 +105,7 @@
 			        type: "numeric",
 			        column: {
 			            format: "0.00",
-			            renderer: suffixRenderer(" db/g"),
+			            renderer: prefixSuffixRenderer("", " db/g"),
 						width: 100
 			        }
 			    }),
@@ -115,7 +115,7 @@
 			        type: "numeric",
 			        column: {
 			            format: "0.00",
-			            renderer: suffixRenderer(" db/g"),
+			            renderer: prefixSuffixRenderer("", " db/g"),
 						width: 100
 			        },
 			        recalculate: function(seedsPerGramm) {

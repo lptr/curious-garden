@@ -50,12 +50,12 @@
 		};
 	});
 
-    tablesModule.factory("suffixRenderer", function () {
-        return function (suffix) {
+    tablesModule.factory("prefixSuffixRenderer", function () {
+        return function (prefix, suffix) {
             return function (instance, td, row, col, prop, value, cellProperties) {
                 Handsontable.renderers.NumericRenderer.apply(null, arguments);
                 if (td.textContent) {
-                    td.textContent += suffix;
+                    td.textContent = prefix + td.textContent + suffix;
                 }
             };
         };
@@ -149,7 +149,7 @@
 		return ReferenceEditor;
 	});
 
-    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, ReferenceEditor) {
+    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, ReferenceEditor, prefixSuffixRenderer) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -177,7 +177,7 @@
         };
 		SimpleProperty.prototype = Object.create(Property.prototype);
 		SimpleProperty.prototype.toColumn = function () {
-			return _.extend({
+			var column = _.extend({
 				width: 120,
 			}, this.column, {
 				type: this.type,
@@ -185,6 +185,11 @@
 				data: this.toProperty(),
 				readOnly: this.readOnly ? true : false
 			});
+			if (this.unit) {
+				column.type = "numeric";
+				column.renderer = prefixSuffixRenderer("", "\xA0" + this.unit);
+			}
+			return column;
 		};
         tables.SimpleProperty = SimpleProperty;
 
