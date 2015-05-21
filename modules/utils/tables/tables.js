@@ -236,7 +236,7 @@
 		IdProperty.prototype.toColumn = function () {
 			return _.extend(SimpleProperty.prototype.toColumn.call(this), {
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
-					var value = id ? this.source.items.get(id) : null;
+					var value = id ? this.table.items.get(id) : null;
 					var displayValue = value ? value.toIdString() : id;
 					Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				}.bind(this)
@@ -449,7 +449,7 @@
             this.propertiesMap = {};
             this.properties.forEach(function (property) {
                 this.propertiesMap[property.name] = property;
-				property.source = this;
+				property.table = this;
             }, this);
             this.recalculateProps = this.properties.map(function (property) {
 				var executeRecalculation = function (item, calc, set) {
