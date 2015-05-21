@@ -312,7 +312,7 @@
             return this.item.asText(this.property);
         };
         tables.ItemProperty = ItemProperty;
-		
+
         var Table = function (options) {
 			options.properties = (options.properties || []).map(function (property) {
 				if (property instanceof Property) {
