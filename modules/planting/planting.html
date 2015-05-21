@@ -20,6 +20,14 @@
         </div>
     </tab>
     <tab>
+        <tab-heading>Magvásárlások</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="MagvasarlasokController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+    <tab>
         <tab-heading>Színek</tab-heading>
         <div class="panel-body">
             <div ng-controller="SzinekController">

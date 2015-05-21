@@ -136,6 +136,28 @@
 	plantingModule.controller("MagtipusokController", function ($scope, kapaServer, Magtipusok) {
 		$scope.table = Magtipusok;
 	});
+	
+	plantingModule.factory("Magvasarlasok", function (tables, formulas, Magtipusok) {
+		return new tables.Table({
+			name: "Magvásárlások",
+			properties: [
+				{ name: "datum", title: "Dátum", type: "date", column: {
+					dateFormat: "YYYY-MM-DD"
+				}},
+				{ name: "mag", title: "Mag", width: 300, target: Magtipusok },
+				{ name: "mennyiseg", title: "Mennyiség", unit: "g" },
+				{ name: "ar", title: "Ár", type: "numeric", width: 60 },
+				{ name: "penznem", title: "Pénznem", type: "dropdown", width: 60, column: {
+					source: [ "HUF", "EUR", "GBP", "USD" ]
+				}},
+				{ name: "memo", title: "Memo", width: 300 },
+			]
+		});
+	});
+
+	plantingModule.controller("MagvasarlasokController", function ($scope, kapaServer, Magvasarlasok) {
+		$scope.table = Magvasarlasok;
+	});
 
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
 		$scope.pending = 0;
