@@ -3,6 +3,7 @@
     <span>{{pending}}</span>
 </div>
 <div ng-controller="ProducesController">
+    Filter: <input ng-model="filter"></input>
     <button ng-click="dump()">Dump</button>
     <button ng-click="add()">Add new</button>
     <div id="producesTable"></div>

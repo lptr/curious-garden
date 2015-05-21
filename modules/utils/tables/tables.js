@@ -421,6 +421,12 @@
 					.map(function (property) { return property.toColumn(); })
             });
         };
+		Table.prototype.setFilter = function (filter) {
+			if (this.hot) {
+				var data = filter ? this.items.filter(filter) : this.items;
+				this.hot.loadData(data);
+			}
+		};
 		Table.prototype.render = function () {
 			console.log("Render requested", this.name, this.items);
 			if (this.hot) {
