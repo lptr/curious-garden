@@ -30,9 +30,21 @@
 				{ name: "csirazas30c", title: "30℃", type: "numeric", column: { width: 30 } },
 				{ name: "csirazas35c", title: "35℃", type: "numeric", column: { width: 30 } },
 				{ name: "csirazas40c", title: "40℃", type: "numeric", column: { width: 30 } },
-				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "hét", calculate: function () {
-					return 12;
-				}},
+				{
+					name: "optialisCsirazas",
+					title: "Optiomalis csírázás",
+					unit: "nap",
+					calculate: function (csirazas5c, csirazas10c, csirazas15c, csirazas20c, csirazas25c, csirazas30c, csirazas35c, csirazas40c) {
+						var values = _.filter(arguments, function (value) {
+							return !!value.value();
+						});
+						if (values.length > 0) {
+							return Math.min.apply(null, values.map(function (value) { return value.asNumber(); }));
+						} else {
+							return null;
+						}
+					}
+				},
 				{ name: "magPerGramm", title: "Magok száma" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje" }
 			],
