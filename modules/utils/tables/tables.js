@@ -358,7 +358,10 @@
 				name: "id",
 				title: "ID",
 				hidden: options.hideId,
-				column: { className: "htCenter" },
+				column: {
+					className: "htCenter",
+					width: 60
+				},
 				recalculate: assignId
 			});
             this.properties.unshift(this.id);

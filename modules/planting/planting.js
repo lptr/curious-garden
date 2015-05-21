@@ -22,11 +22,17 @@
 				new tables.SimpleProperty({
 			        name: "name",
 			        title: "Név",
+					column: {
+						width: 200
+					}
 			    }),
 				new tables.SimpleProperty({
 					name: "rowWidth",
 					title: "Sorköz",
-					type: "numeric"
+					type: "numeric",
+					column: {
+						width: 60
+					}
 				})
 			],
 			items: {
