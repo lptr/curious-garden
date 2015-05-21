@@ -178,7 +178,7 @@
 		SimpleProperty.prototype = Object.create(Property.prototype);
 		SimpleProperty.prototype.toColumn = function () {
 			var column = _.extend({
-				width: 120,
+				width: this.width || 100,
 			}, this.column, {
 				type: this.type,
 				title: this.title,
@@ -218,7 +218,7 @@
 
         var ReferenceProperty = function (options) {
 			var self = this;
-            Property.apply(this, arguments);
+            SimpleProperty.apply(this, arguments);
 			_.extend(this, {
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
 					var value = id ? this.target.items.get(id) : null;
@@ -226,7 +226,8 @@
 					Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				},
 				toColumn: function () {
-					return _.extend({}, this.column, {
+					var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
+					return _.extend(column, this.column, {
 		                type: "numeric",
 						editor: ReferenceEditor,
 						items: function () {
@@ -469,7 +470,9 @@
 				hotResolved(this);
 			};
 			
-            this.settings = $.extend({}, this.settings, {
+            this.settings = $.extend({
+				height: 500
+			}, this.settings, {
                 data: this.items,
 				// Without this a RangeError is thrown with columnSorting enabled
 				observeChanges: false,
