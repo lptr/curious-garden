@@ -479,12 +479,14 @@
 	tablesModule.directive("backboneTable", function() {
 		return {
 			link: function (scope, element, attrs) {
-				var table = scope.$eval(attrs["table"]);
-				var hot = new Handsontable(element[0].firstChild, table.getSettings());
-				table.fetch();
+				var hot = new Handsontable(element[0].firstChild, scope.table.getSettings());
+				scope.table.fetch();
 			},
 			restrict: "E",
-			template: "<div></div>"
+			template: "<div></div>",
+			scope: {
+				table: "="
+			}
 		}
 	});
 })();
