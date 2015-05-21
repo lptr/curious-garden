@@ -37,14 +37,14 @@
 				request.error(function(data, status, headers, config) {
 					console.log("Error", data, status, headers, config);
 					alert("Error: " + status);
-					options.error.apply(this, arguments);
 				});
 				request.success(function (data) {
 					console.log("Data fetched for ", table.name, data);
 					// set collection data (assuming you have retrieved a json object)
 					collection.reset(data);
-					options.success.apply(this, arguments);
 				});
+				request.success(options.success);
+				request.error(options.error);
 				return request;
 			};			
 		};
