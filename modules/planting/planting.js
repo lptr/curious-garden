@@ -43,7 +43,6 @@
 			settings: {
 				colHeaders: true,
 				rowHeaders: true,
-				contextMenu: ['row_above', 'row_below', 'remove_row'],
 				height: 300,
 				width: 700,
 			}
@@ -139,7 +138,6 @@
 			settings: {
 				colHeaders: true,
 				rowHeaders: true,
-				contextMenu: ['row_above', 'row_below', 'remove_row'],
 				height: 300,
 				width: 700,
 			}
