@@ -131,31 +131,31 @@
 		return plantingTable;
 	});
 
+	var normalize = function (string) {
+		if (!string) {
+			return string;
+		}
+		if (String.prototype.normalize) {
+			string = string.normalize("NFKD").replace(/[^\x00-\x7F]/g, "");
+		}
+		string = string.toLowerCase();
+		return string;
+	};
+
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {
 		producesTable.link($("#producesTable"));
 		producesTable.fetch();
 		$scope.filter = "";
 		$scope.$watch("filter", function (filter) {
-			var normalize = function (string) {
-				if (!string) {
-					return string;
-				}
-				if (String.prototype.normalize) {
-					string = string.normalize("NFKD").replace(/[^\x00-\x7F]/g, "");
-				}
-				string = string.toLowerCase();
-				return string;
-			};
 			if (!filter) {
 				producesTable.setFilter(null);
 			} else {
 				filter = normalize(filter);
 				producesTable.setFilter(function (item) {
-					var name = item.get("name");
+					var name = normalize(item.get("name"));
 					if (!name) {
 						return false;
 					}
-					name = normalize(name.toLowerCase());
 					return name.indexOf(filter) !== -1;
 				});
 			}
