@@ -368,9 +368,9 @@
 			});
 			this.items = new BackboneCollection();
 			
-			this.items.on("all", function () {
-				console.log("Backbone event", self.name, arguments);
-			});
+			// this.items.on("all", function () {
+			// 	console.log("Backbone event", self.name, arguments);
+			// });
 			this.items.on("reset", function () {
 				self.items.forEach(function (item) {
 					self.recalculate(item);
@@ -522,9 +522,7 @@
 			}
 		};
 		Table.prototype.render = function () {
-			console.log("Render requested", this.name, this.items);
 			if (this.hot) {
-				console.log("Re-rendering");
 				this.hot.render();
 			}
 		};
@@ -543,7 +541,7 @@
 			return parameters;
 		};
         Table.prototype.recalculate = function (item) {
-			console.log("Recalculating", this.name, item);
+			// console.log("Recalculating", this.name, item);
             this.recalculateProps.forEach(function (recalculateProp) {
                 recalculateProp(item);
             });
