@@ -47,7 +47,6 @@
 				width: 700,
 			}
 		});
-		// producesTable.load(produces);
 
 		return producesTable;
 	});
