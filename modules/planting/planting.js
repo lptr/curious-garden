@@ -30,7 +30,7 @@
 				{ name: "csirazas30c", title: "30℃", column: { width: 30 } },
 				{ name: "csirazas35c", title: "35℃", column: { width: 30 } },
 				{ name: "csirazas40c", title: "40℃", column: { width: 30 } },
-				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "hét", recalculate: function () {
+				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "hét", calculate: function () {
 					return 12;
 				}},
 				{ name: "magPerGramm", title: "Magok száma" },

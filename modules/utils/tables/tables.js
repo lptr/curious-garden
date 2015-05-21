@@ -398,7 +398,7 @@
 					className: "htCenter",
 					width: 60
 				},
-				recalculate: assignId
+				calculate: assignId
 			});
             this.properties.unshift(this.id);
 
@@ -416,8 +416,8 @@
                     set.apply(property, [property.name, calc.apply(property, parameters)]);
 				}.bind(this);
 				return function (item) {
-					executeRecalculation(item, property.recalculate, item.set.bind(item));
-					executeRecalculation(item, property.recalculateDefault, item.setDefaultValue.bind(item));
+					executeRecalculation(item, property.calculate, item.set.bind(item));
+					executeRecalculation(item, property.calculateDefault, item.setDefaultValue.bind(item));
 				};
             }, this);
 			
