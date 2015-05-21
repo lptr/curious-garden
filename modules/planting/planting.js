@@ -35,7 +35,10 @@
 				}},
 				{ name: "magPerGramm", title: "Magok száma" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje" }
-			]
+			],
+			settings: {
+				height: 500
+			}
 		});
 	});
 
