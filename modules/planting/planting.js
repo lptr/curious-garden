@@ -143,15 +143,14 @@
 	};
 
 	plantingModule.controller("ProducesController", function ($scope, kapaServer, producesTable) {
-		producesTable.link($("#producesTable"));
-		producesTable.fetch();
+		$scope.table = producesTable;
 		$scope.filter = "";
 		$scope.$watch("filter", function (filter) {
 			if (!filter) {
 				producesTable.setFilter(null);
 			} else {
 				filter = normalize(filter);
-				producesTable.setFilter(function (item) {
+				$scope.table.setFilter(function (item) {
 					var name = normalize(item.get("name"));
 					if (!name) {
 						return false;
@@ -164,15 +163,14 @@
 			producesTable.addItem();
 		};
 		$scope.dump = function () {
-			console.log("Data:", producesTable.items);
+			console.log("Data:", $scope.table.items);
 		};
 	});
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {
-		plantingTable.link($("#plantingTable"));
-		plantingTable.fetch();
+		$scope.table = plantingTable;
 		$scope.dump = function () {
-			console.log("Data:", plantingTable.items);
+			console.log("Data:", $scope.table.items);
 		};
 	});
 	

@@ -470,12 +470,21 @@
 			} finally {
 				changeTracking.finish();
 			}
-		},
-		Table.prototype.link = function (element) {
-			element.handsontable(this.getSettings());
 		};
         tables.Table = Table;
         
         return tables;
     });
+
+	tablesModule.directive("backboneTable", function() {
+		return {
+			link: function (scope, element, attrs) {
+				var table = scope.$eval(attrs["table"]);
+				var hot = new Handsontable(element[0].firstChild, table.getSettings());
+				table.fetch();
+			},
+			restrict: "E",
+			template: "<div></div>"
+		}
+	});
 })();
