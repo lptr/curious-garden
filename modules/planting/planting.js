@@ -74,6 +74,23 @@
 		$scope.table = Felhasznalasok;
 	});
 	
+	plantingModule.factory("Egysegek", function (tables) {
+		return new tables.Table({
+			name: "Egységek",
+			properties: [
+				{ name: "nev", title: "Egység" },
+				{ name: "rovid", title: "Rövidítés" },
+				{ name: "name", title: "Name" },
+				{ name: "abbrev", title: "Abbreviation" },
+			],
+			titleProperty: "nev"
+		});
+	});
+
+	plantingModule.controller("EgysegekController", function ($scope, kapaServer, Egysegek) {
+		$scope.table = Egysegek;
+	});
+	
 	plantingModule.factory("Fajok", function (tables, formulas) {
 		return new tables.Table({
 			name: "Fajok",
