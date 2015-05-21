@@ -48,7 +48,7 @@
 		$scope.table = KereskedelmiJellegek;
 	});
 	
-	plantingModule.factory("Fajok", function (tables) {
+	plantingModule.factory("Fajok", function (tables, formulas) {
 		return new tables.Table({
 			name: "Fajok",
 			properties: [
@@ -66,17 +66,10 @@
 				{ name: "csirazas40c", title: "40℃", type: "numeric", width: 30 },
 				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "nap",
 					calculate: function (csirazas5c, csirazas10c, csirazas15c, csirazas20c, csirazas25c, csirazas30c, csirazas35c, csirazas40c) {
-						var values = _.filter(arguments, function (value) {
-							return !!value.value();
-						});
-						if (values.length > 0) {
-							return Math.min.apply(null, values.map(function (value) { return value.asNumber(); }));
-						} else {
-							return null;
-						}
+						return formulas.min(arguments);
 					}
 				},
-				{ name: "magPerGramm", title: "Magok száma" },
+				{ name: "magPerGramm", title: "Magok száma", unit: "db/g" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje", unit: "hét" }
 			],
 			items: {
@@ -126,7 +119,7 @@
 						return faj.value() ? faj.value().get("magPerGramm") : null;
 					}
 				},
-				{ name: "egyszeruId", title: "Egyszerű ID",
+				{ name: "egyszeruId", title: "Egyszerű ID", width: 200,
 					calculate: function (fajtanev, gyarto) {
 						return formulas.join(arguments);
 					}

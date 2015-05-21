@@ -4,12 +4,28 @@
 	]);
 	
 	tablesModule.factory("formulas", function () {
+		var mapOverNumbers = function (items, defaultValue, fun) {
+			var values = _.filter(items, function (value) {
+				return !!value.value();
+			});
+			if (values.length > 0) {
+				return fun.apply(null, values.map(function (value) { return value.asNumber(); }));
+			} else {
+				return defaultValue;
+			}
+		}
 		return {
 			join: function (items, deliminator) {
 				return _
 					.map(items, function (value) { return value.value() ? value.value().toString() : null; })
 					.filter(function (value) { return !!value; })
 					.join(deliminator || ", ");
+			},
+			min: function (items) {
+				return mapOverNumbers(items, null, Math.min);
+			},
+			max: function (items) {
+				return mapOverNumbers(items, null, Math.max);
 			}
 		};
 	});
