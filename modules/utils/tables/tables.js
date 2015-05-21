@@ -482,11 +482,16 @@
 	tablesModule.directive("backboneTable", function() {
 		return {
 			link: function (scope, element, attrs) {
-				var hot = new Handsontable(element[0].firstChild, scope.table.getSettings());
+				var hot = new Handsontable(element[0].children[1], scope.table.getSettings());
 				scope.table.fetch();
 			},
 			restrict: "E",
-			template: "<div></div>",
+			template: "<button ng-click='dump()'>Dump</button><div></div>",
+			controller: function ($scope) {
+				$scope.dump = function () {
+					console.log("Dump", $scope.table.items);
+				}
+			},
 			scope: {
 				table: "="
 			}

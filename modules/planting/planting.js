@@ -179,16 +179,10 @@
 		$scope.add = function () {
 			producesTable.addItem();
 		};
-		$scope.dump = function () {
-			console.log("Data:", $scope.table.items);
-		};
 	});
 
 	plantingModule.controller("PlantingController", function ($scope, kapaServer, plantingTable) {
 		$scope.table = plantingTable;
-		$scope.dump = function () {
-			console.log("Data:", $scope.table.items);
-		};
 	});
 	
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
