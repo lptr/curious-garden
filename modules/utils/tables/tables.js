@@ -369,8 +369,12 @@
 			});
 			console.log("Options:", options);
 
-			_.extend(this, options);
+			_.extend(this, {
+				titleProperty: "id"
+			}, options);
+
 			var self = this;
+
 			this.BackboneModel = Item.extend(_.extend({
 				getTableName: function () {
 					return self.name;
@@ -385,7 +389,12 @@
 							relatedModel: property.target.BackboneModel,
 							includeInJSON: "id"
 						}
-					})
+					}
+				),
+				toString: function () {
+					var value = this.get(self.titleProperty);
+					return value ? value.toString() : value;
+				}
 			}, options.items));
 			var BackboneCollection = Backbone.Collection.extend({
 				model: this.BackboneModel,

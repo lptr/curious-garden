@@ -21,9 +21,7 @@
 				{ name: "nev", title: "Szín" },
 				{ name: "name", title: "Color" },
 			],
-			items: {
-				toString: function () { return this.get("nev"); }
-			}
+			titleProperty: "nev"
 		});
 	});
 
@@ -38,9 +36,7 @@
 				{ name: "nev", title: "Név" },
 				{ name: "name", title: "Name" },
 			],
-			items: {
-				toString: function () { return this.get("nev"); }
-			}
+			titleProperty: "nev"
 		});
 	});
 
@@ -72,11 +68,7 @@
 				{ name: "magPerGramm", title: "Magok száma", unit: "db/g" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje", unit: "hét" }
 			],
-			items: {
-				toString: function () {
-					return this.get("nev");
-				}
-			}
+			titleProperty: "nev"
 		});
 	});
 
@@ -125,11 +117,7 @@
 					}
 				},
 			],
-			items: {
-				toString: function () {
-					return this.get("nev");
-				}
-			}
+			titleProperty: "nev"
 		});
 	});
 
@@ -151,7 +139,8 @@
 					source: [ "HUF", "EUR", "GBP", "USD" ]
 				}},
 				{ name: "memo", title: "Memo", width: 300 },
-			]
+			],
+			titleProperty: "mag"
 		});
 	});
 
