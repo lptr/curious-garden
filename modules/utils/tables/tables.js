@@ -392,7 +392,7 @@
 					}
 				),
 				toString: function () {
-					var value = this.get(self.titleProperty);
+					var value = this.value(self.titleProperty);
 					return value ? value.toString() : value;
 				}
 			}, options.items));
