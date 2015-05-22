@@ -252,7 +252,7 @@
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
 					var value = id ? this.target.items.get(id) : null;
 					var displayValue = value ? value.toString() : null;
-					Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				},
 				toColumn: function () {
 					var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
