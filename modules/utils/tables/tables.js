@@ -155,28 +155,7 @@
 		return changeTracking;
 	});
 
-	tablesModule.factory("ReferenceEditor", function () {
-		var ReferenceEditor = Handsontable.editors.SelectEditor.prototype.extend();
-		ReferenceEditor.prototype.prepare = function() {
-			Handsontable.editors.BaseEditor.prototype.prepare.apply(this, arguments);
-
-			var items = this.cellProperties.items;
-			if (typeof items == 'function') {
-				items = items(this.row, this.col, this.prop);
-			}
-
-			Handsontable.Dom.empty(this.select);
-			items.forEach(function (item) {
-				var optionElement = document.createElement('OPTION');
-				optionElement.value = item.id;
-				Handsontable.Dom.fastInnerHTML(optionElement, item.toString());
-				this.select.appendChild(optionElement);
-			}, this);
-		};
-		return ReferenceEditor;
-	});
-
-    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, ReferenceEditor, prefixSuffixRenderer) {
+    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, prefixSuffixRenderer) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -246,6 +225,29 @@
         var ReferenceProperty = function (options) {
 			var self = this;
             SimpleProperty.apply(this, arguments);
+
+			var AutocompleteEditor = Handsontable.editors.AutocompleteEditor;
+			var ReferenceEditor = AutocompleteEditor.prototype.extend();
+			ReferenceEditor.prototype.prepare = function(row, col, prop, td, originalId, cellProperties) {
+				var originalItem = self.target.items.get(originalId);
+				var originalValue = originalItem ? originalItem.toString() : null;
+				AutocompleteEditor.prototype.prepare.call(this, row, col, prop, td, originalValue, cellProperties);
+			};
+			ReferenceEditor.prototype.saveValue = function(values, ctrlDown) {
+				var ids = values.map(function (valueRow) {
+					return valueRow.map(function (value) {
+						if (!value) {
+							return null;
+						}
+						var item = self.target.items.find(function (item) {
+							return item.toString() === value;
+						});
+						return item ? item.id : null;
+					});
+				});
+				return AutocompleteEditor.prototype.saveValue.call(this, ids, ctrlDown);
+			};
+
 			_.extend(this, {
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
 					var value = id ? this.target.items.get(id) : null;
@@ -255,10 +257,14 @@
 				toColumn: function () {
 					var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
 					return _.extend(column, this.column, {
-		                type: "numeric",
+		                type: "autocomplete",
+						strict: true,
+						validator: null,
 						editor: ReferenceEditor,
-						items: function () {
-							return self.target.items;
+						source: function (query, process) {
+							process(self.target.items.map(function (item) {
+								return item.toString() || "";
+							}));
 						},
 		                title: this.title,
 		                data: this.toProperty(),
