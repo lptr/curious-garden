@@ -80,10 +80,10 @@
 			properties: [
 				{ name: "nev", title: "Egység" },
 				{ name: "rovid", title: "Rövidítés" },
-				{ name: "name", title: "Name" },
+				{ name: "name", title: "Unit" },
 				{ name: "abbrev", title: "Abbreviation" },
 			],
-			titleProperty: "nev"
+			titleProperty: "rovid"
 		});
 	});
 
@@ -250,12 +250,40 @@
 				{ name: "sulyPerDb", title: "Süly / db", unit: "g" },
 				{ name: "egysegar", title: "Egységár", unit: "Ft" },
 			],
-			titleProperty: "mag"
+			titleProperty: "nev"
 		});
 	});
 
 	plantingModule.controller("TermenyekController", function ($scope, kapaServer, Termenyek) {
 		$scope.table = Termenyek;
+	});
+
+	plantingModule.factory("Termekek", function (tables, formulas, Egysegek, Termenyek) {
+		return new tables.Table({
+			name: "Termékek",
+			properties: [
+				{ name: "nev", title: "Név", width: 240,
+					calculate: function (termeny, kiszereles) {
+						return termeny.asText() + ", " + (kiszereles.value() ? kiszereles.value().toString() : "??");
+					}
+				},
+				{ name: "termeny", title: "Termény", target: Termenyek, width: 200 },
+				{ name: "kiszereles", title: "Kiszerelés", target: Egysegek, width: 60 },
+				{ name: "kategoria", title: "Kategória" },
+				{ name: "alapar", title: "Alapár", unit: "Ft" },
+				{ name: "raktarkeszlet1", title: "Raktárkészlet 1", type: "numeric" },
+				{ name: "raktarkeszlet2", title: "Raktárkészlet 2", type: "numeric"  },
+				{ name: "rovidLeirasHu", title: "Rövid leírás (HU)", width: 300 },
+				{ name: "rovidLeirasEn", title: "Rövid leírás (EN)", width: 300 },
+				{ name: "kategoriaId", title: "Kategória" },
+				{ name: "memo", title: "Jegyzet", width: 200 },
+			],
+			titleProperty: "nev"
+		});
+	});
+
+	plantingModule.controller("TermekekController", function ($scope, kapaServer, Termekek) {
+		$scope.table = Termekek;
 	});
 
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {

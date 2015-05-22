@@ -36,6 +36,15 @@
         </div>
     </tab>
     <tab>
+        <tab-heading>Termékek</tab-heading>
+        <div class="panel-body">
+            <div ng-controller="TermekekController">
+                <backbone-table table="table" filter="nev"></backbone-table>
+            </div>
+        </div>
+    </tab>
+
+    <tab>
         <tab-heading>Színek</tab-heading>
         <div class="panel-body">
             <div ng-controller="SzinekController">
