@@ -182,7 +182,7 @@
 		var Property = function (options) {
             _.extend(this, {
 					hidden: false,
-					readOnly: !!options.recalculate
+					readOnly: !!options.calculate
 				},
 				options, {
 				toProperty: function () {
