@@ -202,14 +202,14 @@
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (faj, felhasznalas, kereskedelmiJelleg, szin, meret) {
 						if (faj.value()) {
-							return faj.asText() + formulas.join([felhasznalas, kereskedelmiJelleg, szin, meret]);
+							return formulas.join([faj.asText() + felhasznalas.asText(), kereskedelmiJelleg, szin, meret]);
 						} else {
 							return "NINCS FAJ: " + formulas.join(arguments);
 						}
 					}
 				},
-				{ name: "faj", title: "Faj", target: Fajok, width: 120 },
-				{ name: "elsodlegesKategoria", title: "Elsődleges kategória", target: Termekkategoriak },
+				{ name: "faj", title: "Faj", target: Fajok, width: 140 },
+				{ name: "elsodlegesKategoria", title: "Elsődleges kategória", target: Termekkategoriak, width: 120 },
 				{ name: "felhasznalas", title: "Felhasználás", target: Felhasznalasok },
 				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
 				{ name: "szin", title: "Szín", target: Szinek },

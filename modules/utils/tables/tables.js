@@ -3,7 +3,7 @@
 		"ui.bootstrap",
 	]);
 	
-	tablesModule.factory("formulas", function () {
+	tablesModule.factory("formulas", function (tables) {
 		var mapOverNumbers = function (items, defaultValue, fun) {
 			var values = _.filter(items, function (value) {
 				return !!value.value();
@@ -17,7 +17,17 @@
 		return {
 			join: function (items, deliminator) {
 				return _
-					.map(items, function (value) { return value.value() ? value.value().toString() : null; })
+					.map(items, function (value) {
+						if (!value) {
+							return value;
+						}
+						if (value instanceof tables.ItemProperty) {
+							value = value.value() ? value.value().toString() : null;
+						} else if (typeof value !== 'string') {
+							value = value.toString();
+						}
+						return value;
+					})
 					.filter(function (value) { return !!value; })
 					.join(deliminator || ", ");
 			},
