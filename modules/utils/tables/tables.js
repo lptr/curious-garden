@@ -501,22 +501,46 @@
 			});
             this.properties.unshift(this.id);
 
-            this.propertiesMap = {};
+            var propertiesMap = {};
             this.properties.forEach(function (property) {
-                this.propertiesMap[property.name] = property;
+                propertiesMap[property.name] = property;
 				property.table = this;
             }, this);
+
+			var injectParameters = function (parameterNames, item) {
+				var parameters = [];
+				for (var idx = 0; idx < parameterNames.length; idx++) {
+					var name = parameterNames[idx];
+					var result;
+					if (name === "item") {
+						result = item;
+					} else {
+						var dependentProperty = propertiesMap[name];
+						if (!dependentProperty) {
+							throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
+						}
+						result = new ItemProperty(item, dependentProperty.name);
+					}
+					parameters.push(result);
+				};
+				return parameters;
+			};
             this.recalculateProps = this.properties.map(function (property) {
-				var executeRecalculation = function (item, calc, set) {
+				var injectedRecalculator = function (calc) {
 					if (typeof calc !== 'function') {
-	                    return;
-	                }
-					var parameters = this.injectParameters(calc, item);
-                    set.apply(property, [property.name, calc.apply(property, parameters)]);
-				}.bind(this);
+						return function () {};
+					}
+					var parameterNames = angular.injector.$$annotate(calc);
+					return function (item, set) {
+						var parameters = injectParameters(parameterNames, item);
+	                    set.call(item, property.name, calc.apply(property, parameters));
+					};
+				};
+				var recalculate = injectedRecalculator(property.calculate);
+				var recalculateDefault = injectedRecalculator(property.calculateDefault);
 				return function (item) {
-					executeRecalculation(item, property.calculate, item.set.bind(item));
-					executeRecalculation(item, property.calculateDefault, item.setDefaultValue.bind(item));
+					recalculate(item, item.set);
+					recalculateDefault(item, item.setDefaultValue);
 				};
             }, this);
 			
@@ -625,20 +649,6 @@
 			if (this.hot) {
 				this.hot.render();
 			}
-		};
-		Table.prototype.injectParameters = function (fun, item) {
-			var parameterNames = angular.injector.$$annotate(fun);
-			var parameters = parameterNames.map(function (name) {
-				if (name === "item") {
-					return item;
-				}
-				var dependentProperty = this.propertiesMap[name];
-				if (!dependentProperty) {
-					throw new Error("Unknown property '" + name + "' for table '" + this.name + "'");
-				}
-				return new ItemProperty(item, dependentProperty.name);
-			}, this);
-			return parameters;
 		};
         Table.prototype.recalculate = function (item) {
 			// console.log("Recalculating", this.name, item);
