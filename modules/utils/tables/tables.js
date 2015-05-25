@@ -36,6 +36,28 @@
 			},
 			max: function (items) {
 				return mapOverNumbers(items, null, Math.max);
+			},
+			addDays: function (date, days) {
+				if (days instanceof tables.ItemProperty) {
+					days = days.asNumber();
+				}
+				if (typeof days !== 'number') {
+					return null;
+				}
+
+				if (date instanceof tables.ItemProperty) {
+					date = date.asDate();
+				}
+				if (typeof date === 'string') {
+					date = new Date(date);
+				}
+				if (!(date instanceof Date) || isNaN(date)) {
+					return null;
+				}
+
+				var result = new Date(date.valueOf());
+				result.setDate(date.getDate() + days);
+				return result;
 			}
 		};
 	});
