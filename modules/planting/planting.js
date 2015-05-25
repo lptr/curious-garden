@@ -107,7 +107,7 @@
 				{ name: "csirazas30c", title: "30℃", type: "numeric", width: 30 },
 				{ name: "csirazas35c", title: "35℃", type: "numeric", width: 30 },
 				{ name: "csirazas40c", title: "40℃", type: "numeric", width: 30 },
-				{ name: "optialisCsirazas", title: "Optiomalis csírázás", unit: "nap",
+				{ name: "optimalisCsirazas", title: "Optiomalis csírázás", unit: "nap",
 					calculate: function (csirazas5c, csirazas10c, csirazas15c, csirazas20c, csirazas25c, csirazas30c, csirazas35c, csirazas40c) {
 						return formulas.min(arguments);
 					}
