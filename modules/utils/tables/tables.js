@@ -409,6 +409,14 @@
 		ItemProperty.prototype.asText = function () {
             return this.item.asText(this.property);
         };
+		ItemProperty.prototype.get = function (subProperty) {
+			var value = this.item.value(this.property);
+			if (value instanceof Item) {
+				return new ItemProperty(value, subProperty);
+			} else {
+				return null;
+			}
+		}
         tables.ItemProperty = ItemProperty;
 
         var Table = function (options) {
