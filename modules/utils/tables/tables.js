@@ -5,13 +5,24 @@
 	
 	tablesModule.factory("formulas", function (tables) {
 		var mapOverNumbers = function (items, defaultValue, fun) {
-			var values = _.filter(items, function (value) {
-				return !!value.value();
-			});
-			if (values.length > 0) {
-				return fun.apply(null, values.map(function (value) { return value.asNumber(); }));
-			} else {
+			var result = NaN;
+			for (var idx = 0, len = items.length; idx < len; idx++) {
+				var value = items[idx];
+				if (value instanceof tables.ItemProperty) {
+					value = value.asNumber();
+				}
+				if (!isNaN(value) && value !== null) {
+					if (isNaN(result)) {
+						result = value;
+					} else {
+						result = fun.call(null, result, value);
+					}
+				}
+			}
+			if (isNaN(result)) {
 				return defaultValue;
+			} else {
+				return result;
 			}
 		}
 		return {
@@ -346,7 +357,7 @@
 			},
 			asNumber: function (property) {
 				var value = this.value(property);
-	            return typeof value === 'number' ? value : 0;
+	            return typeof value === 'number' ? value : NaN;
 			},
 			asDate: function (property) {
 				var value = this.value(property);
