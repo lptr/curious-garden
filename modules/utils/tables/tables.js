@@ -474,18 +474,18 @@
 
             var dataProperties = this.properties.slice();
             var assignId = function (item) {
-                var hasId = item.has(self.id.name);
+				if (item.has(self.id.name)) {
+					return undefined;
+				}
                 var hasSomeValues = dataProperties.some(function (property) { return item.has(property.name); });
-                if (!hasId && hasSomeValues) {
+                if (hasSomeValues) {
                     var maxId = 0;
                     self.items.forEach(function (item) {
                         maxId = Math.max(item.asNumber(self.id.name), maxId);
                     }, self);
                     return maxId + 1;
-                } else if (hasId && !hasSomeValues) {
-                    return null;
                 } else {
-                    return item.value(self.id.name);
+                    return undefined;
                 }
             };
             this.id = new IdProperty({
