@@ -285,6 +285,214 @@
 	plantingModule.controller("TermekekController", function ($scope, kapaServer, Termekek) {
 		$scope.table = Termekek;
 	});
+	
+	var date = function (date) {
+		if (!(date instanceof Date) || isNaN(date)) {
+			return null;
+		}
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var day = date.getDate();
+		if (month < 10) {
+			month = "0" + month;
+		}
+		if (day < 10) {
+			day = "0" + day;
+		}
+		return year + "-" + month + "-" + day;
+	}
+
+	plantingModule.factory("Vetestervezo", function (tables, formulas, Magtipusok, Termenyek) {
+		return new tables.Table({
+			name: "Vetéstervező",
+			properties: [
+				{ name: "termeny", title: "Termény", target: Termenyek, width: 200 },
+				{ name: "mag", title: "Mag", target: Magtipusok, width: 200 },
+				// TODO vanElegMag
+				{ name: "vetesIdeje", title: "Tervezett időpont", type: "date", column: { dateFormat: "YYYY-MM-DD" } },
+				{ name: "mibe", title: "Mibe", type: "dropdown", column: {
+					source: [ "föld", "normál", "szapláda" ]
+				} },
+				{ name: "helyszin", title: "Helyszín", type: "dropdown", column: {
+					source: [ "ehető virágok", "fűszernövények", "kis zöldségek", "levelek", "palántázó", "zöldségek" ]
+				} },
+				{ name: "agyas", title: "Ágyás", type: "numeric", width: 50 },
+				{ name: "sav", title: "Sáv", type: "dropdown", width: 50, column: {
+					source: [ "A", "B", "C", "D" ]
+				} },
+				{ name: "kosar", title: "Kosar", type: "dropdown", width: 50,
+					calculateDefault: function (mag) {
+						var magPerGramm = mag.get("magPerGramm");
+						if (!magPerGramm) {
+							return null;
+						}
+						magPerGramm = magPerGramm.asNumber();
+						if (magPerGramm <= 70) {
+							return "K";
+						} else if (magPerGramm <= 90) {
+							return "D";
+						} else if (magPerGramm <= 100) {
+							return "C";
+						} else if (magPerGramm <= 300) {
+							return "B";
+						} else {
+							return "A";
+						}
+					}, column: {
+						source: [ "A", "B", "C", "D", "K" ]
+					}
+				},
+				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", column: { format: "0.0" },
+					calculateDefault: function (kosar, sorkoz) {
+						if (kosar.asText() === "K") {
+							return 30 / sorkoz.asNumber();
+						} else {
+							return 30 / (sorkoz.asNumber() + 1);
+						}
+					}
+				},
+				{ name: "szorzo", title: "Szorzó", type: "numeric", column: { format: "+0%" },
+					calculateDefault: function () {
+						return 0;
+					}
+				},
+				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm",
+					calculateDefault: function (termeny) {
+						return termeny.value() ? termeny.value().get("sorkoz") : null;
+					}
+				},
+				{ name: "novenykoz", title: "Vetési növényköz", unit: "cm",
+					calculateDefault: function (termeny) {
+						return termeny.value() ? termeny.value().get("novenykoz") : null;
+					}
+				},
+				{ name: "melyseg", title: "Vetési mélység", unit: "cm", column: { format: "0.0"},
+					calculateDefault: function (mag) {
+						var magPerGramm = mag.get("magPerGramm");
+						if (!magPerGramm) {
+							return null;
+						}
+						magPerGramm = magPerGramm.asNumber();
+						if (magPerGramm <= 0.1) {
+							return 5;
+						} else if (magPerGramm <= 1) {
+							return 3;
+						} else if (magPerGramm <= 10) {
+							return 2;
+						} else if (magPerGramm <= 50) {
+							return 1;
+						} else if (magPerGramm <= 200) {
+							return 0.5;
+						} else {
+							return 0.2;
+						}
+					}
+				},
+				{ name: "terulet", title: "Terület", unit: "m²", column: { format: "0.00" },
+					calculate: function (sorokSzama, sorkoz) {
+						return 3.6 * sorokSzama.asNumber() * sorkoz.asNumber() / 100
+					}
+				},
+				{ name: "fedokomposztMennyisege", title: "Fedőkomposzt mennyisége", unit: "l", column: { format: "0.0" },
+					calculate: function (melyseg, terulet) {
+						return melyseg.asNumber() / 100 * terulet.asNumber() * 1000;
+					}
+				},
+				{ name: "ontozes", title: "Öntözés", type: "dropdown", column: {
+					source: [ "adatra vár", "csepicső", "csepicső+gomba", "eldöntendő", "gomba", "szórófejes" ]
+				} },
+				// TODO What is this?
+				{ name: "hanySzal", title: "Hány szál" },
+				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
+				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
+				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", column: { format: "0.00" },
+					calculate: function (novenykoz, mag, szorzo) {
+						var magPerGramm = mag.get("magPerGramm");
+						if (!magPerGramm) {
+							return null;
+						}
+						return 3.6 / (novenykoz.asNumber() / 100) / magPerGramm.asNumber() * (1 + szorzo.asNumber());
+					}
+				},
+				{ name: "tasakbaKeruloMagmennyiseg", title: "Tasakba kerülő magnennyiség", unit: "g", column: { format: "0.00" },
+					calculate: function (magMennyisegeSoronkent, sorokSzama) {
+						return magMennyisegeSoronkent.asNumber() * sorokSzama.asNumber();
+					}
+				},
+				{ name: "darab", title: "DB", unit: "db",
+					calculate: function (novenykoz, szorzo, sorokSzama) {
+						return 3.6 / (novenykoz.asNumber() / 100) * (1 + szorzo.asNumber()) * sorokSzama.asNumber();
+					}
+				},
+				{ name: "csirazasIdeje", title: "Csírázás tervezett ideje", type: "date",
+					calculateDefault: function (vetesIdeje, termeny) {
+						var faj = termeny.get("faj");
+						if (!faj) {
+							return null;
+						}
+						var optimalisCsirazas = faj.get("optimalisCsirazas");
+						var result = formulas.addDays(vetesIdeje, optimalisCsirazas || 0);
+						return date(result);
+					}
+				},
+				{ name: "elsoAtultetesIdeje", title: "1. átültetés tervezett ideje", type: "date",
+					calculateDefault: function (csirazasIdeje, mibe) {
+						if (mibe.asText() === "mini") {
+							return date(formulas.addDays(csirazasIdeje, 1));
+						} else {
+							return null;
+						}
+					}
+				},
+				{ name: "masodikAtultetesIdeje", title: "2. átültetés tervezett ideje", type: "date" },
+				{ name: "kiultetesIdeje", title: "Kiültetés tervezett ideje", type: "date",
+					calculateDefault: function (vetesIdeje, mibe) {
+						if (mibe.asText() === "mini" || mibe.asText() == "normál") {
+							return date(formulas.addDays(vetesIdeje, 30));
+						} else {
+							return null;
+						}
+					}
+				},
+				{ name: "szuretIdeje", title: "Szüret tervezett ideje", type: "date",
+					calculateDefault: function (vetesIdeje, termeny) {
+						var elsoSzuret = termeny.get("elsoSzuret");
+						if (!elsoSzuret) {
+							return null;
+						}
+						return date(formulas.addDays(vetesIdeje, elsoSzuret.asNumber() * 7));
+					}
+				},
+				{ name: "halalszuretIdeje", title: "Halálszüret tervezett ideje", type: "date",
+					calculateDefault: function (vetesIdeje, termeny) {
+						var elsoSzuret = termeny.get("elsoSzuret");
+						if (!elsoSzuret) {
+							return null;
+						}
+						var szuretekSzama = termeny.get("szuretekSzama");
+						if (!szuretekSzama) {
+							return null;
+						}
+						var hanyHetenteSzuretelunk = termeny.get("hanyHetenteSzuretelunk");
+						if (!hanyHetenteSzuretelunk) {
+							return null;
+						}
+						return date(formulas.addDays(vetesIdeje,
+							elsoSzuret.asNumber() * 7
+							+ Math.max(0, (szuretekSzama.asNumber() - 1) * hanyHetenteSzuretelunk.asNumber() * 7)
+						));
+					}
+				},
+			],
+			settings: {
+				fixedColumnsLeft: 3
+			}
+		});
+	});
+
+	plantingModule.controller("VetestervezoController", function ($scope, kapaServer, Vetestervezo) {
+		$scope.table = Vetestervezo;
+	});
 
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
 		$scope.pending = 0;
