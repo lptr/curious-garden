@@ -666,7 +666,7 @@
 				var startRow = selected.from.row;
 				var endRow = selected.to.row;
 				for (var rowNumber = startRow; rowNumber <= endRow; rowNumber++) {
-					var item = this.hot.getDataAtRow(rowNumber);
+					var item = this.hot.getSourceDataAtRow(rowNumber);
 					this.items.remove(item);
 				}
 				this.render();
