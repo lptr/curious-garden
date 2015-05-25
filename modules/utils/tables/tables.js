@@ -508,7 +508,7 @@
 
 			var injectParameters = function (parameterNames, item) {
 				var parameters = [];
-				for (var idx = 0; idx < parameterNames.length; idx++) {
+				for (var idx = 0, len = parameterNames.length; idx < len; idx++) {
 					var name = parameterNames[idx];
 					var result;
 					if (name === "item") {
@@ -525,23 +525,26 @@
 				return parameters;
 			};
             this.recalculateProps = this.properties.map(function (property) {
-				var injectedRecalculator = function (calc) {
+				var injectRecalculator = function (calc) {
 					if (typeof calc !== 'function') {
 						return function () {};
 					}
 					var parameterNames = angular.injector.$$annotate(calc);
 					return function (item, set) {
 						var parameters = injectParameters(parameterNames, item);
-	                    set.call(item, property.name, calc.apply(property, parameters));
+						var value = calc.apply(property, parameters);
+						if (typeof value !== 'undefined') {
+	                    	set.call(item, property.name, value);
+						}
 					};
 				};
-				var recalculate = injectedRecalculator(property.calculate);
-				var recalculateDefault = injectedRecalculator(property.calculateDefault);
+				var recalculate = injectRecalculator(property.calculate);
+				var recalculateDefault = injectRecalculator(property.calculateDefault);
 				return function (item) {
-					recalculate(item, item.set);
 					recalculateDefault(item, item.setDefaultValue);
+					recalculate(item, item.set);
 				};
-            }, this);
+            });
 			
 			this.properties.forEach(function (property) {
 				if (property instanceof ReferenceProperty) {
