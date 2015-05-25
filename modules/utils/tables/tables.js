@@ -357,6 +357,13 @@
 				var value = this.value(property);
 	            return typeof value === 'number' ? value : 0;
 			},
+			asDate: function (property) {
+				var value = this.value(property);
+				if (typeof value !== 'string') {
+					return null;
+				}
+	            return new Date(value);
+			},
 			asText: function (property) {
 				var value = this.value(property);
 				if (!value) {
@@ -396,7 +403,10 @@
         ItemProperty.prototype.asNumber = function () {
             return this.item.asNumber(this.property);
         };
-        ItemProperty.prototype.asText = function () {
+		ItemProperty.prototype.asDate = function () {
+            return this.item.asDate(this.property);
+        };
+		ItemProperty.prototype.asText = function () {
             return this.item.asText(this.property);
         };
         tables.ItemProperty = ItemProperty;
