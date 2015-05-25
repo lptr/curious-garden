@@ -670,9 +670,9 @@
 		};
         Table.prototype.recalculate = function (item) {
 			// console.log("Recalculating", this.name, item);
-            this.recalculateProps.forEach(function (recalculateProp) {
-                recalculateProp(item);
-            });
+			for (var idx = 0, len = this.recalculateProps.length; idx < len; idx++) {
+				this.recalculateProps[idx](item);
+			}
         };
         Table.prototype.getSettings = function () {
 			return this.settings;
