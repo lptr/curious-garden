@@ -319,14 +319,14 @@
             });
 		};
 		ReferenceProperty.prototype.toProperty = function () {
-			var name = this.name;
+			var self = this;
 			return function (item, value) {
                 if (typeof value === 'undefined') {
-					var result = item.value(name);
+					var result = item.value(self.name);
                     return result ? result.id : result;
                 } else {
 					var ref = value ? self.target.items.get(value) : null;
-                    return item.set(name, ref);
+                    return item.set(self.name, ref);
                 }
             };
 		};
@@ -582,7 +582,9 @@
 				afterChange: changeTracking.finish,
                 columns: this.properties
 					.filter(function (property) { return !property.hidden })
-					.map(function (property) { return property.toColumn(); })
+					.map(function (property) { return property.toColumn(); }),
+				currentRowClassName: "currentRow",
+				currentColClassName: "currentCol"
             });
 			
 			var initializeChangeTracking = function () {

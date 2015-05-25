@@ -15,3 +15,11 @@
     top: 0;
     right: 0;
 }
+
+td.currentRow {
+    background-color: #f0fff0;
+}
+
+td.currentCol {
+    background-color: #f8fff8;
+}
