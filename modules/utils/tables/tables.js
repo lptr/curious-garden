@@ -155,6 +155,7 @@
 				};
 			} else {
 				// console.log("--! Ignoring change", item);
+				throw new Error("Change not recorded: " + JSON.stringify(item.toJSON()));
 			}
 		};
 		changeTracking.registerChange = function (item) {
@@ -562,42 +563,6 @@
 				};
             });
 			
-			this.properties.forEach(function (property) {
-				if (property instanceof ReferenceProperty) {
-					property.target.items.on("change", function (changed, options) {
-						var changedId = changed.id;
-						this.items.forEach(function (item) {
-							var ref = item.value(property.name);
-							var refId = ref ? ref.id : null;
-							if (refId === changedId) {
-								this.recalculate(item);
-							}
-						}, this);
-						this.render();
-					}.bind(this));
-					property.target.items.on("relational:remove", function (removed, options) {
-						var removedId = removed.id;
-						this.items.forEach(function (item) {
-							var ref = item.value(property.name);
-							var refId = ref ? ref.id : null;
-							if (refId === removedId) {
-								item.set(property.name, null);
-								this.recalculate(item);
-							}
-						}, this);
-						this.render();
-					}.bind(this));
-				}
-			}, this);
-
-			this.items.on("change", function (changed, options) {
-				self.recalculate(changed);
-				changeTracking.registerChange(changed);
-			});
-			this.items.on("remove", function (removed, options) {
-				changeTracking.registerRemove(removed);
-			});
-
 			var hotResolved;
 			var hotInitialized = new Promise(function (resolve, reject) {
 				hotResolved = resolve;
@@ -625,6 +590,44 @@
 					.map(function (property) { return property.toColumn(); })
             });
 			
+			var initializeChangeTracking = function () {
+				this.properties.forEach(function (property) {
+					if (property instanceof ReferenceProperty) {
+						property.target.items.on("change", function (changed, options) {
+							var changedId = changed.id;
+							this.items.forEach(function (item) {
+								var ref = item.value(property.name);
+								var refId = ref ? ref.id : null;
+								if (refId === changedId) {
+									this.recalculate(item);
+								}
+							}, this);
+							this.render();
+						}.bind(this));
+						property.target.items.on("relational:remove", function (removed, options) {
+							var removedId = removed.id;
+							this.items.forEach(function (item) {
+								var ref = item.value(property.name);
+								var refId = ref ? ref.id : null;
+								if (refId === removedId) {
+									item.set(property.name, null);
+									this.recalculate(item);
+								}
+							}, this);
+							this.render();
+						}.bind(this));
+					}
+				}, this);
+
+				this.items.on("change", function (changed, options) {
+					self.recalculate(changed);
+					changeTracking.registerChange(changed);
+				});
+				this.items.on("remove", function (removed, options) {
+					changeTracking.registerRemove(removed);
+				});
+			}.bind(this);
+
 			var dependencies = this.properties
 				.filter(function (property) { return property instanceof ReferenceProperty; })
 				.map(function (property) { return property.target; });
@@ -649,8 +652,15 @@
 					error: reject
 				});
 			});
+			var itemsInitialized = itemsLoaded.then(function (items) {
+				return new Promise(function (resolve, reject) {
+					initializeChangeTracking();
+					console.log("Change tracking initialized for", self.name);
+					resolve(items);
+				});
+			});
 
-			this.ready = Promise.all([hotInitialized, itemsLoaded]);
+			this.ready = Promise.all([hotInitialized, itemsInitialized]);
 			this.ready.then(function () {
 				console.log("Table initialized", self.name);
 			}, function () {
