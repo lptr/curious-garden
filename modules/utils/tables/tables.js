@@ -334,7 +334,7 @@
 			},
 			value: function (property) {
 				var value = this.get(property);
-				if (value === null) {
+				if (!value) {
 					value = this.defaultValue(property);
 				}
 	            return value;
