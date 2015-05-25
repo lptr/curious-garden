@@ -2,3 +2,16 @@
 .handsontable th {
     font-size: 10pt;
 }
+
+.handsontable td {
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.handsontable .htAutocompleteArrow {
+    float: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+}

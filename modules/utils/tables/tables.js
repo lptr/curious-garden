@@ -703,7 +703,10 @@
 
 		return {
 			link: function (scope, element, attrs) {
-				new Handsontable(element[0].children[1], scope.table.getSettings());
+				var hot = new Handsontable(element[0].children[1], scope.table.getSettings());
+				hot.addHook("modifyRowHeight", function () {
+					return 21;
+				});
 			},
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
