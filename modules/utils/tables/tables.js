@@ -85,6 +85,7 @@
 		return function (table) {
 			return function (options) {
 				console.log("Fetching", table.name);
+				var fetchStart = new Date().getTime();
 				var collection = this;
 				var request = $http.jsonp(serverUrl, {
 					params: {
@@ -99,8 +100,12 @@
 				});
 				request.success(function (data) {
 					console.log("Data fetched for ", table.name, data);
+					var fetchEnd = new Date().getTime();
+					console.log("Fetch for", table.name, "took", fetchEnd - fetchStart, "ms");
 					// set collection data (assuming you have retrieved a json object)
 					collection.reset(data);
+					var resetEnd = new Date().getTime();
+					console.log("Collection reset for", table.name, "took", resetEnd - fetchEnd, "ms");
 				});
 				request.success(options.success);
 				request.error(options.error);
