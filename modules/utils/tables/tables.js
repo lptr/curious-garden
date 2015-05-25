@@ -204,23 +204,23 @@
         var tables = {};
 		
 		var Property = function (options) {
-            _.extend(this, {
+            _.extend(this,
+				{
 					hidden: false,
 					readOnly: !!options.calculate
 				},
-				options, {
-				toProperty: function () {
-					var name = this.name;
-					return function (item, value) {
-		                if (typeof value === 'undefined') {
-		                    return item.value(name);
-		                } else {
-		                    return item.set(name, value);
-		                }
-		            };
-				}
-			});
+				options);
         };
+		Property.prototype.toProperty = function () {
+			var name = this.name;
+			return function (item, value) {
+                if (typeof value === 'undefined') {
+                    return item.value(name);
+                } else {
+                    return item.set(name, value);
+                }
+            };
+		};
         tables.Property = Property;
 
         var SimpleProperty = function (options) {
@@ -258,13 +258,14 @@
 		}
 		IdProperty.prototype = Object.create(SimpleProperty.prototype);
 		IdProperty.prototype.toColumn = function () {
-			return _.extend(SimpleProperty.prototype.toColumn.call(this), {
-				renderer: function (instance, td, row, col, prop, id, cellProperties) {
-					var value = id ? this.table.items.get(id) : null;
-					var displayValue = value ? value.toIdString() : id;
-					Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
-				}.bind(this)
-			})
+			var column = SimpleProperty.prototype.toColumn.call(this);
+			var self = this;
+			column.renderer = function (instance, td, row, col, prop, id, cellProperties) {
+				var value = id ? self.table.items.get(id) : null;
+				var displayValue = value ? value.toIdString() : id;
+				Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+			};
+			return column;
 		};
 
         var ReferenceProperty = function (options) {
@@ -272,7 +273,7 @@
             SimpleProperty.apply(this, arguments);
 
 			var AutocompleteEditor = Handsontable.editors.AutocompleteEditor;
-			var ReferenceEditor = AutocompleteEditor.prototype.extend();
+			var ReferenceEditor = this.ReferenceEditor = AutocompleteEditor.prototype.extend();
 			ReferenceEditor.prototype.prepare = function(row, col, prop, td, originalId, cellProperties) {
 				var originalItem = self.target.items.get(originalId);
 				var originalValue = originalItem ? originalItem.toString() : null;
@@ -293,49 +294,43 @@
 				return AutocompleteEditor.prototype.saveValue.call(this, ids, ctrlDown);
 			};
 
-			_.extend(this, {
-				renderer: function (instance, td, row, col, prop, id, cellProperties) {
-					var value = id ? this.target.items.get(id) : null;
-					var displayValue = value ? value.toString() : null;
-					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
-				},
-				toColumn: function () {
-					var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
-					return _.extend(column, this.column, {
-		                type: "autocomplete",
-						strict: true,
-						validator: null,
-						editor: ReferenceEditor,
-						source: function (query, process) {
-							process(self.target.items.map(function (item) {
-								return item.toString() || "";
-							}));
-						},
-		                title: this.title,
-		                data: this.toProperty(),
-						renderer: this.renderer.bind(this)
-		            });
-				},
-				toProperty: function () {
-					var name = this.name;
-					return function (item, value) {
-		                if (typeof value === 'undefined') {
-							var result = item.value(name);
-		                    return result ? result.id : result;
-		                } else {
-							var ref = value ? self.target.items.get(value) : null;
-		                    return item.set(name, ref);
-		                }
-		            };
-				}
-			});
         };
         ReferenceProperty.prototype = Object.create(Property.prototype);
-        tables.ReferenceProperty = ReferenceProperty;
-
-		var delegate = function (type, fun) {
-			return function () { return type.prototype[fun].apply(this, arguments); };
+		ReferenceProperty.prototype.toColumn = function () {
+			var self = this;
+			var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
+			return _.extend(column, this.column, {
+                type: "autocomplete",
+				strict: true,
+				validator: null,
+				editor: this.ReferenceEditor,
+				source: function (query, process) {
+					process(self.target.items.map(function (item) {
+						return item.toString() || "";
+					}));
+				},
+                title: this.title,
+                data: this.toProperty(),
+				renderer: function (instance, td, row, col, prop, id, cellProperties) {
+					var value = id ? self.target.items.get(id) : null;
+					var displayValue = value ? value.toString() : null;
+					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+				}
+            });
 		};
+		ReferenceProperty.prototype.toProperty = function () {
+			var name = this.name;
+			return function (item, value) {
+                if (typeof value === 'undefined') {
+					var result = item.value(name);
+                    return result ? result.id : result;
+                } else {
+					var ref = value ? self.target.items.get(value) : null;
+                    return item.set(name, ref);
+                }
+            };
+		};
+        tables.ReferenceProperty = ReferenceProperty;
 
 		var Item = Backbone.RelationalModel.extend({
 			constructor: function () {
