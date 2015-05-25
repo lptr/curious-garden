@@ -91,6 +91,20 @@
 		$scope.table = Egysegek;
 	});
 	
+	plantingModule.factory("Gyartok", function (tables) {
+		return new tables.Table({
+			name: "Gyártók",
+			properties: [
+				{ name: "nev", title: "Név" },
+			],
+			titleProperty: "nev"
+		});
+	});
+
+	plantingModule.controller("GyartokController", function ($scope, kapaServer, Gyartok) {
+		$scope.table = Gyartok;
+	});
+	
 	plantingModule.factory("Fajok", function (tables, formulas) {
 		return new tables.Table({
 			name: "Fajok",
@@ -123,7 +137,7 @@
 		$scope.table = Fajok;
 	});
 	
-	plantingModule.factory("Magtipusok", function (tables, formulas, Fajok, Szinek, KereskedelmiJellegek) {
+	plantingModule.factory("Magtipusok", function (tables, formulas, Fajok, Gyartok, KereskedelmiJellegek, Szinek) {
 		return new tables.Table({
 			name: "Magtípusok",
 			properties: [
@@ -138,7 +152,7 @@
 				},
 				{ name: "faj", title: "Faj", target: Fajok, width: 120 },
 				{ name: "fajtanev", title: "Fajtanév" },
-				{ name: "gyarto", title: "Gyártó", width: 200 },
+				{ name: "gyarto", title: "Gyártó", target: Gyartok, width: 200 },
 				{ name: "szin", title: "Szín", target: Szinek },
 				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
 				{ name: "kerteszetiHabitus", title: "Kertészeti habitus", type: "dropdown",
@@ -264,6 +278,9 @@
 			properties: [
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (termeny, kiszereles) {
+						if (!termeny.value()) {
+							return "NINCS Termeny";
+						}
 						return termeny.asText() + ", " + (kiszereles.value() ? kiszereles.value().toString() : "??");
 					}
 				},
