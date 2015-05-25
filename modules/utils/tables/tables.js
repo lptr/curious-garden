@@ -156,24 +156,23 @@
 				return;
 			}
 			console.log("<<< Finished change tracking", pendingChanges);
+			var callListeners = function (listeners, item) {
+				for (var idx = 0, len = listeners.length; idx < len; idx++) {
+					listeners[idx](item);
+				}
+			}
 			try {
 				console.log("=== Changes to save", pendingChanges);
 				_.values(pendingChanges).forEach(function (change) {
 					var item = change.item;
 					var operation = change.operation;
-					changeTracking.operationStartListeners.forEach(function (listener) {
-						listener(item);
-					});
+					callListeners(changeTracking.operationStartListeners, item);
 					operation().then(function (result) {
 						console.log("Successfully saved", item, result);
-						changeTracking.operationSuccessListeners.forEach(function (listener) {
-							listener(item);
-						});
+						callListeners(changeTracking.operationSuccessListeners, item);
 					}, function (reason) {
 						console.log("Failed to save", item, reason);
-						changeTracking.operationFailureListeners.forEach(function (listener) {
-							listener(item);
-						});
+						callListeners(changeTracking.operationFailureListeners, item);
 					});					
 				});
 			} finally {
