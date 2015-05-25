@@ -466,9 +466,9 @@
 			// 	console.log("Backbone event", self.name, arguments);
 			// });
 			this.items.on("reset", function () {
-				self.items.forEach(function (item) {
-					self.recalculate(item);
-				});
+				for (var idx = 0, len = self.items.length; idx < len; idx++) {
+					self.recalculate(self.items.at(idx));
+				}
 				self.render.bind(self)();
 			});
 
