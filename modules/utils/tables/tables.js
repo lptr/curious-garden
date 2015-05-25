@@ -80,37 +80,29 @@
 			return request;
 		};
 	});
-
-	tablesModule.factory("backboneFetch", function ($http) {
-		return function (table) {
-			return function (options) {
-				console.log("Fetching", table.name);
-				var fetchStart = new Date().getTime();
-				var collection = this;
-				var request = $http.jsonp(serverUrl, {
-					params: {
-						method: "fetch",
-						table: table.name,
-						callback: "JSON_CALLBACK"
-					}
-				});
-				request.error(function(data, status, headers, config) {
-					console.log("Error", data, status, headers, config);
-					alert("Error: " + status);
-				});
-				request.success(function (data) {
-					console.log("Data fetched for ", table.name, data);
-					var fetchEnd = new Date().getTime();
-					console.log("Fetch for", table.name, "took", fetchEnd - fetchStart, "ms");
-					// set collection data (assuming you have retrieved a json object)
-					collection.reset(data);
-					var resetEnd = new Date().getTime();
-					console.log("Collection reset for", table.name, "took", resetEnd - fetchEnd, "ms");
-				});
-				request.success(options.success);
-				request.error(options.error);
-				return request;
-			};			
+	
+	tablesModule.factory("itemFetcher", function ($http) {
+		return function (table, options) {
+			var fetchStart = new Date().getTime();
+			console.log("Fetching", table.name);
+			var request = $http.jsonp(serverUrl, {
+				params: {
+					method: "fetch",
+					table: table.name,
+					callback: "JSON_CALLBACK"
+				}
+			});
+			request.error(function(data, status, headers, config) {
+				console.log("Error", data, status, headers, config);
+				alert("Error: " + status);
+			});
+			request.success(function (data) {
+				var fetchEnd = new Date().getTime();
+				console.log("Data fetched for", table.name, "in", fetchEnd - fetchStart, "ms");
+			});
+			request.success(options.success);
+			request.error(options.error);
+			return request;
 		};
 	});
 
@@ -192,7 +184,7 @@
 		return changeTracking;
 	});
 
-    tablesModule.factory("tables", function (backboneFetch, backboneSync, changeTracking, prefixSuffixRenderer) {
+    tablesModule.factory("tables", function (itemFetcher, backboneSync, changeTracking, prefixSuffixRenderer) {
         var tables = {};
 		
 		var Property = function (options) {
@@ -462,7 +454,6 @@
 			}, options.items));
 			var BackboneCollection = Backbone.Collection.extend({
 				model: this.BackboneModel,
-				fetch: backboneFetch(this),
 				splice: function (index, howMany) {
 					var args = _.toArray(arguments).slice(2).concat({at: index}),
 					removed = this.models.slice(index, index + howMany);
@@ -595,24 +586,29 @@
 			var dependencies = this.properties
 				.filter(function (property) { return property instanceof ReferenceProperty; })
 				.map(function (property) { return property.target; });
-			console.log(this.name, "depends on", dependencies);
-			var dependenciesFetched = Promise.all(_.pluck(dependencies, "ready"));
-			dependenciesFetched.then(function () {
-				console.log("Dependencies fetched for", self.name);
-			});
-			var itemsFetched = dependenciesFetched.then(function () {
-				return new Promise(function (resolve, reject) {
-					self.items.fetch({
-						success: resolve,
-						error: reject
-					});
+			// console.log(this.name, "depends on", dependencies);
+			var dependenciesReady = Promise.all(_.pluck(dependencies, "ready"));
+			// dependenciesReady.then(function () {
+			// 	console.log("Dependencies ready for", self.name);
+			// });
+			var itemsLoaded = new Promise(function (resolve, reject) {
+				itemFetcher(self, {
+					success: function (items) {
+						dependenciesReady.then(function () {
+							var resetStart = new Date().getTime();
+							self.items.reset(items);
+							var resetEnd = new Date().getTime();
+							console.log("Collection reset for", self.name, "in", resetEnd - resetStart, "ms, which is", (resetEnd - resetStart) / items.length, "ms/item");
+							resolve(items);
+						}, function () {
+							reject.apply(this, arguments);
+						});
+					},
+					error: reject
 				});
 			});
-			itemsFetched.then(function () {
-				console.log("Items fetched for", self.name);
-			});
 
-			this.ready = Promise.all([hotInitialized, itemsFetched]);
+			this.ready = Promise.all([hotInitialized, itemsLoaded]);
 			this.ready.then(function () {
 				console.log("Table initialized", self.name);
 			}, function () {
