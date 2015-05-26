@@ -312,7 +312,7 @@
                 title: this.title,
                 data: this.toProperty(),
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
-					var value = id ? self.target.items.get(id) : null;
+					var value = self.target.items._byId[id];
 					var displayValue = value ? value.toString() : null;
 					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				}
