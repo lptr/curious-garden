@@ -77,6 +77,7 @@
 			properties: [
 				{ name: "nev", title: "Név" },
 			],
+			filters: [ "nev" ],
 			titleProperty: "nev"
 		});
 	});
@@ -105,6 +106,7 @@
 				{ name: "magPerGramm", title: "Magok száma", unit: "db/g" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje", unit: "hét" }
 			],
+			filters: [ "nev" ],
 			titleProperty: "nev"
 		});
 	});
@@ -150,6 +152,7 @@
 					}
 				},
 			],
+			filters: [ "nev", "faj", "fajtanev", "gyarto", "szin", "kereskedelmiJelleg", "kerteszetiHabitus" ],
 			titleProperty: "nev"
 		});
 	});

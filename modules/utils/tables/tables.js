@@ -522,9 +522,9 @@
 			});
             this.properties.unshift(this.id);
 
-            var propertiesMap = {};
+            this.propertiesMap = {};
             this.properties.forEach(function (property) {
-                propertiesMap[property.name] = property;
+                self.propertiesMap[property.name] = property;
 				property.table = this;
             }, this);
 
@@ -536,7 +536,7 @@
 					if (name === "item") {
 						result = item;
 					} else {
-						var dependentProperty = propertiesMap[name];
+						var dependentProperty = self.propertiesMap[name];
 						if (!dependentProperty) {
 							throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
 						}
@@ -693,6 +693,9 @@
 				});
 			});
         };
+		Table.prototype.getProperty = function (name) {
+			return this.propertiesMap[name];
+		}
 		Table.prototype.setFilter = function (filter) {
 			if (this.hot) {
 				var data = filter ? this.items.filter(filter) : this.items;
@@ -779,8 +782,7 @@
 		};
 		
 		var root = null;
-		var currentTable = null;
-
+		
 		return {
 			link: function (scope, element, attrs) {
 				root = element[0].children[1];
@@ -789,40 +791,62 @@
 			templateUrl: "modules/utils/tables/backbone-table.html",
 			controller: function ($scope) {
 				$scope.ready = false;
-				$scope.$watch("table", function (table) {
-					if (currentTable) {
-						currentTable.unload();
+				$scope.filters = {};
+				$scope.filterValues = {};
+				$scope.$watch("table", function (table, previousTable) {
+					if (previousTable) {
+						previousTable.unload();
 					}
-					currentTable = null;
+					$scope.ready = false;
+					$scope.filters = {};
+					$scope.filterValues = {};
 					if (table) {
-						currentTable = table;
 						table.load(root);
+						$scope.filters = (table.filters || []).map(function (propertyName) {
+							return table.getProperty(propertyName);
+						});
+						table.ready.then(function () {
+							if ($scope.table === table) {
+								$scope.$apply(function () {
+									$scope.ready = true;
+								});
+							}
+						});
 					}
 				});
-				$scope.filter = "";
-				if ($scope.filterProperty) {
-					$scope.$watch("filter", function (filter) {
-						if (!filter) {
-							$scope.table.setFilter(null);
-						} else {
-							filter = normalize(filter);
-							$scope.table.setFilter(function (item) {
-								var name = normalize(item.get($scope.filterProperty));
-								if (!name) {
+				$scope.$watch("filterValues", function (filterValues) {
+					var filterFunctions = [];
+					_.forEach(filterValues, function (filterValue, property) {
+						filterValue = normalize(filterValue);
+						if (!filterValue) {
+							return;
+						}
+						filterFunctions.push(function (item) {
+							var itemValue = normalize(item.value(property));
+							return itemValue && itemValue.indexOf(filterValue) !== -1;
+						});
+					});
+					var filterFunction;
+					if (filterFunctions.length === 0) {
+						filterFunction = null;
+					} else {
+						filterFunction = function (item) {
+							for (var idx = 0, len = filterFunctions.length; idx < len; idx++) {
+								if (!filterFunctions[idx](item)) {
 									return false;
 								}
-								return name.indexOf(filter) !== -1;
-							});
-						}
-					});
-				}
+							}
+							return true;
+						};
+					}
+					$scope.table.setFilter(filterFunction);
+				}, true);
 				$scope.dump = function () {
 					console.log("Dump", $scope.table.items);
 				};
 			},
 			scope: {
-				table: "=",
-				filterProperty: "@filter"
+				table: "="
 			}
 		}
 	});
