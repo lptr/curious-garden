@@ -463,8 +463,26 @@
 		});
 	});
 
-	plantingModule.controller("TablesController", function ($scope, Fajok, Magtipusok, Vetestervezo) {
+	plantingModule.controller("TablesController", function ($scope, tables, Fajok, Magtipusok, Vetestervezo) {
 		$scope.tables = [ Fajok, Magtipusok, Vetestervezo ];
+		$scope.failed = {};
+		$scope.enabled = {};
+		$scope.tables.forEach(function (table) {
+			table.stateListeners.push(function (table, state) {
+				switch (state) {
+					case tables.TableState.READY:
+						$scope.$apply(function () {
+							$scope.enabled[table.name] = true;
+						});
+						break;
+					case tables.TableState.FAILED:
+						$scope.$apply(function () {
+							$scope.failed[table.name] = true;
+						});
+						break;
+				}
+			});
+		});
 		$scope.selected = $scope.tables[0];
 	});
 
