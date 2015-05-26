@@ -421,6 +421,16 @@
 			}
 		}
         tables.ItemProperty = ItemProperty;
+		
+		var TableState = {
+			CREATED: 0,
+			DEPENDENCIES_READY: 1,
+			ITEMS_LOADED: 2,
+			ITEMS_INITIALIZED: 3,
+			READY: 4,
+			FAILED: -1
+		};
+		tables.TableState = TableState;
 
         var Table = function (options) {
 			options.properties = (options.properties || []).map(function (property) {
@@ -625,14 +635,17 @@
 				});
 			}.bind(this);
 
+			this.stateListeners = [];
+
 			var dependencies = this.properties
 				.filter(function (property) { return property instanceof ReferenceProperty; })
 				.map(function (property) { return property.target; });
-			// console.log(this.name, "depends on", dependencies);
 			var dependenciesReady = Promise.all(_.pluck(dependencies, "ready"));
-			// dependenciesReady.then(function () {
-			// 	console.log("Dependencies ready for", self.name);
-			// });
+			dependenciesReady.then(function () {
+				self.stateListeners.forEach(function (listener) {
+					listener(self, TableState.DEPENDENCIES_READY);
+				});
+			});
 			var itemsLoaded = new Promise(function (resolve, reject) {
 				itemFetcher(self, {
 					success: function (items) {
@@ -649,6 +662,11 @@
 					error: reject
 				});
 			});
+			itemsLoaded.then(function () {
+				self.stateListeners.forEach(function (listener) {
+					listener(self, TableState.ITEMS_LOADED);
+				});
+			});
 			var itemsInitialized = itemsLoaded.then(function (items) {
 				return new Promise(function (resolve, reject) {
 					initializeChangeTracking();
@@ -656,12 +674,23 @@
 					resolve(items);
 				});
 			});
-
+			itemsInitialized.then(function () {
+				self.stateListeners.forEach(function (listener) {
+					listener(self, TableState.ITEMS_INITIALIZED);
+				});
+			});
+			
 			this.ready = Promise.all([itemsInitialized]);
 			this.ready.then(function () {
-				console.log("Table initialized", self.name);
+				console.log("Table ready", self.name);
+				self.stateListeners.forEach(function (listener) {
+					listener(self, TableState.READY);
+				});
 			}, function () {
 				console.log("Table failed to initialize", self.name, arguments)
+				self.stateListeners.forEach(function (listener) {
+					listener(self, TableState.FAILED);
+				});
 			});
         };
 		Table.prototype.setFilter = function (filter) {
