@@ -558,18 +558,19 @@
 				};
             });
 			
-			var hotResolved;
-			var hotInitialized = new Promise(function (resolve, reject) {
-				hotResolved = resolve;
-			});
-			var afterInit = function () {
-				self.hot = this;
-				hotResolved(this);
-			};
-			
+			var renderStart = NaN;
             this.settings = $.extend({
 				height: 500
 			}, this.settings, {
+				beforeRender: function () {
+					console.log("Rendered", arguments);
+					renderStart = Date.now();
+				},
+				afterRender: function () {
+					var renderEnd = Date.now();
+					console.log("Rendered in", renderEnd - renderStart, "ms", arguments);
+					renderStart = NaN;
+				},
                 data: this.items,
 				// Without this a RangeError is thrown with columnSorting enabled
 				observeChanges: false,
@@ -577,7 +578,6 @@
 				// Without this we cannot press "delete rows" button outside
 				outsideClickDeselects: false,
                 dataSchema: function () { return new self.BackboneModel(); },
-				afterInit: afterInit,
 				beforeChange: changeTracking.start,
 				afterChange: changeTracking.finish,
                 columns: this.properties
@@ -657,7 +657,7 @@
 				});
 			});
 
-			this.ready = Promise.all([hotInitialized, itemsInitialized]);
+			this.ready = Promise.all([itemsInitialized]);
 			this.ready.then(function () {
 				console.log("Table initialized", self.name);
 			}, function () {
@@ -681,9 +681,6 @@
 				this.recalculateProps[idx](item);
 			}
         };
-        Table.prototype.getSettings = function () {
-			return this.settings;
-        };
 		Table.prototype.addItem = function (attributes) {
 			changeTracking.start();
 			try {
@@ -696,6 +693,9 @@
 			}
 		};
 		Table.prototype.removeSelectedItems = function (attributes) {
+			if (!this.hot) {
+				return;
+			}
 			changeTracking.start();
 			try {
 				var selected = this.hot.getSelectedRange();
@@ -711,6 +711,19 @@
 				this.render();
 			} finally {
 				changeTracking.finish();
+			}
+		};
+		Table.prototype.load = function (root) {
+			var hot = new Handsontable(root, this.settings);
+			hot.addHook("modifyRowHeight", function () {
+				return 21;
+			});
+			this.hot = hot;
+		};
+		Table.prototype.unload = function (hot) {
+			if (this.hot) {
+				this.hot.destroy();
+				this.hot = null;
 			}
 		};
 		Table.prototype.toString = function () {
@@ -735,22 +748,27 @@
 			string = string.toLowerCase();
 			return string;
 		};
+		
+		var root = null;
+		var currentTable = null;
 
 		return {
 			link: function (scope, element, attrs) {
-				var hot = new Handsontable(element[0].children[1], scope.table.getSettings());
-				hot.addHook("modifyRowHeight", function () {
-					return 21;
-				});
+				root = element[0].children[1];
 			},
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
 			controller: function ($scope) {
 				$scope.ready = false;
-				$scope.table.ready.then(function () {
-					$scope.$apply(function () {
-						$scope.ready = true;
-					});
+				$scope.$watch("table", function (table) {
+					if (currentTable) {
+						currentTable.unload();
+					}
+					currentTable = null;
+					if (table) {
+						currentTable = table;
+						table.load(root);
+					}
 				});
 				$scope.filter = "";
 				if ($scope.filterProperty) {

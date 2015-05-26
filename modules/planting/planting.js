@@ -25,10 +25,6 @@
 		});
 	});
 
-	plantingModule.controller("SzinekController", function ($scope, kapaServer, Szinek) {
-		$scope.table = Szinek;
-	});
-	
 	plantingModule.factory("KereskedelmiJellegek", function (tables) {
 		return new tables.Table({
 			name: "Kereskedelmi jellegek",
@@ -40,10 +36,6 @@
 		});
 	});
 
-	plantingModule.controller("KereskedelmiJellegekController", function ($scope, kapaServer, KereskedelmiJellegek) {
-		$scope.table = KereskedelmiJellegek;
-	});
-	
 	plantingModule.factory("Termekkategoriak", function (tables) {
 		return new tables.Table({
 			name: "Termékkategóriák",
@@ -55,10 +47,6 @@
 		});
 	});
 
-	plantingModule.controller("TermekkategoriakController", function ($scope, kapaServer, Termekkategoriak) {
-		$scope.table = Termekkategoriak;
-	});
-	
 	plantingModule.factory("Felhasznalasok", function (tables) {
 		return new tables.Table({
 			name: "Felhasználások",
@@ -70,10 +58,6 @@
 		});
 	});
 
-	plantingModule.controller("FelhasznalasokController", function ($scope, kapaServer, Felhasznalasok) {
-		$scope.table = Felhasznalasok;
-	});
-	
 	plantingModule.factory("Egysegek", function (tables) {
 		return new tables.Table({
 			name: "Egységek",
@@ -87,10 +71,6 @@
 		});
 	});
 
-	plantingModule.controller("EgysegekController", function ($scope, kapaServer, Egysegek) {
-		$scope.table = Egysegek;
-	});
-	
 	plantingModule.factory("Gyartok", function (tables) {
 		return new tables.Table({
 			name: "Gyártók",
@@ -101,10 +81,6 @@
 		});
 	});
 
-	plantingModule.controller("GyartokController", function ($scope, kapaServer, Gyartok) {
-		$scope.table = Gyartok;
-	});
-	
 	plantingModule.factory("Fajok", function (tables, formulas) {
 		return new tables.Table({
 			name: "Fajok",
@@ -133,10 +109,6 @@
 		});
 	});
 
-	plantingModule.controller("FajokController", function ($scope, kapaServer, Fajok) {
-		$scope.table = Fajok;
-	});
-	
 	plantingModule.factory("Magtipusok", function (tables, formulas, Fajok, Gyartok, KereskedelmiJellegek, Szinek) {
 		return new tables.Table({
 			name: "Magtípusok",
@@ -182,10 +154,6 @@
 		});
 	});
 
-	plantingModule.controller("MagtipusokController", function ($scope, kapaServer, Magtipusok) {
-		$scope.table = Magtipusok;
-	});
-	
 	plantingModule.factory("Magvasarlasok", function (tables, formulas, Magtipusok) {
 		return new tables.Table({
 			name: "Magvásárlások",
@@ -205,10 +173,6 @@
 		});
 	});
 
-	plantingModule.controller("MagvasarlasokController", function ($scope, kapaServer, Magvasarlasok) {
-		$scope.table = Magvasarlasok;
-	});
-	
 	plantingModule.factory("Termenyek", function (tables, formulas, Egysegek, Fajok, Felhasznalasok, KereskedelmiJellegek, Szinek, Termekkategoriak) {
 		return new tables.Table({
 			name: "Termények",
@@ -268,10 +232,6 @@
 		});
 	});
 
-	plantingModule.controller("TermenyekController", function ($scope, kapaServer, Termenyek) {
-		$scope.table = Termenyek;
-	});
-
 	plantingModule.factory("Termekek", function (tables, formulas, Egysegek, Termenyek) {
 		return new tables.Table({
 			name: "Termékek",
@@ -299,10 +259,6 @@
 		});
 	});
 
-	plantingModule.controller("TermekekController", function ($scope, kapaServer, Termekek) {
-		$scope.table = Termekek;
-	});
-	
 	var date = function (date) {
 		if (!(date instanceof Date) || isNaN(date)) {
 			return null;
@@ -507,8 +463,9 @@
 		});
 	});
 
-	plantingModule.controller("VetestervezoController", function ($scope, kapaServer, Vetestervezo) {
-		$scope.table = Vetestervezo;
+	plantingModule.controller("TablesController", function ($scope, Fajok, Magtipusok, Vetestervezo) {
+		$scope.tables = [ Fajok, Magtipusok, Vetestervezo ];
+		$scope.selected = $scope.tables[0];
 	});
 
 	plantingModule.controller("ChangeTrackingController", function ($scope, changeTracking) {
