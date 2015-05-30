@@ -376,9 +376,45 @@
 				},
 				{ name: "ontozes", title: "Öntözés", type: "dropdown", column: {
 					source: [ "adatra vár", "csepicső", "csepicső+gomba", "eldöntendő", "gomba", "szórófejes" ]
-				} },
+				},
+					calculateDefault: function (sorkoz, novenykoz) {
+						if (sorkoz.asNumber() < 12) {
+							return "szórófejes";
+						} else if (novenykoz.asNumber() === 30) {
+							return "csepicső";
+						} else if (novenykoz.asNumber() === 15) {
+							return "csepicső+gomba";
+						} else if (novenykoz.asNumber() > 30) {
+							return "gomba";
+						} else if (novenykoz.value()) {
+							return "eldöntendő";
+						} else {
+							return "adatra vár";
+						}
+					}
+				},
 				// TODO What is this?
-				{ name: "hanySzal", title: "Hány szál" },
+				{ name: "hanySzal", title: "Hány szál", unit: "szál",
+					calculateDefault: function (sorkoz, ontozes) {
+						if (ontozes.value() === "szórófejes") {
+							return null;
+						} else if (sorkoz.asNumber() > 60) {
+							return 1;
+						} else if (sorkoz.asNumber() === 60) {
+							return 2;
+						} else if (sorkoz.asNumber() === 40) {
+							return 3;
+						} else if (sorkoz.asNumber() === 30) {
+							return 4;
+						} else if (sorkoz.asNumber() == 20) {
+							return 5;
+						} else if (sorkoz.value()) {
+							return "eldöntendő";
+						} else {
+							return "adatra vár";
+						}
+					}
+				},
 				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
 				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
 				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", column: { format: "0.00" },
@@ -461,7 +497,7 @@
 				},
 			],
 			settings: {
-				// fixedColumnsLeft: 3
+				fixedColumnsLeft: 3
 			}
 		});
 	});
