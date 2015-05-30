@@ -701,6 +701,11 @@
 		Table.prototype.addItem = function (attributes) {
 			changeTracking.start();
 			try {
+				this.properties.forEach(function (property) {
+					if (typeof attributes[property.name] === 'undefined') {
+						attributes[property.name] = null;
+					}
+				});
 				var item = new this.BackboneModel(attributes);
 				if (!item.get(this.id.name)) {
 					var maxId = 0;
