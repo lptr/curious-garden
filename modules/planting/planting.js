@@ -461,7 +461,7 @@
 				},
 			],
 			settings: {
-				fixedColumnsLeft: 3
+				// fixedColumnsLeft: 3
 			}
 		});
 	});
