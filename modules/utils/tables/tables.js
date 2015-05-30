@@ -495,21 +495,6 @@
 			});
 
             var dataProperties = this.properties.slice();
-            var assignId = function (item) {
-				if (item.has(self.id.name)) {
-					return undefined;
-				}
-                var hasSomeValues = dataProperties.some(function (property) { return item.has(property.name); });
-                if (hasSomeValues) {
-                    var maxId = 0;
-                    self.items.forEach(function (item) {
-                        maxId = Math.max(item.asNumber(self.id.name), maxId);
-                    }, self);
-                    return maxId + 1;
-                } else {
-                    return undefined;
-                }
-            };
             this.id = new IdProperty({
 				name: "id",
 				title: "ID",
@@ -518,7 +503,7 @@
 					className: "htCenter",
 					width: 60
 				},
-				calculate: assignId
+				readOnly: true
 			});
             this.properties.unshift(this.id);
 
@@ -717,6 +702,14 @@
 			changeTracking.start();
 			try {
 				var item = new this.BackboneModel(attributes);
+				if (!item.get(this.id.name)) {
+					var maxId = 0;
+					this.items.forEach(function (item) {
+						maxId = Math.max(item.asNumber(this.id.name), maxId);
+					}, this);
+					item.set(this.id.name, maxId + 1);
+				}
+
 				this.items.add(item);
 				this.recalculate(item);
 				this.render();
