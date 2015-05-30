@@ -699,6 +699,7 @@
 			}
         };
 		Table.prototype.addItem = function (attributes) {
+			var attributes = attributes || {};
 			changeTracking.start();
 			try {
 				this.properties.forEach(function (property) {
