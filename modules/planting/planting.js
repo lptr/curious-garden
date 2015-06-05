@@ -509,6 +509,7 @@
 				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
 				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
 			],
+			filters: [ "termeny", "mag", "agyas" ],
 			settings: {
 				fixedColumnsLeft: 3
 			}
