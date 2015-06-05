@@ -126,7 +126,7 @@
 		return function (prefix, suffix) {
 			return function (instance, td, row, col, prop, value, cellProperties) {
 				Handsontable.renderers.NumericRenderer.apply(null, arguments);
-				if (td.textContent) {
+				if (value !== null && value !== "" && typeof value !== 'undefined') {
 					td.textContent = prefix + td.textContent + suffix;
 				}
 			};
