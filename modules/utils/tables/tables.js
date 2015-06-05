@@ -530,7 +530,7 @@
 					recalculator = null;
 				} else {
 					var dependentPropertyNames = angular.injector.$$annotate(property.calculate);
-					dependentProperties = dependentPropertyNames.forEach(function (name) {
+					dependentProperties = dependentPropertyNames.map(function (name) {
 						var dependentProperty = self.propertiesMap[name];
 						if (!dependentProperty) {
 							throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
@@ -573,12 +573,12 @@
 					throw new Error("There is a cycle between the properties in " + this.name);
 				}
 
-				var property = currentRecalculation.property;
 				if (currentRecalculation.recalculator) {
 					this.recalculateProps.push(currentRecalculation.recalculator);
 				}
 
 				// Remove from dependent properties
+				var property = currentRecalculation.property;
 				for (var idx = 0, len = propertyRecalculations.length; idx < len; idx++) {
 					var propertyRecalculation = propertyRecalculations[idx];
 					propertyRecalculation.dependentProperties = _.without(propertyRecalculation.dependentProperties, property);
