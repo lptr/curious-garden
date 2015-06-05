@@ -1,18 +1,18 @@
 <div ng-controller="ChangeTrackingController">
-    <span>Pending operations:</span>
-    <span>{{pending}}</span>
+	<span>Pending operations:</span>
+	<span>{{pending}}</span>
 </div>
 <div ng-controller="TablesController">
-    <div class="btn-group">
-        <label
-            class="btn btn-sm"
-            ng-class="{ 'btn-danger': $parent.failed[table.name], 'btn-default': !$parent.failed[table.name] }"
-            ng-repeat="table in tables"
-            ng-model="$parent.selected"
-            btn-radio="table"
-            ng-disabled="!$parent.enabled[table.name]">
-            {{table.name}}
-        </label>
-    </div>
-    <backbone-table table="selected"></backbone-table>
+	<div class="btn-group">
+		<label
+			class="btn btn-sm"
+			ng-class="{ 'btn-danger': $parent.failed[table.name], 'btn-default': !$parent.failed[table.name] }"
+			ng-repeat="table in tables"
+			ng-model="$parent.selected"
+			btn-radio="table"
+			ng-disabled="!$parent.enabled[table.name]">
+			{{table.name}}
+		</label>
+	</div>
+	<backbone-table table="selected"></backbone-table>
 </div>

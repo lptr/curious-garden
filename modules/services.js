@@ -9,8 +9,8 @@
 				if (!input) {
 					return input;
 				}
-				return (input.replace(translate_re, function(match) { 
-					return translate[match]; 
+				return (input.replace(translate_re, function(match) {
+					return translate[match];
 				})).toLowerCase();
 			};
 		})();

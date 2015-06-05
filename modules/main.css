@@ -22,5 +22,5 @@
 }
 
 .stripped > .row:nth-of-type(even) {
-    background: #f0f0f0;
+	background: #f0f0f0;
 }

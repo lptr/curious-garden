@@ -13,7 +13,7 @@
 				templateUrl: 'modules/planting/planting.html'
 			});
 	});
-	
+
 	plantingModule.factory("Szinek", function (tables) {
 		return new tables.Table({
 			name: "Színek",

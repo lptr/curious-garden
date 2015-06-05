@@ -1,25 +1,25 @@
 .handsontable td,
 .handsontable th {
-    font-size: 10pt;
+	font-size: 10pt;
 }
 
 .handsontable td {
-    position: relative;
-    white-space: nowrap;
-    overflow: hidden;
+	position: relative;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .handsontable .htAutocompleteArrow {
-    float: none;
-    position: absolute;
-    top: 0;
-    right: 0;
+	float: none;
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 td.currentRow {
-    background-color: #f0fff0;
+	background-color: #f0fff0;
 }
 
 td.currentCol {
-    background-color: #f8fff8;
+	background-color: #f8fff8;
 }

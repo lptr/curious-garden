@@ -1,14 +1,14 @@
 <form>
-    <fieldset ng-disabled="!ready">
-        <span ng-repeat="filterProperty in filters">
-            <label>{{filterProperty.title}}:</label>
-            <input ng-model="$parent.filterValues[filterProperty.name]"></input>
-        </span>
-        <span ng-show="filterProperty">
-        </span>
-        <button class="btn btn-xs btn-success" ng-click="table.addItem()" ng-disabled="filter">+ Hozzáadás</button>
-        <button class="btn btn-xs btn-danger"  ng-click="table.removeSelectedItems()" ng-disabled="filter">– Törlés</button>
-        <button class="btn btn-xs btn-warning" ng-click="dump()">Dump</button>
-    </fieldset>
+	<fieldset ng-disabled="!ready">
+		<span ng-repeat="filterProperty in filters">
+			<label>{{filterProperty.title}}:</label>
+			<input ng-model="$parent.filterValues[filterProperty.name]"></input>
+		</span>
+		<span ng-show="filterProperty">
+		</span>
+		<button class="btn btn-xs btn-success" ng-click="table.addItem()" ng-disabled="filter">+ Hozzáadás</button>
+		<button class="btn btn-xs btn-danger"  ng-click="table.removeSelectedItems()" ng-disabled="filter">– Törlés</button>
+		<button class="btn btn-xs btn-warning" ng-click="dump()">Dump</button>
+	</fieldset>
 </form>
 <div></div>

@@ -2,7 +2,7 @@
 	var tablesModule = angular.module("kapa.utils.tables", [
 		"ui.bootstrap",
 	]);
-	
+
 	tablesModule.factory("formulas", function (tables) {
 		var mapOverNumbers = function (items, defaultValue, fun) {
 			var result = NaN;
@@ -96,7 +96,7 @@
 			return request;
 		};
 	});
-	
+
 	tablesModule.factory("itemFetcher", function ($http) {
 		return function (table, options) {
 			var fetchStart = new Date().getTime();
@@ -122,24 +122,24 @@
 		};
 	});
 
-    tablesModule.factory("prefixSuffixRenderer", function () {
-        return function (prefix, suffix) {
-            return function (instance, td, row, col, prop, value, cellProperties) {
-                Handsontable.renderers.NumericRenderer.apply(null, arguments);
-                if (td.textContent) {
-                    td.textContent = prefix + td.textContent + suffix;
-                }
-            };
-        };
-    });
-	
+	tablesModule.factory("prefixSuffixRenderer", function () {
+		return function (prefix, suffix) {
+			return function (instance, td, row, col, prop, value, cellProperties) {
+				Handsontable.renderers.NumericRenderer.apply(null, arguments);
+				if (td.textContent) {
+					td.textContent = prefix + td.textContent + suffix;
+				}
+			};
+		};
+	});
+
 	tablesModule.factory("changeTracking", function () {
 		var changeTracking = {
 			operationStartListeners: [],
 			operationSuccessListeners: [],
 			operationFailureListeners: []
 		};
-		
+
 		var pendingChanges = null;
 		changeTracking.start = function () {
 			console.log(">>> Started change tracking");
@@ -190,7 +190,7 @@
 					}, function (reason) {
 						console.log("Failed to save", item, reason);
 						callListeners(changeTracking.operationFailureListeners, item);
-					});					
+					});
 				});
 			} finally {
 				pendingChanges = null;
@@ -200,33 +200,33 @@
 		return changeTracking;
 	});
 
-    tablesModule.factory("tables", function (itemFetcher, backboneSync, changeTracking, prefixSuffixRenderer) {
-        var tables = {};
-		
+	tablesModule.factory("tables", function (itemFetcher, backboneSync, changeTracking, prefixSuffixRenderer) {
+		var tables = {};
+
 		var Property = function (options) {
-            _.extend(this,
+			_.extend(this,
 				{
 					hidden: false,
 					readOnly: !!options.calculate,
 					calculate: options.calculateDefault
 				},
 				options);
-        };
+		};
 		Property.prototype.toProperty = function () {
 			var name = this.name;
 			return function (item, value) {
-                if (typeof value === 'undefined') {
-                    return item.value(name);
-                } else {
-                    return item.set(name, value);
-                }
-            };
+				if (typeof value === 'undefined') {
+					return item.value(name);
+				} else {
+					return item.set(name, value);
+				}
+			};
 		};
-        tables.Property = Property;
+		tables.Property = Property;
 
-        var SimpleProperty = function (options) {
-            Property.call(this, _.extend({ type: "text" }, options));
-        };
+		var SimpleProperty = function (options) {
+			Property.call(this, _.extend({ type: "text" }, options));
+		};
 		SimpleProperty.prototype = Object.create(Property.prototype);
 		SimpleProperty.prototype.toColumn = function () {
 			var column = _.extend({
@@ -252,7 +252,7 @@
 			}
 			return column;
 		};
-        tables.SimpleProperty = SimpleProperty;
+		tables.SimpleProperty = SimpleProperty;
 
 		var IdProperty = function (options) {
 			SimpleProperty.call(this, _.extend({}, options, {
@@ -272,9 +272,9 @@
 			return column;
 		};
 
-        var ReferenceProperty = function (options) {
+		var ReferenceProperty = function (options) {
 			var self = this;
-            SimpleProperty.apply(this, arguments);
+			SimpleProperty.apply(this, arguments);
 
 			var AutocompleteEditor = Handsontable.editors.AutocompleteEditor;
 			var ReferenceEditor = this.ReferenceEditor = AutocompleteEditor.prototype.extend();
@@ -298,13 +298,13 @@
 				return AutocompleteEditor.prototype.saveValue.call(this, ids, ctrlDown);
 			};
 
-        };
-        ReferenceProperty.prototype = Object.create(Property.prototype);
+		};
+		ReferenceProperty.prototype = Object.create(Property.prototype);
 		ReferenceProperty.prototype.toColumn = function () {
 			var self = this;
 			var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
 			return _.extend(column, this.column, {
-                type: "autocomplete",
+				type: "autocomplete",
 				strict: true,
 				validator: null,
 				editor: this.ReferenceEditor,
@@ -313,14 +313,14 @@
 						return item.toString() || "";
 					}));
 				},
-                title: this.title,
-                data: this.toProperty(),
+				title: this.title,
+				data: this.toProperty(),
 				renderer: function (instance, td, row, col, prop, id, cellProperties) {
 					var value = self.target.items._byId[id];
 					var displayValue = value ? value.toString() : null;
 					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				}
-            });
+			});
 		};
 		ReferenceProperty.prototype.toProperty = function () {
 			var self = this;
@@ -328,16 +328,16 @@
 				if (item === null || typeof item === 'undefined') {
 					return null;
 				}
-                if (typeof value === 'undefined') {
+				if (typeof value === 'undefined') {
 					var result = item.value(self.name);
-                    return result ? result.id : result;
-                } else {
+					return result ? result.id : result;
+				} else {
 					var ref = value ? self.target.items.get(value) : null;
-                    return item.set(self.name, ref);
-                }
-            };
+					return item.set(self.name, ref);
+				}
+			};
 		};
-        tables.ReferenceProperty = ReferenceProperty;
+		tables.ReferenceProperty = ReferenceProperty;
 
 		var Item = Backbone.RelationalModel.extend({
 			constructor: function () {
@@ -355,8 +355,8 @@
 				if (!value) {
 					value = this.defaultValue(property);
 				}
-	            return value;
-	        },
+				return value;
+			},
 			hasValue: function (property) {
 				return this.has(property) || this.hasDefaultValue(property);
 			},
@@ -365,21 +365,21 @@
 			},
 			asNumber: function (property) {
 				var value = this.value(property);
-	            return typeof value === 'number' ? value : NaN;
+				return typeof value === 'number' ? value : NaN;
 			},
 			asDate: function (property) {
 				var value = this.value(property);
 				if (typeof value !== 'string') {
 					return null;
 				}
-	            return new Date(value);
+				return new Date(value);
 			},
 			asText: function (property) {
 				var value = this.value(property);
 				if (!value) {
 					return "";
 				}
-	            return value.toString();
+				return value.toString();
 			},
 			toIdString: function () {
 				return this.id ? this.id.toString() : null;
@@ -394,31 +394,31 @@
 			}
 		});
 
-        var ItemProperty = function (item, property) {
-            this.item = item;
-            this.property = property;
-        };
-        ItemProperty.prototype.value = function () {
-            return this.item.value(this.property);
-        };
+		var ItemProperty = function (item, property) {
+			this.item = item;
+			this.property = property;
+		};
+		ItemProperty.prototype.value = function () {
+			return this.item.value(this.property);
+		};
 		ItemProperty.prototype.hasValue = function () {
-            return this.item.has(this.property);
-        };
+			return this.item.has(this.property);
+		};
 		ItemProperty.prototype.isEmpty = function () {
-            return !!this.item.has(this.property);
-        };
+			return !!this.item.has(this.property);
+		};
 		ItemProperty.prototype.hasExplicit = function () {
-            return this.item.hasExplicit(this.property);
-        };
-        ItemProperty.prototype.asNumber = function () {
-            return this.item.asNumber(this.property);
-        };
+			return this.item.hasExplicit(this.property);
+		};
+		ItemProperty.prototype.asNumber = function () {
+			return this.item.asNumber(this.property);
+		};
 		ItemProperty.prototype.asDate = function () {
-            return this.item.asDate(this.property);
-        };
+			return this.item.asDate(this.property);
+		};
 		ItemProperty.prototype.asText = function () {
-            return this.item.asText(this.property);
-        };
+			return this.item.asText(this.property);
+		};
 		ItemProperty.prototype.get = function (subProperty) {
 			var value = this.item.value(this.property);
 			if (value instanceof Item) {
@@ -427,8 +427,8 @@
 				return null;
 			}
 		}
-        tables.ItemProperty = ItemProperty;
-		
+		tables.ItemProperty = ItemProperty;
+
 		var TableState = {
 			CREATED: 0,
 			DEPENDENCIES_READY: 1,
@@ -439,7 +439,7 @@
 		};
 		tables.TableState = TableState;
 
-        var Table = function (options) {
+		var Table = function (options) {
 			options.properties = (options.properties || []).map(function (property) {
 				if (property instanceof Property) {
 					return property;
@@ -490,7 +490,7 @@
 				}
 			});
 			this.items = new BackboneCollection();
-			
+
 			// this.items.on("all", function () {
 			// 	console.log("Backbone event", self.name, arguments);
 			// });
@@ -501,8 +501,8 @@
 				self.render.bind(self)();
 			});
 
-            var dataProperties = this.properties.slice();
-            this.id = new IdProperty({
+			var dataProperties = this.properties.slice();
+			this.id = new IdProperty({
 				name: "id",
 				title: "ID",
 				hidden: options.hideId,
@@ -512,15 +512,15 @@
 				},
 				readOnly: true
 			});
-            this.properties.unshift(this.id);
+			this.properties.unshift(this.id);
 
-            this.propertiesMap = {};
-            this.properties.forEach(function (property) {
-                self.propertiesMap[property.name] = property;
+			this.propertiesMap = {};
+			this.properties.forEach(function (property) {
+				self.propertiesMap[property.name] = property;
 				property.table = this;
-            }, this);
+			}, this);
 
-            this.recalculateProps = this.properties.map(function (property) {
+			this.recalculateProps = this.properties.map(function (property) {
 				if (typeof property.calculate !== 'function') {
 					return function () {};
 				}
@@ -547,10 +547,10 @@
 					}
 					item.setDefaultValue(property.name, value);
 				};
-            });
-			
+			});
+
 			var renderStart = NaN;
-            this.settings = $.extend({
+			this.settings = $.extend({
 				height: 500
 			}, this.settings, {
 				beforeRender: function () {
@@ -562,22 +562,22 @@
 					console.log("Rendered in", renderEnd - renderStart, "ms", arguments);
 					renderStart = NaN;
 				},
-                data: this.items,
+				data: this.items,
 				// Without this a RangeError is thrown with columnSorting enabled
 				observeChanges: false,
 				columnSorting: true,
 				// Without this we cannot press "delete rows" button outside
 				outsideClickDeselects: false,
-                dataSchema: function () { return new self.BackboneModel(); },
+				dataSchema: function () { return new self.BackboneModel(); },
 				beforeChange: changeTracking.start,
 				afterChange: changeTracking.finish,
-                columns: this.properties
+				columns: this.properties
 					.filter(function (property) { return !property.hidden })
 					.map(function (property) { return property.toColumn(); }),
 				currentRowClassName: "currentRow",
 				currentColClassName: "currentCol"
-            });
-			
+			});
+
 			var initializeChangeTracking = function () {
 				this.properties.forEach(function (property) {
 					if (property instanceof ReferenceProperty) {
@@ -660,7 +660,7 @@
 					listener(self, TableState.ITEMS_INITIALIZED);
 				});
 			});
-			
+
 			this.ready = Promise.all([itemsInitialized]);
 			this.ready.then(function () {
 				console.log("Table ready", self.name);
@@ -673,7 +673,7 @@
 					listener(self, TableState.FAILED);
 				});
 			});
-        };
+		};
 		Table.prototype.getProperty = function (name) {
 			return this.propertiesMap[name];
 		}
@@ -688,12 +688,12 @@
 				this.hot.render();
 			}
 		};
-        Table.prototype.recalculate = function (item) {
+		Table.prototype.recalculate = function (item) {
 			// console.log("Recalculating", this.name, item);
 			for (var idx = 0, len = this.recalculateProps.length; idx < len; idx++) {
 				this.recalculateProps[idx](item);
 			}
-        };
+		};
 		Table.prototype.addItem = function (attributes) {
 			var attributes = attributes || {};
 			changeTracking.start();
@@ -756,10 +756,10 @@
 		Table.prototype.toString = function () {
 			return this.name;
 		};
-        tables.Table = Table;
-        
-        return tables;
-    });
+		tables.Table = Table;
+
+		return tables;
+	});
 
 	tablesModule.directive("backboneTable", function() {
 		var normalize = function (string) {
@@ -775,9 +775,9 @@
 			string = string.toLowerCase();
 			return string;
 		};
-		
+
 		var root = null;
-		
+
 		return {
 			link: function (scope, element, attrs) {
 				root = element[0].children[1];
