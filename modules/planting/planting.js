@@ -117,7 +117,7 @@
 			properties: [
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (faj, fajtanev, gyarto) {
-						if (faj.value()) {
+						if (faj.hasValue()) {
 							return formulas.join(arguments);
 						} else {
 							return "NINCS FAJ: " + formulas.join(arguments);
@@ -141,7 +141,7 @@
 				} },
 				{ name: "magPerGramm", title: "Magok száma", type: "numeric",
 					calculateDefault: function (faj) {
-						return faj.value() ? faj.value().get("magPerGramm") : null;
+						return faj.hasValue() ? faj.get("magPerGramm").asNumber() : null;
 					}
 				},
 				{ name: "egyszeruId", title: "Egyszerű ID", width: 200,
@@ -176,7 +176,7 @@
 			properties: [
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (faj, felhasznalas, kereskedelmiJelleg, szin, meret) {
-						if (faj.value()) {
+						if (faj.hasValue()) {
 							return formulas.join([faj.asText() + felhasznalas.asText(), kereskedelmiJelleg, szin, meret]);
 						} else {
 							return "NINCS FAJ: " + formulas.join(arguments);
@@ -193,7 +193,7 @@
 				{ name: "novenykoz", title: "Vetési növényköz", unit: "cm" },
 				{ name: "termekcsoport", title: "Termékcsoport", width: 200,
 					calculate: function (faj, felhasznalas, meret) {
-						if (faj.value()) {
+						if (faj.hasValue()) {
 							var value = faj.asText() + felhasznalas.asText();
 							if (meret.asText()) {
 								value += " " + meret.asText();
@@ -230,10 +230,10 @@
 			properties: [
 				{ name: "nev", title: "Név", width: 240,
 					calculate: function (termeny, kiszereles) {
-						if (!termeny.value()) {
+						if (!termeny.hasValue()) {
 							return "NINCS Termeny";
 						}
-						return termeny.asText() + ", " + (kiszereles.value() ? kiszereles.value().toString() : "??");
+						return termeny.asText() + ", " + (kiszereles.hasValue() ? kiszereles.asText() : "??");
 					}
 				},
 				{ name: "termeny", title: "Termény", target: Termenyek, width: 200 },
@@ -302,7 +302,7 @@
 				{ name: "egysegekSzama", title: "Hány egység", type: "numeric", format: "0.0" },
 				{ name: "egyseg", title: "Egység", type: "dropdown", source: [ "szapláda", "sor", "sáv", "ágyás" ],
 					calculateDefault: function (mibe) {
-						if (mibe.value() === "szapláda") {
+						if (mibe.asText() === "szapláda") {
 							return "szapláda";
 						} else {
 							return null;
@@ -311,12 +311,12 @@
 				},
 				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm",
 					calculateDefault: function (termeny) {
-						return termeny.value() ? termeny.value().get("sorkoz") : null;
+						return termeny.hasValue() ? termeny.get("sorkoz").asNumber() : null;
 					}
 				},
 				{ name: "novenykoz", title: "Vetési növényköz", unit: "cm",
 					calculateDefault: function (termeny) {
-						return termeny.value() ? termeny.value().get("novenykoz") : null;
+						return termeny.hasValue() ? termeny.get("novenykoz").asNumber() : null;
 					}
 				},
 				{ name: "melyseg", title: "Vetési mélység", unit: "cm", format: "0.0",
@@ -343,16 +343,16 @@
 				},
 				{ name: "terulet", title: "Terület", unit: "m²", format: "0.00",
 					calculate: function (egyseg, egysegekSzama, sorkoz) {
-						if (!egyseg.value()) {
+						if (!egyseg.hasValue()) {
 							return null;
 						}
 						var egysegnyiTerulet;
-						switch (egyseg.value()) {
+						switch (egyseg.asText()) {
 							case "szapláda":
 								egysegnyiTerulet = 0.3 * 0.6;
 								break;
 							case "sor":
-								if (!sorkoz.value()) {
+								if (!sorkoz.hasValue()) {
 									return null;
 								}
 								egysegnyiTerulet = 3.6 * sorkoz.asNumber() / 100;
@@ -376,7 +376,7 @@
 				},
 				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", format: "0.0",
 					calculateDefault: function (egyseg, terulet, sorkoz) {
-						if (egyseg.value() === "szapláda") {
+						if (egyseg.asText() === "szapláda") {
 							return null;
 						}
 						return terulet.asNumber() / sorkoz.asNumber() / 3.6 * 100;
@@ -403,7 +403,7 @@
 							return "csepicső+gomba";
 						} else if (novenykoz.asNumber() > 30) {
 							return "gomba";
-						} else if (novenykoz.value()) {
+						} else if (novenykoz.hasValue()) {
 							return "eldöntendő";
 						} else {
 							return "adatra vár";
@@ -413,7 +413,7 @@
 				// TODO What is this?
 				{ name: "hanySzal", title: "Hány szál", unit: "szál",
 					calculateDefault: function (sorkoz, ontozes) {
-						if (ontozes.value() === "szórófejes") {
+						if (ontozes.asText() === "szórófejes") {
 							return null;
 						} else if (sorkoz.asNumber() > 60) {
 							return 1;
@@ -425,7 +425,7 @@
 							return 4;
 						} else if (sorkoz.asNumber() == 20) {
 							return 5;
-						} else if (sorkoz.value()) {
+						} else if (sorkoz.hasValue()) {
 							return "eldöntendő";
 						} else {
 							return "adatra vár";

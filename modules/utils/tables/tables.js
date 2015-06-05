@@ -340,7 +340,7 @@
 		ReferenceProperty.prototype.toProperty = function () {
 			var self = this;
 			return function (item, value) {
-				if (item === null || typeof item === 'undefined') {
+				if (item == null) {
 					return null;
 				}
 				if (typeof value === 'undefined') {
@@ -367,16 +367,18 @@
 			},
 			value: function (property) {
 				var value = this.get(property);
-				if (!value) {
+				if (value == null || value === "") {
 					value = this.defaultValue(property);
 				}
 				return value;
 			},
 			hasValue: function (property) {
-				return this.has(property) || this.hasDefaultValue(property);
+				var value = this.get(property);
+				return value != null || value !== "" || this.hasDefaultValue(property);
 			},
 			hasDefaultValue: function (property) {
-				return this.defaultValues[property] !== null;
+				var value = this.defaultValues[property];
+				return value != null && value !== "";
 			},
 			asNumber: function (property) {
 				var value = this.value(property);
@@ -391,7 +393,7 @@
 			},
 			asText: function (property) {
 				var value = this.value(property);
-				if (!value) {
+				if (value == null) {
 					return "";
 				}
 				return value.toString();
