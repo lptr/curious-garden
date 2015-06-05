@@ -231,7 +231,18 @@
 			if (type === "dropdown" || type === "date") {
 				type = "autocomplete";
 			}
-			return Handsontable.renderers.getRenderer(type);
+			var renderer = Handsontable.renderers.getRenderer(type);
+			var self = this;
+			return function (instance, td, row, col, prop, value, cellProperties) {
+				var item = self.table.items.at(row);
+				renderer.call(null, instance, td, row, col, prop, value, cellProperties);
+				var explicit = item.hasExplicitValue(self.name);
+				if (!explicit) {
+					td.classList.add("default");
+				} else if (item.hasDefaultValue(self.name)) {
+					td.classList.add("override");
+				}
+			};
 		};
 		Property.prototype.toColumn = function () {
 			var column = _.extend({
@@ -373,8 +384,11 @@
 				return value;
 			},
 			hasValue: function (property) {
+				return this.hasExplicitValue(property) || this.hasDefaultValue(property);
+			},
+			hasExplicitValue: function (property) {
 				var value = this.get(property);
-				return value != null || value !== "" || this.hasDefaultValue(property);
+				return value != null && value !== "";
 			},
 			hasDefaultValue: function (property) {
 				var value = this.defaultValues[property];
