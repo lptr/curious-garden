@@ -274,7 +274,7 @@
 
 		var ReferenceProperty = function (options) {
 			var self = this;
-			SimpleProperty.apply(this, arguments);
+			SimpleProperty.call(this, options);
 
 			var AutocompleteEditor = Handsontable.editors.AutocompleteEditor;
 			var ReferenceEditor = this.ReferenceEditor = AutocompleteEditor.prototype.extend();
@@ -302,7 +302,7 @@
 		ReferenceProperty.prototype = Object.create(Property.prototype);
 		ReferenceProperty.prototype.toColumn = function () {
 			var self = this;
-			var column = SimpleProperty.prototype.toColumn.apply(this, arguments);
+			var column = SimpleProperty.prototype.toColumn.call(this);
 			return _.extend(column, this.column, {
 				type: "autocomplete",
 				strict: true,
