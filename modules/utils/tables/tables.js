@@ -517,39 +517,33 @@
 				property.table = this;
             }, this);
 
-			var injectParameters = function (parameterNames, item) {
-				var parameters = [];
-				for (var idx = 0, len = parameterNames.length; idx < len; idx++) {
-					var name = parameterNames[idx];
-					var result;
-					if (name === "item") {
-						result = item;
-					} else {
-						var dependentProperty = self.propertiesMap[name];
-						if (!dependentProperty) {
-							throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
-						}
-						result = new ItemProperty(item, dependentProperty.name);
-					}
-					parameters.push(result);
-				};
-				return parameters;
-			};
             this.recalculateProps = this.properties.map(function (property) {
-				var injectRecalculator = function (calc) {
-					if (typeof calc !== 'function') {
-						return function () {};
-					}
-					var parameterNames = angular.injector.$$annotate(calc);
-					return function (item) {
-						var parameters = injectParameters(parameterNames, item);
-						var value = calc.apply(property, parameters);
-						if (typeof value !== 'undefined') {
-	                    	item.setDefaultValue(property.name, value);
+				if (typeof property.calculate !== 'function') {
+					return function () {};
+				}
+				var parameterNames = angular.injector.$$annotate(property.calculate);
+				return function (item) {
+					var parameters = [];
+					for (var idx = 0, len = parameterNames.length; idx < len; idx++) {
+						var name = parameterNames[idx];
+						var result;
+						if (name === "item") {
+							result = item;
+						} else {
+							var dependentProperty = self.propertiesMap[name];
+							if (!dependentProperty) {
+								throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
+							}
+							result = new ItemProperty(item, dependentProperty.name);
 						}
+						parameters.push(result);
 					};
+					var value = property.calculate.apply(property, parameters);
+					if (typeof value === 'undefined') {
+						value = null;
+					}
+					item.setDefaultValue(property.name, value);
 				};
-				return injectRecalculator(property.calculate);
             });
 			
 			var renderStart = NaN;
