@@ -95,7 +95,7 @@
 					if (accountNumber == "16200113-18513284") {
 						account = "KK MagnetBank";
 					} else if (accountNumber == "16200113-18514247") {
-						account = "KK Bt.";
+						account = "Bt. Magnet";
 					} else {
 						throw "Error, unknown account: " + accountNumber;
 					}
