@@ -539,7 +539,7 @@
 						parameters.push(result);
 					};
 					var value = property.calculate.apply(property, parameters);
-					if (typeof value === 'undefined') {
+					if (typeof value === 'undefined' || isNaN(value)) {
 						value = null;
 					}
 					item.setDefaultValue(property.name, value);
