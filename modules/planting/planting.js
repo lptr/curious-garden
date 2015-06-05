@@ -369,7 +369,7 @@
 						return egysegnyiTerulet * egysegekSzama.asNumber();
 					}
 				},
-				{ name: "darab", title: "DB", unit: "db",
+				{ name: "darab", title: "DB", unit: "db", format: "#,000",
 					calculateDefault: function (terulet, novenykoz, sorkoz) {
 						return terulet.asNumber() * 100 * 100 / sorkoz.asNumber() / novenykoz.asNumber();
 					}
