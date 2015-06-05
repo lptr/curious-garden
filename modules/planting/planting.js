@@ -434,8 +434,12 @@
 				},
 				{ name: "tasakbaKeruloMagmennyiseg", title: "Tasakba kerülő magnennyiség", unit: "g", format: "0.00",
 					calculate: function (darab, szorzo, mag) {
+						var magPerGramm = mag.get("magPerGramm");
+						if (!magPerGramm) {
+							return null;
+						}
 						var magokSzama = darab.asNumber() * (szorzo.asNumber() + 1);
-						return magokSzama / mag.get("magPerGramm").asNumber();
+						return magokSzama / magPerGramm.asNumber();
 					}
 				},
 				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", format: "0.00",
