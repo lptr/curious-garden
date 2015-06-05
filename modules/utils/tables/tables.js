@@ -540,19 +540,19 @@
 						return function () {};
 					}
 					var parameterNames = angular.injector.$$annotate(calc);
-					return function (item, set) {
+					return function (item) {
 						var parameters = injectParameters(parameterNames, item);
 						var value = calc.apply(property, parameters);
 						if (typeof value !== 'undefined') {
-	                    	set.call(item, property.name, value);
+	                    	item.setDefaultValue(property.name, value);
 						}
 					};
 				};
 				var recalculate = injectRecalculator(property.calculate);
 				var recalculateDefault = injectRecalculator(property.calculateDefault);
 				return function (item) {
-					recalculateDefault(item, item.setDefaultValue);
-					recalculate(item, item.set);
+					recalculateDefault(item);
+					recalculate(item);
 				};
             });
 			
