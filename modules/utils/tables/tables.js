@@ -11,7 +11,7 @@
 				if (value instanceof tables.ItemProperty) {
 					value = value.asNumber();
 				}
-				if (!isNaN(value) && value !== null) {
+				if (value != null && !isNaN(value)) {
 					if (isNaN(result)) {
 						result = value;
 					} else {
