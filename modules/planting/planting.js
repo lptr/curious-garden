@@ -502,8 +502,23 @@
 		});
 	});
 
-	plantingModule.controller("TablesController", function ($scope, tables, Fajok, Magtipusok, Vetestervezo) {
-		$scope.tables = [ Fajok, Magtipusok, Vetestervezo ];
+	plantingModule.controller("TablesController", function ($scope, tables,
+			Egysegek,
+			Fajok,
+			Felhasznalasok,
+			Gyartok,
+			KereskedelmiJellegek,
+			Magtipusok,
+			Magvasarlasok,
+			Szinek,
+			Termenyek,
+			Termekek,
+			Termekkategoriak,
+			Vetestervezo
+		) {
+		$scope.tables = _.filter(arguments, function (dependency) { return dependency instanceof tables.Table; }).sort(function (a, b) {
+			return a.name.localeCompare(b.name, "hu");
+		});
 		$scope.failed = {};
 		$scope.enabled = {};
 		$scope.tables.forEach(function (table) {
