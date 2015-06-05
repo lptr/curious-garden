@@ -123,9 +123,9 @@
 	});
 
 	tablesModule.factory("prefixSuffixRenderer", function () {
-		return function (prefix, suffix) {
+		return function (renderer, prefix, suffix) {
 			return function (instance, td, row, col, prop, value, cellProperties) {
-				Handsontable.renderers.NumericRenderer.apply(null, arguments);
+				renderer.apply(null, arguments);
 				if (value !== null && value !== "" && typeof value !== 'undefined') {
 					td.textContent = prefix + td.textContent + suffix;
 				}
@@ -208,9 +208,13 @@
 				{
 					hidden: false,
 					readOnly: !!options.calculate,
-					calculate: options.calculateDefault
+					calculate: options.calculateDefault,
+					type: "text"
 				},
 				options);
+			if (this.unit) {
+				this.type = "numeric";
+			}
 		};
 		Property.prototype.toProperty = function () {
 			var name = this.name;
@@ -222,13 +226,14 @@
 				}
 			};
 		};
-		tables.Property = Property;
-
-		var SimpleProperty = function (options) {
-			Property.call(this, _.extend({ type: "text" }, options));
+		Property.prototype.getRenderer = function () {
+			var type = this.type;
+			if (type === "dropdown" || type === "date") {
+				type = "autocomplete";
+			}
+			return Handsontable.renderers.getRenderer(type);
 		};
-		SimpleProperty.prototype = Object.create(Property.prototype);
-		SimpleProperty.prototype.toColumn = function () {
+		Property.prototype.toColumn = function () {
 			var column = _.extend({
 				width: this.width || 100,
 			}, this.column, {
@@ -238,19 +243,29 @@
 				readOnly: this.readOnly ? true : false,
 				format: this.format,
 				dateFormat: this.dateFormat,
-				source: this.source
+				source: this.source,
+				renderer: this.getRenderer()
 			});
+			return column;
+		};
+		tables.Property = Property;
+
+		var SimpleProperty = function (options) {
+			Property.call(this, options);
+		};
+		SimpleProperty.prototype = Object.create(Property.prototype);
+		SimpleProperty.prototype.getRenderer = function () {
+			var renderer = Property.prototype.getRenderer.call(this);
 			if (this.unit) {
-				column.type = "numeric";
 				var unit = this.unit;
 				if (unit.indexOf(" ") == -1) {
 					unit = "\xA0" + unit;
 				} else {
 					unit = unit.replace(/\s/g, "\xA0");
 				}
-				column.renderer = prefixSuffixRenderer("", unit);
+				renderer = prefixSuffixRenderer(renderer, "", unit);
 			}
-			return column;
+			return renderer;
 		};
 		tables.SimpleProperty = SimpleProperty;
 
@@ -261,15 +276,14 @@
 			}));
 		}
 		IdProperty.prototype = Object.create(SimpleProperty.prototype);
-		IdProperty.prototype.toColumn = function () {
-			var column = SimpleProperty.prototype.toColumn.call(this);
+		IdProperty.prototype.getRenderer = function () {
 			var self = this;
-			column.renderer = function (instance, td, row, col, prop, id, cellProperties) {
+			var renderer = Property.prototype.getRenderer.call(this);
+			return function (instance, td, row, col, prop, id, cellProperties) {
 				var value = id ? self.table.items.get(id) : null;
 				var displayValue = value ? value.toIdString() : id;
-				Handsontable.renderers.TextRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+				renderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 			};
-			return column;
 		};
 
 		var ReferenceProperty = function (options) {
@@ -300,6 +314,14 @@
 
 		};
 		ReferenceProperty.prototype = Object.create(Property.prototype);
+		ReferenceProperty.prototype.getRenderer = function () {
+			var self = this;
+			return function (instance, td, row, col, prop, id, cellProperties) {
+				var value = self.target.items._byId[id];
+				var displayValue = value ? value.toString() : null;
+				Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
+			};
+		};
 		ReferenceProperty.prototype.toColumn = function () {
 			var self = this;
 			var column = SimpleProperty.prototype.toColumn.call(this);
@@ -312,13 +334,6 @@
 					process(self.target.items.map(function (item) {
 						return item.toString() || "";
 					}));
-				},
-				title: this.title,
-				data: this.toProperty(),
-				renderer: function (instance, td, row, col, prop, id, cellProperties) {
-					var value = self.target.items._byId[id];
-					var displayValue = value ? value.toString() : null;
-					Handsontable.renderers.AutocompleteRenderer.call(null, instance, td, row, col, prop, displayValue, cellProperties);
 				}
 			});
 		};
