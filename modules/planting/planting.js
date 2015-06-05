@@ -103,7 +103,7 @@
 						return formulas.min(arguments);
 					}
 				},
-				{ name: "magPerGramm", title: "Magok száma", unit: "db/g" },
+				{ name: "magPerGramm", title: "Magok száma", unit: "db/g", format: "#,000" },
 				{ name: "palantazasIdeje", title: "Palántázás ideje", unit: "hét" }
 			],
 			filters: [ "nev" ],
@@ -161,7 +161,7 @@
 			properties: [
 				{ name: "datum", title: "Dátum", type: "date", dateFormat: "YYYY-MM-DD" },
 				{ name: "mag", title: "Mag", width: 300, target: Magtipusok },
-				{ name: "mennyiseg", title: "Mennyiség", unit: "g" },
+				{ name: "mennyiseg", title: "Mennyiség", unit: "g", format: "#,000" },
 				{ name: "ar", title: "Ár", type: "numeric", width: 60 },
 				{ name: "penznem", title: "Pénznem", type: "dropdown", width: 60, source: [ "HUF", "EUR", "GBP", "USD" ] },
 				{ name: "memo", title: "Memo", width: 300 },
