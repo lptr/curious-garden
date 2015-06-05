@@ -325,6 +325,9 @@
 		ReferenceProperty.prototype.toProperty = function () {
 			var self = this;
 			return function (item, value) {
+				if (item === null || typeof item === 'undefined') {
+					return null;
+				}
                 if (typeof value === 'undefined') {
 					var result = item.value(self.name);
                     return result ? result.id : result;
