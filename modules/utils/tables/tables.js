@@ -234,7 +234,10 @@
 				type: this.type,
 				title: this.title,
 				data: this.toProperty(),
-				readOnly: this.readOnly ? true : false
+				readOnly: this.readOnly ? true : false,
+				format: this.format,
+				dateFormat: this.dateFormat,
+				source: this.source
 			});
 			if (this.unit) {
 				column.type = "numeric";

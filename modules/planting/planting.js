@@ -130,11 +130,9 @@
 				{ name: "szin", title: "Szín", target: Szinek },
 				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
 				{ name: "kerteszetiHabitus", title: "Kertészeti habitus", type: "dropdown",
-					column: {
-						source: [
-							"alacsony", "bokor", "cornuta", "fejesedő", "fodroslevelű", "futó", "félfutó", "hajtatásra", "indátlan", "levél", "magas", "metélő", "nyári", "törpe", "wittrockiana", "óriás"
-						]
-					}
+					source: [
+						"alacsony", "bokor", "cornuta", "fejesedő", "fodroslevelű", "futó", "félfutó", "hajtatásra", "indátlan", "levél", "magas", "metélő", "nyári", "törpe", "wittrockiana", "óriás"
+					]
 				},
 				{ name: "forma", title: "Forma" },
 				{ name: "hetiVetes", title: "Heti vetés", type: "checkbox", width: 60, column: {
@@ -161,15 +159,11 @@
 		return new tables.Table({
 			name: "Magvásárlások",
 			properties: [
-				{ name: "datum", title: "Dátum", type: "date", column: {
-					dateFormat: "YYYY-MM-DD"
-				}},
+				{ name: "datum", title: "Dátum", type: "date", dateFormat: "YYYY-MM-DD" },
 				{ name: "mag", title: "Mag", width: 300, target: Magtipusok },
 				{ name: "mennyiseg", title: "Mennyiség", unit: "g" },
 				{ name: "ar", title: "Ár", type: "numeric", width: 60 },
-				{ name: "penznem", title: "Pénznem", type: "dropdown", width: 60, column: {
-					source: [ "HUF", "EUR", "GBP", "USD" ]
-				}},
+				{ name: "penznem", title: "Pénznem", type: "dropdown", width: 60, source: [ "HUF", "EUR", "GBP", "USD" ] },
 				{ name: "memo", title: "Memo", width: 300 },
 			],
 			titleProperty: "mag"
@@ -194,9 +188,7 @@
 				{ name: "felhasznalas", title: "Felhasználás", target: Felhasznalasok },
 				{ name: "kereskedelmiJelleg", title: "Kereskedelmi jelleg", target: KereskedelmiJellegek },
 				{ name: "szin", title: "Szín", target: Szinek },
-				{ name: "meret", title: "Méret", width: 50, type: "dropdown", column: {
-					source: [ "XXS", "XS", "S", "M", "" ]
-				}},
+				{ name: "meret", title: "Méret", width: 50, type: "dropdown", source: [ "XXS", "XS", "S", "M", "" ] },
 				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm" },
 				{ name: "novenykoz", title: "Vetési növényköz", unit: "cm" },
 				{ name: "termekcsoport", title: "Termékcsoport", width: 200,
@@ -212,12 +204,8 @@
 						}
 					}
 				},
-				{ name: "statusz", title: "Státusz", type: "dropdown", column: {
-					source: [ "ismert", "félig ismert", "kísérleti", "" ]
-				}},
-				{ name: "teliTermeny", title: "Téli termény", type: "dropdown", column: {
-					source: [ "igen", "nem", "tárolva", "kis fagyig", "" ]
-				}},
+				{ name: "statusz", title: "Státusz", type: "dropdown", source: [ "ismert", "félig ismert", "kísérleti", "" ] },
+				{ name: "teliTermeny", title: "Téli termény", type: "dropdown", source: [ "igen", "nem", "tárolva", "kis fagyig", "" ] },
 				{ name: "elsoSzuret", title: "Első szüret", unit: ". hét" },
 				{ name: "hanyHetenteSzuretelunk", title: "Hány hetente szüretelunk?", unit: "hetente" },
 				{ name: "hanyHetenAtSzuretelunk", title: "Hány heten át szüretelunk?", unit: "hét" },
@@ -285,18 +273,12 @@
 				{ name: "termeny", title: "Termény", target: Termenyek, width: 200 },
 				{ name: "mag", title: "Mag", target: Magtipusok, width: 200 },
 				// TODO vanElegMag
-				{ name: "vetesIdeje", title: "Tervezett időpont", type: "date", column: { dateFormat: "YYYY-MM-DD" } },
-				{ name: "mibe", title: "Mibe", type: "dropdown", column: {
-					source: [ "föld", "normál", "szapláda" ]
-				} },
-				{ name: "helyszin", title: "Helyszín", type: "dropdown", column: {
-					source: [ "ehető virágok", "fűszernövények", "kis zöldségek", "levelek", "palántázó", "zöldségek" ]
-				} },
+				{ name: "vetesIdeje", title: "Tervezett időpont", type: "date", dateFormat: "YYYY-MM-DD" },
+				{ name: "mibe", title: "Mibe", type: "dropdown", source: [ "föld", "normál", "szapláda" ] },
+				{ name: "helyszin", title: "Helyszín", type: "dropdown", source: [ "ehető virágok", "fűszernövények", "kis zöldségek", "levelek", "palántázó", "zöldségek" ] },
 				{ name: "agyas", title: "Ágyás", type: "numeric", width: 50 },
-				{ name: "sav", title: "Sáv", type: "dropdown", width: 50, column: {
-					source: [ "A", "B", "C", "D" ]
-				} },
-				{ name: "kosar", title: "Kosar", type: "dropdown", width: 50,
+				{ name: "sav", title: "Sáv", type: "dropdown", width: 50, source: [ "A", "B", "C", "D" ] },
+				{ name: "kosar", title: "Kosar", type: "dropdown", width: 50, source: [ "A", "B", "C", "D", "K" ],
 					calculateDefault: function (mag) {
 						var magPerGramm = mag.get("magPerGramm");
 						if (!magPerGramm) {
@@ -314,11 +296,9 @@
 						} else {
 							return "A";
 						}
-					}, column: {
-						source: [ "A", "B", "C", "D", "K" ]
 					}
 				},
-				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", column: { format: "0.0" },
+				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", format: "0.0",
 					calculateDefault: function (kosar, sorkoz) {
 						if (kosar.asText() === "K") {
 							return 30 / sorkoz.asNumber();
@@ -327,7 +307,7 @@
 						}
 					}
 				},
-				{ name: "szorzo", title: "Szorzó", type: "numeric", column: { format: "+0%" },
+				{ name: "szorzo", title: "Szorzó", type: "numeric", format: "+0%",
 					calculateDefault: function () {
 						return 0;
 					}
@@ -342,7 +322,7 @@
 						return termeny.value() ? termeny.value().get("novenykoz") : null;
 					}
 				},
-				{ name: "melyseg", title: "Vetési mélység", unit: "cm", column: { format: "0.0"},
+				{ name: "melyseg", title: "Vetési mélység", unit: "cm", format: "0.0",
 					calculateDefault: function (mag) {
 						var magPerGramm = mag.get("magPerGramm");
 						if (!magPerGramm) {
@@ -364,19 +344,18 @@
 						}
 					}
 				},
-				{ name: "terulet", title: "Terület", unit: "m²", column: { format: "0.00" },
+				{ name: "terulet", title: "Terület", unit: "m²", format: "0.00",
 					calculate: function (sorokSzama, sorkoz) {
 						return 3.6 * sorokSzama.asNumber() * sorkoz.asNumber() / 100
 					}
 				},
-				{ name: "fedokomposztMennyisege", title: "Fedőkomposzt mennyisége", unit: "l", column: { format: "0.0" },
+				{ name: "fedokomposztMennyisege", title: "Fedőkomposzt mennyisége", unit: "l", format: "0.0",
 					calculate: function (melyseg, terulet) {
 						return melyseg.asNumber() / 100 * terulet.asNumber() * 1000;
 					}
 				},
-				{ name: "ontozes", title: "Öntözés", type: "dropdown", column: {
-					source: [ "adatra vár", "csepicső", "csepicső+gomba", "eldöntendő", "gomba", "szórófejes" ]
-				},
+				{ name: "ontozes", title: "Öntözés", type: "dropdown",
+					source: [ "adatra vár", "csepicső", "csepicső+gomba", "eldöntendő", "gomba", "szórófejes" ],
 					calculateDefault: function (sorkoz, novenykoz) {
 						if (sorkoz.asNumber() < 12) {
 							return "szórófejes";
@@ -417,7 +396,7 @@
 				},
 				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
 				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
-				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", column: { format: "0.00" },
+				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", format: "0.00",
 					calculate: function (novenykoz, mag, szorzo) {
 						var magPerGramm = mag.get("magPerGramm");
 						if (!magPerGramm) {
@@ -426,7 +405,7 @@
 						return 3.6 / (novenykoz.asNumber() / 100) / magPerGramm.asNumber() * (1 + szorzo.asNumber());
 					}
 				},
-				{ name: "tasakbaKeruloMagmennyiseg", title: "Tasakba kerülő magnennyiség", unit: "g", column: { format: "0.00" },
+				{ name: "tasakbaKeruloMagmennyiseg", title: "Tasakba kerülő magnennyiség", unit: "g", format: "0.00",
 					calculate: function (magMennyisegeSoronkent, sorokSzama) {
 						return magMennyisegeSoronkent.asNumber() * sorokSzama.asNumber();
 					}
