@@ -115,6 +115,9 @@
 						parseInt(dateParts[2], 10)
 					);
 
+					// Melinda: let's not fill in the transaction date
+					var transactionDate = null;  // $filter("date")(date, "yyyy-MM-dd");
+					var paymentDate = $filter("date")(date, "yyyy-MM-dd");
 					var memo = message + " (" + id + ", " + payeeAccount + ")";
 
 					var item = {
@@ -126,8 +129,8 @@
 						memo: memo,
 						status: "paid",
 						vat: null,
-						transactionDate: $filter("date")(date, "yyyy-MM-dd"),
-						paymentDate: $filter("date")(date, "yyyy-MM-dd")
+						transactionDate: transactionDate,
+						paymentDate: paymentDate
 					}
 
 					console.log("Transaction parsed", item);
