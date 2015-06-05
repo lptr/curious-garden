@@ -520,34 +520,71 @@
 				property.table = this;
 			}, this);
 
-			this.recalculateProps = this.properties.map(function (property) {
+			this.recalculateProps = [];
+			var propertyRecalculations = [];
+			this.properties.forEach(function (property) {
+				var dependentProperties;
+				var recalculator;
 				if (typeof property.calculate !== 'function') {
-					return function () {};
-				}
-				var parameterNames = angular.injector.$$annotate(property.calculate);
-				return function (item) {
-					var parameters = [];
-					for (var idx = 0, len = parameterNames.length; idx < len; idx++) {
-						var name = parameterNames[idx];
-						var result;
-						if (name === "item") {
-							result = item;
-						} else {
-							var dependentProperty = self.propertiesMap[name];
-							if (!dependentProperty) {
-								throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
-							}
-							result = new ItemProperty(item, dependentProperty.name);
+					dependentProperties = [];
+					recalculator = null;
+				} else {
+					var dependentPropertyNames = angular.injector.$$annotate(property.calculate);
+					dependentProperties = dependentPropertyNames.forEach(function (name) {
+						var dependentProperty = self.propertiesMap[name];
+						if (!dependentProperty) {
+							throw new Error("Unknown property '" + name + "' for table '" + self.name + "'");
 						}
-						parameters.push(result);
+						return dependentProperty;
+					});
+					recalculator = function (item) {
+						var parameters = [];
+						for (var idx = 0, len = dependentPropertyNames.length; idx < len; idx++) {
+							var dependentPropertyName = dependentPropertyNames[idx];
+							parameters.push(new ItemProperty(item, dependentPropertyName));
+						};
+						var value = property.calculate.apply(property, parameters);
+						if (typeof value === 'undefined' || isNaN(value)) {
+							value = null;
+						}
+						item.setDefaultValue(property.name, value);
 					};
-					var value = property.calculate.apply(property, parameters);
-					if (typeof value === 'undefined' || isNaN(value)) {
-						value = null;
-					}
-					item.setDefaultValue(property.name, value);
-				};
+				}
+				propertyRecalculations.push({
+					property: property,
+					dependentProperties: dependentProperties,
+					recalculator: recalculator
+				});
 			});
+			while (propertyRecalculations.length > 0) {
+				// Find next recalculation with no uncalculated dependencies
+				var currentRecalculation = null;
+				for (var idx = 0, len = propertyRecalculations.length; idx < len; idx++) {
+					var propertyRecalculation = propertyRecalculations[idx];
+					if (propertyRecalculation.dependentProperties.length == 0) {
+						currentRecalculation = propertyRecalculation;
+						break;
+					}
+				}
+
+				// Signal cycles
+				if (!currentRecalculation) {
+					console.log("Cycle detected between properties", propertyRecalculations);
+					throw new Error("There is a cycle between the properties in " + this.name);
+				}
+
+				var property = currentRecalculation.property;
+				if (currentRecalculation.recalculator) {
+					this.recalculateProps.push(currentRecalculation.recalculator);
+				}
+
+				// Remove from dependent properties
+				for (var idx = 0, len = propertyRecalculations.length; idx < len; idx++) {
+					var propertyRecalculation = propertyRecalculations[idx];
+					propertyRecalculation.dependentProperties = _.without(propertyRecalculation.dependentProperties, property);
+				}
+				propertyRecalculations = _.without(propertyRecalculations, currentRecalculation);
+			}
 
 			var renderStart = NaN;
 			this.settings = $.extend({
