@@ -300,7 +300,15 @@
 					}
 				},
 				{ name: "egysegekSzama", title: "Hány egység", type: "numeric", format: "0.0" },
-				{ name: "egyseg", title: "Egység", type: "dropdown", source: [ "szapláda", "sor", "sáv", "ágyás" ] },
+				{ name: "egyseg", title: "Egység", type: "dropdown", source: [ "szapláda", "sor", "sáv", "ágyás" ],
+					calculateDefault: function (mibe) {
+						if (mibe.value() === "szapláda") {
+							return "szapláda";
+						} else {
+							return null;
+						}
+					}
+				},
 				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm",
 					calculateDefault: function (termeny) {
 						return termeny.value() ? termeny.value().get("sorkoz") : null;
@@ -361,8 +369,17 @@
 						return egysegnyiTerulet * egysegekSzama.asNumber();
 					}
 				},
+				{ name: "darab", title: "DB", unit: "db",
+					calculateDefault: function (terulet, novenykoz, sorkoz) {
+						return terulet.asNumber() * 100 * 100 / sorkoz.asNumber() / novenykoz.asNumber();
+					}
+				},
 				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", format: "0.0",
-					calculateDefault: function (kosar, sorkoz) {
+					calculateDefault: function (egyseg, terulet, sorkoz) {
+						if (egyseg.value() === "szapláda") {
+							return null;
+						}
+						return terulet.asNumber() / sorkoz.asNumber() / 3.6 * 100;
 					}
 				},
 				{ name: "szorzo", title: "Szorzó", type: "numeric", format: "+0%",
@@ -415,25 +432,15 @@
 						}
 					}
 				},
-				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
-				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
-				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", format: "0.00",
-					calculate: function (novenykoz, mag, szorzo) {
-						var magPerGramm = mag.get("magPerGramm");
-						if (!magPerGramm) {
-							return null;
-						}
-						return 3.6 / (novenykoz.asNumber() / 100) / magPerGramm.asNumber() * (1 + szorzo.asNumber());
-					}
-				},
 				{ name: "tasakbaKeruloMagmennyiseg", title: "Tasakba kerülő magnennyiség", unit: "g", format: "0.00",
-					calculate: function (magMennyisegeSoronkent, sorokSzama) {
-						return magMennyisegeSoronkent.asNumber() * sorokSzama.asNumber();
+					calculate: function (darab, szorzo, mag) {
+						var magokSzama = darab.asNumber() * (szorzo.asNumber() + 1);
+						return magokSzama / mag.get("magPerGramm").asNumber();
 					}
 				},
-				{ name: "darab", title: "DB", unit: "db",
-					calculate: function (novenykoz, szorzo, sorokSzama) {
-						return 3.6 / (novenykoz.asNumber() / 100) * (1 + szorzo.asNumber()) * sorokSzama.asNumber();
+				{ name: "magMennyisegeSoronkent", title: "Mag mennyisége", unit: "g/sor", format: "0.00",
+					calculate: function (tasakbaKeruloMagmennyiseg, sorokSzama) {
+						return tasakbaKeruloMagmennyiseg.asNumber() / sorokSzama.asNumber();
 					}
 				},
 				{ name: "csirazasIdeje", title: "Csírázás tervezett ideje", type: "date",
@@ -495,6 +502,8 @@
 						));
 					}
 				},
+				{ name: "agyaselokeszitesiMegjegyzes", title: "Ágyáselőkészítési megjegyzés", width: 300 },
+				{ name: "vetesiMegjegyzes", title: "Vetési megjegyzés", width: 300 },
 			],
 			settings: {
 				fixedColumnsLeft: 3
