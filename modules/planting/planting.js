@@ -299,20 +299,8 @@
 						}
 					}
 				},
-				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", format: "0.0",
-					calculateDefault: function (kosar, sorkoz) {
-						if (kosar.asText() === "K") {
-							return 30 / sorkoz.asNumber();
-						} else {
-							return 30 / (sorkoz.asNumber() + 1);
-						}
-					}
-				},
-				{ name: "szorzo", title: "Szorzó", type: "numeric", format: "+0%",
-					calculateDefault: function () {
-						return 0;
-					}
-				},
+				{ name: "egysegekSzama", title: "Hány egység", type: "numeric", format: "0.0" },
+				{ name: "egyseg", title: "Egység", type: "dropdown", source: [ "szapláda", "sor", "sáv", "ágyás" ] },
 				{ name: "sorkoz", title: "Vetési sorköz", unit: "cm",
 					calculateDefault: function (termeny) {
 						return termeny.value() ? termeny.value().get("sorkoz") : null;
@@ -346,8 +334,40 @@
 					}
 				},
 				{ name: "terulet", title: "Terület", unit: "m²", format: "0.00",
-					calculate: function (sorokSzama, sorkoz) {
-						return 3.6 * sorokSzama.asNumber() * sorkoz.asNumber() / 100
+					calculate: function (egyseg, egysegekSzama, sorkoz) {
+						if (!egyseg.value()) {
+							return null;
+						}
+						var egysegnyiTerulet;
+						switch (egyseg.value()) {
+							case "szapláda":
+								egysegnyiTerulet = 0.3 * 0.6;
+								break;
+							case "sor":
+								if (!sorkoz.value()) {
+									return null;
+								}
+								egysegnyiTerulet = 3.6 * sorkoz.asNumber() / 100;
+								break;
+							case "sáv":
+								egysegnyiTerulet = 0.3 * 3.6;
+								break;
+							case "ágyás":
+								egysegnyiTerulet = 1.2 * 3.6;
+								break;
+							default:
+								return null;
+						}
+						return egysegnyiTerulet * egysegekSzama.asNumber();
+					}
+				},
+				{ name: "sorokSzama", title: "Sorok száma", unit: "sor", format: "0.0",
+					calculateDefault: function (kosar, sorkoz) {
+					}
+				},
+				{ name: "szorzo", title: "Szorzó", type: "numeric", format: "+0%",
+					calculateDefault: function () {
+						return 0;
 					}
 				},
 				{ name: "fedokomposztMennyisege", title: "Fedőkomposzt mennyisége", unit: "l", format: "0.0",
