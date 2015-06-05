@@ -219,6 +219,7 @@
 				{ name: "sulyPerDb", title: "Süly / db", unit: "g" },
 				{ name: "egysegar", title: "Egységár", unit: "Ft" },
 			],
+			filters: [ "nev" ],
 			titleProperty: "nev"
 		});
 	});
