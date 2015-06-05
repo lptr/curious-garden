@@ -561,7 +561,7 @@
 							parameters.push(new ItemProperty(item, dependentPropertyName));
 						};
 						var value = property.calculate.apply(property, parameters);
-						if (typeof value === 'undefined' || isNaN(value)) {
+						if (typeof value === 'undefined' || (typeof value === 'number' && isNaN(value))) {
 							value = null;
 						}
 						item.setDefaultValue(property.name, value);
