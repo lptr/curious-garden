@@ -207,7 +207,8 @@
             _.extend(this,
 				{
 					hidden: false,
-					readOnly: !!options.calculate
+					readOnly: !!options.calculate,
+					calculate: options.calculateDefault
 				},
 				options);
         };
@@ -548,12 +549,7 @@
 						}
 					};
 				};
-				var recalculate = injectRecalculator(property.calculate);
-				var recalculateDefault = injectRecalculator(property.calculateDefault);
-				return function (item) {
-					recalculateDefault(item);
-					recalculate(item);
-				};
+				return injectRecalculator(property.calculate);
             });
 			
 			var renderStart = NaN;
