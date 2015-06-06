@@ -3,6 +3,10 @@
 		"ui.bootstrap",
 	]);
 
+	RegExp.escape = function(s) {
+	    return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
+	};
+
 	tablesModule.factory("formulas", function (tables) {
 		var mapOverNumbers = function (items, defaultValue, fun) {
 			var result = NaN;
@@ -884,9 +888,11 @@
 						if (!filterValue) {
 							return;
 						}
+						var filterRegexText = "\\b" + filterValue.split(/\s+/).map(RegExp.escape).join(".*\\b");
+						var filterRegex = new RegExp(filterRegexText);
 						filterFunctions.push(function (item) {
 							var itemValue = normalize(item.value(property));
-							return itemValue && itemValue.indexOf(filterValue) !== -1;
+							return itemValue && filterRegex.test(itemValue);
 						});
 					});
 					var filterFunction;
