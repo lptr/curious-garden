@@ -12,3 +12,26 @@
 	</fieldset>
 </form>
 <div></div>
+<form class="form-horizontal" ng-model="item">
+	<fieldset ng-disabled="!item">
+		<div class="form-group" ng-repeat="property in table.properties">
+			<label class="col-md-2 control-label">{{property.title}}</label>
+			<div class="col-md-3 input-group">
+				<span ng-if="isSimple(property)" ng-switch="property.type">
+					<input ng-switch-when="text" class="form-control" ng-model="prop(property)" ng-model-options="{ getterSetter: true }" type="text" ng-readonly="property.readOnly" />
+					<input ng-switch-when="numeric" class="form-control" ng-model="prop(property)" ng-model-options="{ getterSetter: true }" type="number" ng-readonly="property.readOnly" />
+					<input ng-switch-when="date" class="form-control" ng-model="prop(property)" ng-model-options="{ getterSetter: true }" type="text" placeholder="YYYY-MM-DD" ng-readonly="property.readOnly" />
+					<select ng-switch-when="dropdown" class="form-control" ng-model="prop(property)" ng-model-options="{ getterSetter: true }" ng-options="item for item in property.source" ng-readonly="property.readOnly">
+						<option></option>
+					</select>
+				</span>
+				<span ng-if="isReference(property)">
+					<select class="form-control" ng-model="prop(property)" ng-model-options="{ getterSetter: true }" ng-options="item for item in property.target.items.models" ng-readonly="property.readOnly">
+						<option></option>
+					</select>
+				</span>
+				<span ng-if="property.unit" class="input-group-addon">{{property.unit}}</span>
+			</div>
+		</div>
+	</fieldset>
+</form>

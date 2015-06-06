@@ -622,6 +622,7 @@
 			}
 
 			var renderStart = NaN;
+			this.afterSelection = [];
 			this.settings = $.extend({
 				height: 500
 			}, this.settings, {
@@ -633,6 +634,16 @@
 					var renderEnd = Date.now();
 					console.log("Rendered in", renderEnd - renderStart, "ms", arguments);
 					renderStart = NaN;
+				},
+				afterSelectionEnd: function (startRow, startCol, endRow, endCol) {
+					for (var idx = 0, len = self.afterSelection.length; idx < len; idx++) {
+						self.afterSelection[idx](self, startRow, endRow);
+					}
+				},
+				afterDeselect: function () {
+					for (var idx = 0, len = self.afterSelection.length; idx < len; idx++) {
+						self.afterSelection[idx](self, -1, -1);
+					}
 				},
 				data: this.items,
 				// Without this a RangeError is thrown with columnSorting enabled
@@ -812,6 +823,12 @@
 				changeTracking.finish();
 			}
 		};
+		Table.prototype.addSelectionListener = function (listener) {
+			this.afterSelection.push(listener);
+		};
+		Table.prototype.removeSelectionListener = function (listener) {
+			this.afterSelection = _.without(this.afterSelection, listener);
+		};
 		Table.prototype.load = function (root) {
 			var hot = new Handsontable(root, this.settings);
 			hot.addHook("modifyRowHeight", function () {
@@ -833,7 +850,7 @@
 		return tables;
 	});
 
-	tablesModule.directive("backboneTable", function() {
+	tablesModule.directive("backboneTable", function(tables) {
 		var normalize = function (string) {
 			if (!string) {
 				return string;
@@ -857,17 +874,49 @@
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
 			controller: function ($scope) {
+				var afterSelection = function (table, start, end) {
+					$scope.$apply(function () {
+						if (start === -1 || start !== end) {
+							$scope.item = null;
+						} else {
+							$scope.item = table.items.at(start);
+						}
+					});
+				};
+				$scope.item = null;
+				$scope.isSimple = function (property) {
+					return property instanceof tables.SimpleProperty;
+				};
+				$scope.isReference = function (property) {
+					return property instanceof tables.ReferenceProperty;
+				};
+
 				$scope.ready = false;
 				$scope.filters = {};
 				$scope.filterValues = {};
+				$scope.prop = function (property) {
+					return function (value) {
+						if (!$scope.item) {
+							return null;
+						}
+						if (typeof value === 'undefined') {
+							return $scope.item.get(property.name);
+						} else {
+							$scope.item.set(property.name, value);
+						}
+					};
+				};
 				$scope.$watch("table", function (table, previousTable) {
 					if (previousTable) {
+						previousTable.removeSelectionListener(afterSelection);
 						previousTable.unload();
 					}
+					$scope.item = null;
 					$scope.ready = false;
 					$scope.filters = {};
 					$scope.filterValues = {};
 					if (table) {
+						table.addSelectionListener(afterSelection);
 						table.load(root);
 						$scope.filters = (table.filters || []).map(function (propertyName) {
 							return table.getProperty(propertyName);
