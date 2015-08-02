@@ -16,6 +16,10 @@
 	right: 0;
 }
 
+.hot-container {
+	padding: 0;
+}
+
 td.currentRow {
 	background-color: #f0fff0;
 }
@@ -30,4 +34,16 @@ td.default {
 
 td.override {
 	font-weight: bold;
+}
+
+.controls .form-group-sm .control-label {
+	font-size: 12px;
+}
+
+.controls .form-group-sm .form-control {
+	height: 20px;
+	padding: 2px 4px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 2px;
 }

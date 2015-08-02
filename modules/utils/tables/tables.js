@@ -869,7 +869,7 @@
 
 		return {
 			link: function (scope, element, attrs) {
-				root = element[0].children[1];
+				root = element.find("div.hot")[0];
 			},
 			restrict: "E",
 			templateUrl: "modules/utils/tables/backbone-table.html",
