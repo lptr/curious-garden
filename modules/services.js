@@ -110,32 +110,7 @@
 	});
 
 	services.factory("categoryManager", function (kapaServer) {
-		var manager = new Loader(kapaServer, "getCategories");
-		manager.convertFromHungarianToEnglish = function (categories, hungarian) {
-			// Try to find category in the given categories
-			// and translate from there
-			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i];
-				if (category.hungarian == hungarian) {
-					return category.english;
-				}
-			}
-			// Fall back to the original if not found
-			return hungarian;
-		};
-		manager.convertFromEnglishToHungarian = function (categories, english) {
-			// Try to find category in the given categories
-			// and translate from there
-			for (var i = 0; i < categories.length; i++) {
-				var category = categories[i];
-				if (category.english == english) {
-					return category.hungarian;
-				}
-			}
-			// Fall back to the original if not found
-			return english;
-		};
-		return manager;
+		return new Loader(kapaServer, "getCategories");
 	});
 
 	services.factory("productManager", function (kapaServer) {

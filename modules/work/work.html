@@ -35,7 +35,7 @@
 	<label class="col-md-4 control-label">Kategória</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="category" type="text" ng-model="category" typeahead="category.hungarian for category in find(categories, $viewValue, 'hungarian')" typeahead-min-length="0" class="form-control clearable" placeholder="min dolgozott?" ng-required="true"/>
+			<input name="category" type="text" ng-model="category" typeahead="category.name for category in find(categories, $viewValue, 'name')" typeahead-min-length="0" class="form-control clearable" placeholder="min dolgozott?" ng-required="true"/>
 			<span class="input-group-addon">
 				<span ng-show="categories.length" class="glyphicon glyphicon-tags"></span>
 				<span ng-hide="categories.length" class="glyphicon glyphicon-refresh"></span>

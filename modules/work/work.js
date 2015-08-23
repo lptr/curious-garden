@@ -35,9 +35,6 @@
 
 		// Recent work items
 		$scope.recentItems = [];
-		$scope.convertCategoryFromEnglishToHungarian = function (category) {
-			return categoryManager.convertFromEnglishToHungarian($scope.categories, category);
-		};
 		$scope.formatTime = function (time) {
 			var hours = Math.floor(time);
 			var minutes = Math.round((time % 1) * 60);
@@ -105,8 +102,6 @@
 				templateUrl: "save-dialog.html"
 			});
 
-			var category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
-
 			var hours = 0;
 			if ($scope.hours) {
 				hours += parseInt($scope.hours);
@@ -118,7 +113,7 @@
 			var formData = {
 				employee: $scope.employee.name,
 				hours: hours,
-				category: category,
+				category: $scope.category,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
 				costMonth: $filter("date")($scope.date, "yyyy-MM")

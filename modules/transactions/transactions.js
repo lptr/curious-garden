@@ -70,7 +70,7 @@
 				category = "transfer";
 				vat = false;
 			} else {
-				category = categoryManager.convertFromHungarianToEnglish($scope.categories, $scope.category);
+				category = $scope.category;
 				vat = $scope.vat;
 			}
 
