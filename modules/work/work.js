@@ -109,11 +109,15 @@
 			if ($scope.minutes) {
 				hours += parseInt($scope.minutes) / 60;
 			}
+			
+			var category = typeof $scope.category == "string" ? $scope.category : $scope.category.name;
+			var quantity = $scope.category.unit ? $scope.quantity : null;
 
 			var formData = {
 				employee: $scope.employee.name,
 				hours: hours,
-				category: $scope.category,
+				category: category,
+				quantity: quantity,
 				memo: $scope.memo,
 				date: $filter("date")($scope.date, "yyyy-MM-dd"),
 				costMonth: $filter("date")($scope.date, "yyyy-MM")
