@@ -15,6 +15,23 @@
 	</div>
 </div>
 
+<!-- Category -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Feladat</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="category" type="text" ng-model="category" typeahead="category as category.name for category in find(categories, $viewValue, 'name')" typeahead-min-length="0" class="form-control clearable" placeholder="mi volt a feladat?" ng-required="true"/>
+			<span class="input-group-addon">
+				<span ng-show="categories.length" class="glyphicon glyphicon-tags"></span>
+				<span ng-hide="categories.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+		<div class="input-group" ng-show="category.task">
+			<span class="help-block">{{category.task}}</span>
+		</div>
+	</div>
+</div>
+
 <!-- Hours -->
 <div class="form-group" show-errors>
 	<label class="col-md-4 control-label">Eltöltött idő</label>
@@ -30,29 +47,12 @@
 	</div>
 </div>
 
-<!-- Category -->
-<div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Kategória</label>
-	<div class="col-md-4">
-		<div class="input-group">
-			<input name="category" type="text" ng-model="category" typeahead="category as category.name for category in find(categories, $viewValue, 'name')" typeahead-min-length="0" class="form-control clearable" placeholder="min dolgozott?" ng-required="true"/>
-			<span class="input-group-addon">
-				<span ng-show="categories.length" class="glyphicon glyphicon-tags"></span>
-				<span ng-hide="categories.length" class="glyphicon glyphicon-refresh"></span>
-			</span>
-		</div>
-		<div class="input-group" ng-show="category.task">
-			<span class="help-block">{{category.task}}</span>
-		</div>
-	</div>
-</div>
-
 <!-- Quantity -->
 <div class="form-group" show-errors ng-show="category.unit">
 	<label class="col-md-4 control-label">Evlégzett munka</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input name="quantity" ng-model="quantity" type="number" pattern="\d*" class="form-control" placeholder="munka mennyisége" ng-required="category.unit"/>
+			<input name="quantity" ng-model="quantity" type="number" pattern="\d*(\.\d*)?" class="form-control" placeholder="munka mennyisége" ng-required="category.unit"/>
 			<span class="input-group-addon">{{category.unit}}</span>
 		</div>
 		<div class="input-group" ng-show="category.normPerHour">
