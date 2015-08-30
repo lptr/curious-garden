@@ -35,9 +35,9 @@
 		$scope.reset = function () {
 			$scope.payee = "";
 			$scope.amount = undefined;
-			$scope.sourceAccount = "";
+			$scope.sourceAccount = $scope.type == "withdrawal" ? "KK kassza" : "";
 			$scope.targetAccount = "";
-			$scope.status = "";
+			$scope.status = "paid";
 			$scope.vat = false;
 			$scope.category = "";
 			$scope.memo = "";
