@@ -119,8 +119,7 @@
 				category: category,
 				quantity: quantity,
 				memo: $scope.memo,
-				date: $filter("date")($scope.date, "yyyy-MM-dd"),
-				costMonth: $filter("date")($scope.date, "yyyy-MM")
+				date: $filter("date")($scope.date, "yyyy-MM-dd")
 			};
 
 			kapaServer.query("submitWork", formData).success(function (id) {
