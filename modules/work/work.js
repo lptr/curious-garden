@@ -81,7 +81,7 @@
 		employeeManager.load(function (employees) {
 			$scope.employees = employees;
 			setEmployeeToActiveUser();
-		});
+		}, "work");
 		categoryManager.load(function (categories) {
 			$scope.categories = categories;
 		});
