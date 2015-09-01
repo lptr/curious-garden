@@ -77,15 +77,15 @@
 	});
 
 	var Loader = function(kapaServer, method) {
-		var cache = null;
+		var cache = {};
 		return {
-			load: function (callback) {
-				if (cache) {
-					callback(cache);
+			load: function (callback, data) {
+				if (cache[data]) {
+					callback(cache[data]);
 				} else {
-					kapaServer.query(method).success(function (result) {
-						console.log(method + " received: ", result);
-						cache = result;
+					kapaServer.query(method, data).success(function (result) {
+						console.log(method, "with data", data, "received", result);
+						cache[data] = result;
 						callback(result);
 					});
 				}
