@@ -55,6 +55,7 @@
 				printBody.empty();
 				$scope.labels.forEach(function (label) {
 					var labelDiv = $('<div class="label"></div>');
+					labelDiv.append('<div class="customer">' + label.customer + '</div>');
 					labelDiv.append('<div class="hu">' + label.hu + '</div>');
 					labelDiv.append('<div class="en">' + label.en + '</div>');
 					labelDiv.append('<div class="date">' + label.date + '</div>');
@@ -72,12 +73,15 @@
 			var reader = new FileReader();
 			reader.onload = function(event) {
 				// Parse CSV
-				CSV.COLUMN_SEPARATOR = ";";
+				CSV.COLUMN_SEPARATOR = ",";
 				var data = CSV.parse(reader.result);
 				console.log("Raw CSV data:", data);
 
-				// Skip first line
-				data.shift();
+				// Get the column indexes
+				var columns = {};
+				data.shift().forEach(function (column, index) {
+					columns[column] = index;
+				});
 
 				var numberOfProducts = data.length;
 				var numberOfMissingProducts = 0;
@@ -86,23 +90,23 @@
 					$scope.labels = [];
 					while (data.length > 0) {
 						var row = data.shift();
-						// CSV format:
-						// Cikkszam;Nev;Darabszam;Netto ar;Brutto ar;Gyarto, Rendelesi azonosito(k)
-						var productSKU = row[0];
+						var customer = row[columns["Ügyfél neve"]];
+						var productSKU = row[columns["Termék cikkszáma"]];
 						var productNameHU;
 						var productNameEN;
 						var product = $scope.products[productSKU];
 						if (!product) {
-							log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU + " (" + row[1] + ")");
+							log("Ez a cikkszám nem szerepel a KAPA-ban: " + productSKU + " (" + row[coluns["Termék neve"]] + ")");
 							numberOfMissingProducts++;
 							continue;
 						}
 						productNameEN = product.en;
 						productNameHU = product.hu;
 
-						var count = row[2];
+						var count = row[columns["Termék mennyisége"]];
 						for (var idx = 0; idx < count; idx++) {
 							$scope.labels.push({
+								customer: customer,
 								en: productNameEN,
 								hu: productNameHU,
 								date: date
@@ -118,7 +122,7 @@
 					}
 				});
 			};
-			reader.readAsText(file, "iso-8859-2");
+			reader.readAsText(file, "utf-8");
 		}
 	});
 
