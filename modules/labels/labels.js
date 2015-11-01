@@ -28,12 +28,12 @@
 		$scope.notChrome = navigator.userAgent.indexOf('Chrome/') == -1;
 	});
 
-	labelsModule.controller("LabelPrinterController", function ($scope, $filter, productManager, log) {
+	labelsModule.controller("LabelPrinterController", function ($scope, $filter, productNameManager, log) {
 		$scope.products = null;
 		$scope.labels = [];
 
 		log("Termékek betöltése... (amíg tölt, nem lehet matricát nyomtatni)");
-		productManager.load(function (products) {
+		productNameManager.load(function (products) {
 			$scope.products = products;
 			log("Termékek betöltve");
 		});

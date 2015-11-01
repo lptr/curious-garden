@@ -113,8 +113,16 @@
 		return new Loader(kapaServer, "getCategories");
 	});
 
+	services.factory("produceManager", function (kapaServer) {
+		return new Loader(kapaServer, "getProduces");
+	});
+
 	services.factory("productManager", function (kapaServer) {
 		return new Loader(kapaServer, "getProducts");
+	});
+
+	services.factory("productNameManager", function (kapaServer) {
+		return new Loader(kapaServer, "getProductNames");
 	});
 
 	services.factory("priceTagManager", function (kapaServer) {

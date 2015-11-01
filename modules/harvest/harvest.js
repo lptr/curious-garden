@@ -13,56 +13,31 @@
 			});
 	});
 
-	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer) {
+	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager) {
 		$scope.date = new Date();
-		$scope.produces = [
-			{
-				name: "búzavirág, S",
-				species: "búzavirág"
-			},
-			{
-				name: "búzavirág, XS",
-				species: "búzavirág"
-			},
-			{
-				name: "tomatillo",
-				species: "tomatillo"
+
+		produceManager.load(function (produces) {
+			$scope.produces = _.indexBy(produces, "name");
+			processProducts();
+			processHarvests();
+		});
+		productManager.load(function (products) {
+			$scope.unprocessedProducts = products;
+			processProducts();
+		});
+		var processProducts = function () {
+			if (!$scope.produces || !$scope.unprocessedProducts) {
+				return;
 			}
-		];
-		$scope.producesIndex = _.indexBy($scope.produces, 'name');
-		$scope.products = [
-			{
-				name: "búzavirág, XS, kis doboz",
-				produce: "búzavirág, XS",
-				unit: "kd"
-			},
-			{
-				name: "búzavirág, XS, nagy doboz",
-				produce: "búzavirág, XS",
-				unit: "nd"
-			},
-			{
-				name: "búzavirág, S, kis doboz",
-				produce: "búzavirág, S",
-				unit: "kd"
-			},
-			{
-				name: "búzavirág, S, nagy doboz",
-				produce: "búzavirág, S",
-				unit: "nd"
-			},
-			{
-				name: "chili, csípős, kis doboz",
-				produce: "chili, csípős",
-				unit: "kd"
-			},
-			{
-				name: "tomatillo, 200 gramm",
-				produce: "tomatillo",
-				unit: "200 g"
-			},
-		];
-		$scope.harvests = [
+			$scope.products = $scope.unprocessedProducts.map(function (product) {
+				var produce = $scope.produces[product.produce];
+				if (produce) {
+					product.species = produce.species;
+				}
+				return product;
+			});
+		};
+		$scope.unprocessedHarvests = [
 			{
 				location: "fólia",
 				plot: 5,
@@ -80,23 +55,21 @@
 				state: "halálszüret piac"
 			},
 		];
-
-		$scope.products.forEach(function (product) {
-			var produce = $scope.producesIndex[product.produce];
-			if (produce) {
-				product.species = produce.species;
+		var processHarvests = function () {
+			if (!$scope.produces || !$scope.unprocessedHarvests) {
+				return;
 			}
-		});
-		$scope.harvests.forEach(function (harvest) {
-			var produce = $scope.producesIndex[harvest.produce];
-			if (produce) {
-				harvest.species = produce.species;
-			}
-		});
-
-		$scope.locations = _.uniq($scope.harvests.map(function (harvest) {
-			return harvest.location;
-		}));
+			$scope.harvests = $scope.unprocessedHarvests.map(function (harvest) {
+				var produce = $scope.produces[harvest.produce];
+				if (produce) {
+					harvest.species = produce.species;
+				}
+				return harvest;
+			});
+			$scope.locations = _.uniq($scope.harvests.map(function (harvest) {
+				return harvest.location;
+			}));
+		};
 		$scope.results = [{}];
 		$scope.addResult = function () {
 			$scope.results.push({});
