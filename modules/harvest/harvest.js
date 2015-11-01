@@ -80,6 +80,15 @@
 				return product.species == $scope.harvest.species;
 			});
 		};
+		$scope.sumIncome = function () {
+			var income = 0;
+			$scope.estimates.forEach(function (estimate) {
+				if (estimate.product && estimate.product.price && estimate.quantity) {
+					income += estimate.product.price * estimate.quantity;
+				}
+			});
+			return income;
+		};
 		$scope.reset = function () {
 			$scope.location = null;
 			$scope.harvest = null;
