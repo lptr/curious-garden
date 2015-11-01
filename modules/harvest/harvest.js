@@ -85,9 +85,26 @@
 				}
 				return harvest;
 			});
-			$scope.locations = _.uniq($scope.harvests.map(function (harvest) {
-				return harvest.location;
-			}));
+			var locationsByName = {};
+			$scope.locations = [];
+			$scope.harvests.forEach(function (harvest) {
+				var location = locationsByName[harvest.location];
+				var plots;
+				if (!location) {
+					var plots = [];
+					location = {
+						name: harvest.location,
+						plots: plots
+					}
+					$scope.locations.push(location);
+					locationsByName[harvest.location] = location;
+				} else {
+					plots = location.plots;
+				}
+				if (plots.indexOf(harvest.plot) === -1) {
+					plots.push(harvest.plot);
+				}
+			});
 		};
 
 		$scope.add = function () {
@@ -97,11 +114,11 @@
 			$scope.estimates.splice(index, 1);
 		}
 		$scope.matchingHarvests = function() {
-			if (!$scope.harvests || !$scope.location) {
+			if (!$scope.harvests || !$scope.plot) {
 				return [];
 			}
 			return $scope.harvests.filter(function (harvest) {
-				return harvest.location == $scope.location;
+				return harvest.plot == $scope.plot;
 			});
 		};
 		$scope.matchingProducts = function() {
@@ -112,25 +129,45 @@
 				return product.species == $scope.harvest.species;
 			});
 		};
+		var status = function (items) {
+			var foundDone = false;
+			var foundNotDone = false;
+			items.forEach(function (item) {
+				if ($scope.storedEstimates[item.id]) {
+					foundDone = true;
+				} else {
+					foundNotDone = true;
+				}
+			});
+			if (!foundNotDone) {
+				return "✅";
+			} else if (!foundDone) {
+				return "❗️";
+			} else if (foundDone) {
+				return "🔶";
+			}
+		};
 		$scope.locationStatus = function (location) {
 			if (!$scope.storedEstimates || !$scope.harvests) {
 				return " ";
 			}
-			if (!$scope.harvests.filter(function (harvest) {
-					return harvest.location == location;
-				}).find(function (harvest) {
-					return !$scope.storedEstimates[harvest.id];
-				})) {
-				return "✅";
-			} else {
-				return "❓";
+			return status($scope.harvests.filter(function (harvest) {
+				return harvest.location == location;
+			}));
+		};
+		$scope.plotStatus = function (plot) {
+			if (!$scope.storedEstimates || !$scope.harvests) {
+				return " ";
 			}
-		}
+			return status($scope.harvests.filter(function (harvest) {
+				return harvest.plot == plot;
+			}));
+		};
 		$scope.harvestStatus = function (id) {
 			if ($scope.storedEstimates && $scope.storedEstimates[id]) {
 				return "✅";
 			} else {
-				return "❓";
+				return "❗️";
 			}
 		}
 		$scope.sumIncome = function () {

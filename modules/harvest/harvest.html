@@ -26,12 +26,32 @@
 			<select name="location"
 				class="form-control"
 				ng-model="location"
-				ng-options="(locationStatus(location) + ' ' + location) for location in locations"
+				ng-options="(locationStatus(location.name) + ' ' + location.name) for location in locations"
 				ng-required="true"
 				ng-disabled="!locations.length">
 			</select>
 			<span class="input-group-addon">
 				<span ng-show="locations.length" class="glyphicon glyphicon-map-marker"></span>
+				<span ng-hide="locations.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Plot -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Ágyás</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="plot"
+				class="form-control"
+				ng-model="plot"
+				ng-options="(plotStatus(plot) + ' #' + plot) for plot in location.plots"
+				ng-required="true"
+				ng-disabled="!location">
+			</select>
+			<span class="input-group-addon">
+				<span ng-show="locations.length" class="glyphicon glyphicon-th-large"></span>
 				<span ng-hide="locations.length" class="glyphicon glyphicon-refresh"></span>
 			</span>
 		</div>
@@ -46,7 +66,7 @@
 			<select name="harvest"
 			 	class="form-control"
 				ng-model="harvest"
-				ng-options="harvestStatus(harvest.id) + (' ID ' + harvest.id + ' – ' + harvest.produce + ' (#' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
+				ng-options="(harvestStatus(harvest.id) + ' ' + harvest.id + ' – ' + harvest.produce) for harvest in matchingHarvests()"
 				ng-required="true"
 				ng-disabled="!harvests.length || !products.length || !storedEstimates || !location">
 			</select>
