@@ -13,7 +13,7 @@
 			});
 	});
 
-	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
+	harvestModule.controller("HarvestController", function ($scope, $uibModal, $filter, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
 		var now = new Date();
 		produceManager.load(function (produces) {
 			$scope.produces = _.indexBy(produces, "name");
@@ -189,18 +189,18 @@
 		};
 		$scope.submit = function () {
 			if ($scope.harvestEstimates.$invalid) {
-				$modal.open({
+				$uibModal.open({
 					templateUrl: "error-dialog.html",
-					controller: function ($scope, $modalInstance) {
+					controller: function ($scope, $uibModalInstance) {
 						$scope.close = function () {
-							$modalInstance.dismiss("close");
+							$uibModalInstance.dismiss("close");
 						}
 					}
 				});
 				return;
 			}
 
-			var popup = $modal.open({
+			var popup = $uibModal.open({
 				templateUrl: "save-dialog.html"
 			});
 

@@ -24,7 +24,7 @@
 		};
 	});
 
-	importModule.controller("ImportMagnetController", function($scope, $filter, $modal, kapaServer, log) {
+	importModule.controller("ImportMagnetController", function($scope, $filter, $uibModal, kapaServer, log) {
 		$scope.transactions = [];
 		$scope.uploading = false;
 		$scope.import = function() {

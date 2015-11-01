@@ -14,7 +14,7 @@
 			});
 	});
 
-	workModule.controller("WorkController", function ($scope, $modal, $filter, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
+	workModule.controller("WorkController", function ($scope, $uibModal, $filter, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
 		$scope.employees = [];
 		$scope.categories = [];
 
@@ -88,17 +88,17 @@
 
 		$scope.submit = function () {
 			if ($scope.work.$invalid) {
-				$modal.open({
+				$uibModal.open({
 					templateUrl: "error-dialog.html",
-					controller: function ($scope, $modalInstance) {
+					controller: function ($scope, $uibModalInstance) {
 						$scope.close = function () {
-							$modalInstance.dismiss("close");
+							$uibModalInstance.dismiss("close");
 						}
 					}
 				});
 				return;
 			}
-			var popup = $modal.open({
+			var popup = $uibModal.open({
 				templateUrl: "save-dialog.html"
 			});
 

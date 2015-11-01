@@ -14,7 +14,7 @@
 			});
 	});
 
-	transactionModule.controller("TransactionsController", function ($scope, $filter, $modal, normalizer, kapaServer, payeeManager, accountManager, categoryManager) {
+	transactionModule.controller("TransactionsController", function ($scope, $filter, $uibModal, normalizer, kapaServer, payeeManager, accountManager, categoryManager) {
 		$scope.accounts = [];
 		$scope.payees = [];
 		$scope.categories = [];
@@ -50,17 +50,17 @@
 
 		$scope.submit = function () {
 			if ($scope.transaction.$invalid) {
-				$modal.open({
+				$uibModal.open({
 					templateUrl: "error-dialog.html",
-					controller: function ($scope, $modalInstance) {
+					controller: function ($scope, $uibModalInstance) {
 						$scope.close = function () {
-							$modalInstance.dismiss("close");
+							$uibModalInstance.dismiss("close");
 						}
 					}
 				});
 				return;
 			}
-			var popup = $modal.open({
+			var popup = $uibModal.open({
 				templateUrl: "save-dialog.html"
 			});
 

@@ -36,7 +36,7 @@
 		});
 	});
 
-	app.controller("MainController", function ($scope, $modal, kapaServer) {
+	app.controller("MainController", function ($scope, $uibModal, kapaServer) {
 		$scope.user = {
 			features: {}
 		};
@@ -45,7 +45,7 @@
 				$scope.user = user;
 			})
 			.error(function () {
-				$modal.open({
+				$uibModal.open({
 					templateUrl: "access-denied.html",
 					backdrop: "static",
 					keyboard: false
