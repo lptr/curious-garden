@@ -14,54 +14,6 @@
 	});
 
 	harvestModule.controller("HarvestController", function ($scope, $uibModal, $filter, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
-		var now = new Date();
-		produceManager.load(function (produces) {
-			$scope.produces = _.indexBy(produces, "name");
-			processProducts();
-			processHarvests();
-		});
-		harvestManager.load(function (harvests) {
-			$scope.unprocessedHarvests = harvests;
-			processHarvests();
-		});
-		productManager.load(function (products) {
-			$scope.unprocessedProducts = products;
-			processProducts();
-		});
-		$scope.$watch("date", function(date) {
-			$scope.storedEstimates = null;
-			harvestEstimateManager.load(function (storedEstimates) {
-				$scope.storedEstimates = {};
-				storedEstimates.forEach(function(estimate) {
-					estimate.date = new Date(Date.parse(estimate.date));
-					var estimatesForId = $scope.storedEstimates[estimate.id];
-					if (!estimatesForId) {
-						estimatesForId = [];
-						$scope.storedEstimates[estimate.id] = estimatesForId;
-					}
-					estimatesForId.push(estimate);
-				});
-				updateReadyStats();
-			}, date);
-		});
-		$scope.$watch("harvest", function (harvest) {
-			if (!harvest) {
-				$scope.estimates = null;
-			} else {
-				var storedEstimates = $scope.storedEstimates[harvest.id];
-				if (storedEstimates) {
-					$scope.estimates = storedEstimates.map(function (estimate) {
-						return {
-							product: $scope.productsByName[estimate.product],
-							quantity: estimate.quantity
-						}
-					});
-				} else {
-					$scope.estimates = [{}];
-				}
-			}
-		});
-		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		var processProducts = function () {
 			if (!$scope.produces || !$scope.unprocessedProducts) {
 				return;
@@ -114,6 +66,55 @@
 				$scope.storedCount = 0;
 			}
 		}
+
+		var now = new Date();
+		produceManager.load(function (produces) {
+			$scope.produces = _.indexBy(produces, "name");
+			processProducts();
+			processHarvests();
+		});
+		harvestManager.load(function (harvests) {
+			$scope.unprocessedHarvests = harvests;
+			processHarvests();
+		});
+		productManager.load(function (products) {
+			$scope.unprocessedProducts = products;
+			processProducts();
+		});
+		$scope.$watch("date", function(date) {
+			$scope.storedEstimates = null;
+			harvestEstimateManager.load(function (storedEstimates) {
+				$scope.storedEstimates = {};
+				storedEstimates.forEach(function(estimate) {
+					estimate.date = new Date(Date.parse(estimate.date));
+					var estimatesForId = $scope.storedEstimates[estimate.id];
+					if (!estimatesForId) {
+						estimatesForId = [];
+						$scope.storedEstimates[estimate.id] = estimatesForId;
+					}
+					estimatesForId.push(estimate);
+				});
+				updateReadyStats();
+			}, date);
+		});
+		$scope.$watch("harvest", function (harvest) {
+			if (!harvest) {
+				$scope.estimates = null;
+			} else {
+				var storedEstimates = $scope.storedEstimates[harvest.id];
+				if (storedEstimates) {
+					$scope.estimates = storedEstimates.map(function (estimate) {
+						return {
+							product: $scope.productsByName[estimate.product],
+							quantity: estimate.quantity
+						}
+					});
+				} else {
+					$scope.estimates = [{}];
+				}
+			}
+		});
+		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
 		$scope.add = function () {
 			$scope.estimates.push({});
