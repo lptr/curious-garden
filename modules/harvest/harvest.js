@@ -13,23 +13,54 @@
 			});
 	});
 
-	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager, harvestManager) {
+	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
 		var now = new Date();
-		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
 		produceManager.load(function (produces) {
 			$scope.produces = _.indexBy(produces, "name");
 			processProducts();
+			processHarvests();
+		});
+		harvestManager.load(function (harvests) {
+			$scope.unprocessedHarvests = harvests;
 			processHarvests();
 		});
 		productManager.load(function (products) {
 			$scope.unprocessedProducts = products;
 			processProducts();
 		});
-		harvestManager.load(function (harvests) {
-			$scope.unprocessedHarvests = harvests;
-			processHarvests();
+		$scope.$watch("date", function(date) {
+			$scope.storedEstimates = null;
+			harvestEstimateManager.load(function (storedEstimates) {
+				$scope.storedEstimates = {};
+				storedEstimates.forEach(function(estimate) {
+					estimate.date = new Date(Date.parse(estimate.date));
+					var estimatesForId = $scope.storedEstimates[estimate.id];
+					if (!estimatesForId) {
+						estimatesForId = [];
+						$scope.storedEstimates[estimate.id] = estimatesForId;
+					}
+					estimatesForId.push(estimate);
+				});
+			}, date);
 		});
+		$scope.$watch("harvest", function (harvest) {
+			if (!harvest) {
+				$scope.estimates = null;
+			} else {
+				var storedEstimates = $scope.storedEstimates[harvest.id];
+				if (storedEstimates) {
+					$scope.estimates = storedEstimates.map(function (estimate) {
+						return {
+							product: $scope.productsByName[estimate.product],
+							quantity: estimate.quantity
+						}
+					});
+				} else {
+					$scope.estimates = [{}];
+				}
+			}
+		});
+		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		var processProducts = function () {
 			if (!$scope.produces || !$scope.unprocessedProducts) {
 				return;
@@ -41,6 +72,7 @@
 				}
 				return product;
 			});
+			$scope.productsByName = _.indexBy($scope.products, "name");
 		};
 		var processHarvests = function () {
 			if (!$scope.produces || !$scope.unprocessedHarvests) {
@@ -80,20 +112,29 @@
 				return product.species == $scope.harvest.species;
 			});
 		};
+		$scope.status = function (id) {
+			if ($scope.storedEstimates && $scope.storedEstimates[id]) {
+				return "✅";
+			} else {
+				return "❓";
+			}
+		}
 		$scope.sumIncome = function () {
 			var income = 0;
-			$scope.estimates.forEach(function (estimate) {
-				if (estimate.product && estimate.product.price && estimate.quantity) {
-					income += estimate.product.price * estimate.quantity;
-				}
-			});
+			if ($scope.estimates) {
+				$scope.estimates.forEach(function (estimate) {
+					if (estimate.product && estimate.product.price && estimate.quantity) {
+						income += estimate.product.price * estimate.quantity;
+					}
+				});
+			}
 			return income;
 		};
 		$scope.reset = function () {
-			$scope.location = null;
 			$scope.harvest = null;
-			$scope.estimates = [{}];
+			$scope.estimates = null;
 			$scope.memo = null;
+			$scope.$broadcast('show-errors-reset');
 		};
 		$scope.submit = function () {
 			if ($scope.harvestEstimates.$invalid) {
@@ -107,6 +148,10 @@
 				});
 				return;
 			}
+
+			var popup = $modal.open({
+				templateUrl: "save-dialog.html"
+			});
 
 			var estimates = $scope.estimates.map(function (estimate) {
 				return {
@@ -125,6 +170,17 @@
 			};
 
 			kapaServer.query("submitHarvestEstimates", formData).success(function (id) {
+				$scope.storedEstimates[$scope.harvest.id] = estimates.map(function (estimate) {
+					return {
+						date: $scope.date,
+						plot: $scope.harvest.plot,
+						id: $scope.harvest.id,
+						product: estimate.product,
+						quantity: estimate.quantity,
+						unit: estimate.unit,
+						memo: $scope.memo
+					};
+				});
 				$scope.reset();
 			}).finally(function () {
 				popup.close();

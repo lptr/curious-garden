@@ -117,6 +117,10 @@
 		return new Loader(kapaServer, "getHarvests");
 	});
 
+	services.factory("harvestEstimateManager", function (kapaServer) {
+		return new Loader(kapaServer, "getHarvestEstimates");
+	});
+
 	services.factory("produceManager", function (kapaServer) {
 		return new Loader(kapaServer, "getProduces");
 	});

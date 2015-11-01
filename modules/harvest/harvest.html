@@ -43,16 +43,16 @@
 	<label class="col-md-4 control-label">Szüretelendő vetés</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<select name="employee"
+			<select name="harvest"
 			 	class="form-control"
 				ng-model="harvest"
-				ng-options="('ID ' + harvest.id + ' – ' + harvest.produce + ' (ágyás #' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
+				ng-options="status(harvest.id) + (' ID ' + harvest.id + ' – ' + harvest.produce + ' (ágyás #' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
 				ng-required="true"
-				ng-disabled="!harvests.length || !location">
+				ng-disabled="!harvests.length || !products.length || !storedEstimates || !location">
 			</select>
 			<span class="input-group-addon">
-				<span ng-show="harvests.length" class="glyphicon glyphicon-barcode"></span>
-				<span ng-hide="harvests.length" class="glyphicon glyphicon-refresh"></span>
+				<span ng-show="harvests.length &amp;&amp; products.length &amp;&amp; storedEstimates" class="glyphicon glyphicon-barcode"></span>
+				<span ng-hide="harvests.length &amp;&amp; products.length &amp;&amp; storedEstimates" class="glyphicon glyphicon-refresh"></span>
 			</span>
 		</div>
 	</div>
