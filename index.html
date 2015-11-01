@@ -63,6 +63,9 @@
 	<link rel="stylesheet" href="modules/labels/labels.css" />
 	<script src="modules/labels/labels.js"></script>
 
+	<link rel="stylesheet" href="modules/harvest/harvest.css" />
+	<script src="modules/harvest/harvest.js"></script>
+
 <script type="text/ng-template" id="save-dialog.html">
 	<div class="modal-header">
 		<h3 class="modal-title">Adatok küldése</h3>
@@ -136,6 +139,12 @@
 					<a href="#planting">
 						<span class="glyphicon glyphicon-leaf"></span>
 						Vetés
+					</a>
+				</li>
+				<li ng-class="{ active: isActive('^/harvest')}" ng-show="user.access.harvest">
+					<a href="#harvest">
+						<span class="glyphicon glyphicon-apple"></span>
+						Szüret
 					</a>
 				</li>
 				<li ng-class="{ active: isActive('^/import')}" ng-show="user.access.import">

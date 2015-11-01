@@ -1,0 +1,131 @@
+<form name="work" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
+<fieldset>
+
+<!-- Date -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Dátum</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="date"
+				ng-model="date"
+				type="date"
+				class="form-control"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-calendar"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Location -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Helyszín</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="location"
+				class="form-control"
+				ng-model="location"
+				ng-options="location for location in locations"
+				ng-required="true"
+				ng-disabled="!locations.length">
+			</select>
+			<span class="input-group-addon">
+				<span ng-show="locations.length" class="glyphicon glyphicon-map-marker"></span>
+				<span ng-hide="locations.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Harvest -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Szüretelendő vetés</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="employee"
+			 	class="form-control"
+				ng-model="harvest"
+				ng-options="('ágyás #' + harvest.plot + ' / id #' + harvest.id + ' — ' + harvest.produce) group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
+				ng-required="true"
+				ng-disabled="!harvests.length || !location">
+			</select>
+			<span class="input-group-addon">
+				<span ng-show="harvests.length" class="glyphicon glyphicon-barcode"></span>
+				<span ng-hide="harvests.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Product -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Várható szüret</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="product"
+				class="form-control"
+				placeholder="termék neve"
+				ng-model="product"
+				ng-options="product.name for product in matchingProducts()"
+				ng-required="true"
+				ng-disabled="!products.length || !harvest">
+			</select>
+			<span class="input-group-addon">
+				<span ng-show="products.length" class="glyphicon glyphicon-shopping-cart"></span>
+				<span ng-hide="products.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+<div class="form-group">
+	<div class="col-md-4 col-md-offset-4">
+		<div class="input-group">
+			<input name="quantity"
+				ng-model="quantity"
+				type="number"
+				pattern="\d*(\.\d*)?"
+				class="form-control"
+				placeholder="mennyiség"
+				ng-required="true"
+				ng-disabled="!product"/>
+			<span class="input-group-addon">
+				<span ng-show="product">&times; {{product.unit}}</span>
+				<span ng-hide="product" class="glyphicon glyphicon-question-sign"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Memo -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label" for="memo">Megjegyzés</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<textarea name="memo" ng-model="memo" type="text" placeholder="bármi egyéb információ?" class="form-control clearable"></textarea>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-paperclip"></span>
+			</span>
+		</div>
+		<div class="input-group">
+			<span class="help-block">Ha kertészeti probléma van az ágyással, azt is írd ide</span>
+		</div>
+	</div>
+</div>
+
+<!-- Submit -->
+<div class="form-group">
+	<label class="col-md-4 control-label"></label>
+	<div class="col-md-4">
+		<button type="button" class="btn btn-danger" ng-click="reset()">
+			<span class="glyphicon glyphicon-trash"></span>
+			Töröl
+		</button>
+		<button type="submit" class="btn btn-primary pull-right">
+			<span class="glyphicon glyphicon-ok"></span>
+			Rögzít
+		</button>
+	</div>
+</div>
+</fieldset>
+</form>

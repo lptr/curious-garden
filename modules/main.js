@@ -3,6 +3,7 @@
 		"kapa.services",
 		"kapa.transactions",
 		"kapa.planting",
+		"kapa.harvest",
 		"kapa.work",
 		"kapa.import",
 		"kapa.labels",

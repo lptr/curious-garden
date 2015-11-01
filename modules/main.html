@@ -39,6 +39,17 @@
 			Itt lehet bejegyezni, hogy ki mikor mennyit dolgozott.
 		</dd>
 	</li>
+	<li ng-show="user.access.harvest">
+		<dt>
+			<a href="#harvest" class="btn btn-lg btn-primary" target="_new">
+				<span class="glyphicon glyphicon-apple"></span>
+				Szüret
+			</a>
+		</dt>
+		<dd>
+			Ez itt a szüretfelmérés helye
+		</dd>
+	</li>
 	<li ng-show="user.access.transactions">
 		<dt>
 			<a href="#import" class="btn btn-lg btn-primary">
