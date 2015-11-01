@@ -58,6 +58,13 @@
 		$scope.locations = _.uniq($scope.harvests.map(function (harvest) {
 			return harvest.location;
 		}));
+		$scope.results = [{}];
+		$scope.addResult = function () {
+			$scope.results.push({});
+		};
+		$scope.removeResult = function (index) {
+			$scope.results.splice(index, 1);
+		}
 		$scope.matchingHarvests = function() {
 			if (!$scope.harvests || !$scope.location) {
 				return [];
