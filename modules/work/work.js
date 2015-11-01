@@ -109,7 +109,7 @@
 			if ($scope.minutes) {
 				hours += parseInt($scope.minutes) / 60;
 			}
-			
+
 			var category = typeof $scope.category == "string" ? $scope.category : $scope.category.name;
 			var quantity = $scope.category.unit ? $scope.quantity : null;
 
