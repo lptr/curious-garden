@@ -9,7 +9,7 @@
 			ng-class="{ 'btn-danger': $parent.failed[table.name], 'btn-default': !$parent.failed[table.name] }"
 			ng-repeat="table in tables"
 			ng-model="$parent.selected"
-			btn-radio="table"
+			uib-btn-radio="table"
 			ng-disabled="!$parent.enabled[table.name]">
 			{{table.name}}
 		</label>

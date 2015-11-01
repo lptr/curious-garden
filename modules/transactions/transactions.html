@@ -6,15 +6,15 @@
 	<label class="col-md-4 control-label">Tranzakció típusa</label>
 	<div class="col-md-4">
 		<div class="btn-group">
-			<label class="btn btn-danger" ng-model="type" btn-radio="'withdrawal'">
+			<label class="btn btn-danger" ng-model="type" uib-btn-radio="'withdrawal'">
 				<span class="glyphicon glyphicon-open"></span>
 				kivét
 			</label>
-			<label class="btn btn-success" ng-model="type" btn-radio="'deposit'">
+			<label class="btn btn-success" ng-model="type" uib-btn-radio="'deposit'">
 				<span class="glyphicon glyphicon-save"></span>
 				betét
 			</label>
-			<label class="btn btn-primary" ng-model="type" btn-radio="'transfer'">
+			<label class="btn btn-primary" ng-model="type" uib-btn-radio="'transfer'">
 				<span class="glyphicon glyphicon-transfer"></span>
 				transzfer
 			</label>
@@ -27,7 +27,7 @@
 	<label class="col-md-4 control-label" for="payee">Üzletfél</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="payee" name="payee" ng-model="payee" type="text" typeahead="payee for payee in find(payees, $viewValue)" typeahead-min-length="0" class="form-control clearable" placeholder="kinek fizettünk?" ng-required="true" />
+			<input id="payee" name="payee" ng-model="payee" type="text" uib-typeahead="payee for payee in find(payees, $viewValue)" uib-typeahead-min-length="0" class="form-control clearable" placeholder="kinek fizettünk?" ng-required="true" />
 			<small class="error" ng-show="transaction.payee.$error.ng-required">Az üzletfelet meg kell adnod.</small>
 			<span class="input-group-addon">
 				<span ng-show="payees.length" class="glyphicon glyphicon-user"></span>
@@ -57,7 +57,7 @@
 	<label class="col-md-4 control-label" for="sourceAccount">Felvétel erről a számláról</label>
 	<div class="col-md-4">
 		<div class="input-group">
-	  		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" typeahead="account for account in find(accounts, $viewValue)" typeahead-min-length="0" class="form-control clearable" placeholder="melyik számláról fizettünk?" ng-required="type == 'withdrawal' || type == 'transfer'"/>
+	  		<input id="sourceAccount" name="sourceAccount" ng-model="sourceAccount" type="text" uib-typeahead="account for account in find(accounts, $viewValue)" uib-typeahead-min-length="0" class="form-control clearable" placeholder="melyik számláról fizettünk?" ng-required="type == 'withdrawal' || type == 'transfer'"/>
 			<span class="input-group-addon">
 				<span ng-show="accounts.length" class="glyphicon glyphicon-open"></span>
 				<span ng-hide="accounts.length" class="glyphicon glyphicon-refresh"></span>
@@ -71,7 +71,7 @@
 	<label class="col-md-4 control-label" for="targetAccount">Betét erre a számlára</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" typeahead="account for account in find(accounts, $viewValue)" typeahead-min-length="0" class="form-control clearable" placeholder="melyik számlára fizettünk be?" ng-required="type == 'deposit' || type == 'transfer'"/>
+			<input id="targetAccount" name="targetAccount" ng-model="targetAccount" type="text" uib-typeahead="account for account in find(accounts, $viewValue)" uib-typeahead-min-length="0" class="form-control clearable" placeholder="melyik számlára fizettünk be?" ng-required="type == 'deposit' || type == 'transfer'"/>
 			<span class="input-group-addon">
 				<span ng-show="accounts.length" class="glyphicon glyphicon-save"></span>
 				<span ng-hide="accounts.length" class="glyphicon glyphicon-refresh"></span>
@@ -122,7 +122,7 @@
 	<label class="col-md-4 control-label" for="category">Kategória</label>
 	<div class="col-md-4">
 		<div class="input-group">
-			<input id="category" name="category" type="text" ng-model="category" typeahead="category.name for category in find(categories, $viewValue, 'name')" typeahead-min-length="0" class="form-control clearable" placeholder="milyen kategóriába tartozik ez a tranzakció?" ng-required="type != 'transfer'"/>
+			<input id="category" name="category" type="text" ng-model="category" uib-typeahead="category.name for category in find(categories, $viewValue, 'name')" uib-typeahead-min-length="0" class="form-control clearable" placeholder="milyen kategóriába tartozik ez a tranzakció?" ng-required="type != 'transfer'"/>
 			<span class="input-group-addon">
 				<span ng-show="categories.length" class="glyphicon glyphicon-tag"></span>
 				<span ng-hide="categories.length" class="glyphicon glyphicon-refresh"></span>
