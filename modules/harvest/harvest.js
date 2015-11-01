@@ -41,6 +41,7 @@
 					}
 					estimatesForId.push(estimate);
 				});
+				updateReadyStats();
 			}, date);
 		});
 		$scope.$watch("harvest", function (harvest) {
@@ -106,6 +107,13 @@
 				}
 			});
 		};
+		var updateReadyStats = function () {
+			if ($scope.storedEstimates) {
+				$scope.storedCount = Object.keys($scope.storedEstimates).length;
+			} else {
+				$scope.storedCount = 0;
+			}
+		}
 
 		$scope.add = function () {
 			$scope.estimates.push({});
@@ -186,6 +194,7 @@
 			$scope.estimates = null;
 			$scope.memo = null;
 			$scope.$broadcast('show-errors-reset');
+			updateReadyStats();
 		};
 		$scope.submit = function () {
 			if ($scope.harvestEstimates.$invalid) {

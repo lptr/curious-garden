@@ -1,6 +1,17 @@
 <form name="harvestEstimates" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
 <fieldset>
 
+<!-- Progress -->
+<div class="form-group">
+	<div class="col-md-4 col-md-offset-4">
+		<uib-progressbar value="storedCount / harvests.length * 100">
+			<span ng-show="storedCount > harvests.length * 0.2">
+				{{storedCount}} / {{harvests.length}}
+			</span>
+		</uib-progressbar>
+	</div>
+</div>
+
 <!-- Date -->
 <div class="form-group" show-errors>
 	<label class="col-md-4 control-label">Dátum</label>
@@ -60,7 +71,7 @@
 
 <!-- Harvest -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Szüretelendő vetés</label>
+	<label class="col-md-4 control-label">Vetés</label>
 	<div class="col-md-4">
 		<div class="input-group">
 			<select name="harvest"
