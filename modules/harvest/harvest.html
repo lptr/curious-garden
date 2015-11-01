@@ -1,8 +1,8 @@
-<form name="work" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
+<form name="harvestEstimates" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
 <fieldset>
 
 <!-- Date -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label">Dátum</label>
 	<div class="col-md-4">
 		<div class="input-group">
@@ -19,7 +19,7 @@
 </div>
 
 <!-- Location -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label">Helyszín</label>
 	<div class="col-md-4">
 		<div class="input-group">
@@ -39,14 +39,14 @@
 </div>
 
 <!-- Harvest -->
-<div class="form-group">
+<div class="form-group" show-errors>
 	<label class="col-md-4 control-label">Szüretelendő vetés</label>
 	<div class="col-md-4">
 		<div class="input-group">
 			<select name="employee"
 			 	class="form-control"
 				ng-model="harvest"
-				ng-options="('ágyás #' + harvest.plot + ' / id #' + harvest.id + ' — ' + harvest.produce) group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
+				ng-options="('ID ' + harvest.id + ' – ' + harvest.produce + ' (ágyás #' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
 				ng-required="true"
 				ng-disabled="!harvests.length || !location">
 			</select>
@@ -59,15 +59,15 @@
 </div>
 
 <!-- Product -->
-<div ng-repeat="result in results">
-	<div class="form-group">
+<div ng-repeat="estimate in estimates">
+	<div class="form-group" show-errors>
 		<label class="col-md-4 control-label">Várható szüret</label>
 		<div class="col-md-3 col-xs-10">
 			<div class="input-group">
 				<select name="product"
 					class="form-control"
 					placeholder="termék neve"
-					ng-model="result.product"
+					ng-model="estimate.product"
 					ng-options="product.name for product in matchingProducts()"
 					ng-required="true"
 					ng-disabled="!products.length || !harvest">
@@ -81,27 +81,27 @@
 		<div class="col-md-1 col-xs-2">
 			<div class="input-group">
 				<button class="btn btn-danger"
-					ng-show="results.length > 1"
-					ng-click="removeResult($index)">
+					ng-show="estimates.length > 1"
+					ng-click="remove($index)">
 					<span class="glyphicon glyphicon-remove"></span>
 				</button>
 			</div>
 		</div>
 	</div>
-	<div class="form-group">
+	<div class="form-group" show-errors>
 		<div class="col-md-3 col-md-offset-4 col-xs-10">
 			<div class="input-group">
 				<input name="quantity"
-					ng-model="quantity"
+					ng-model="estimate.quantity"
 					type="number"
 					pattern="\d*(\.\d*)?"
 					class="form-control"
 					placeholder="mennyiség"
 					ng-required="true"
-					ng-disabled="!result.product"/>
+					ng-disabled="!estimate.product"/>
 				<span class="input-group-addon">
-					<span ng-show="product">&times; {{product.unit}}</span>
-					<span ng-hide="product" class="glyphicon glyphicon-question-sign"></span>
+					<span ng-show="estimate.product">&times; {{estimate.product.unit}}</span>
+					<span ng-hide="estimate.product" class="glyphicon glyphicon-question-sign"></span>
 				</span>
 			</div>
 		</div>
@@ -109,7 +109,7 @@
 			<div class="input-group">
 				<button class="btn btn-success"
 					ng-show="$last"
-					ng-click="addResult()">
+					ng-click="add()">
 					<span class="glyphicon glyphicon-plus"></span>
 				</button>
 			</div>

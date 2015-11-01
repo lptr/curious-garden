@@ -14,7 +14,8 @@
 	});
 
 	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager, harvestManager) {
-		$scope.date = new Date();
+		var now = new Date();
+		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
 		produceManager.load(function (produces) {
 			$scope.produces = _.indexBy(produces, "name");
@@ -56,12 +57,12 @@
 				return harvest.location;
 			}));
 		};
-		$scope.results = [{}];
-		$scope.addResult = function () {
-			$scope.results.push({});
+
+		$scope.add = function () {
+			$scope.estimates.push({});
 		};
-		$scope.removeResult = function (index) {
-			$scope.results.splice(index, 1);
+		$scope.remove = function (index) {
+			$scope.estimates.splice(index, 1);
 		}
 		$scope.matchingHarvests = function() {
 			if (!$scope.harvests || !$scope.location) {
@@ -79,5 +80,47 @@
 				return product.species == $scope.harvest.species;
 			});
 		};
+		$scope.reset = function () {
+			$scope.location = null;
+			$scope.harvest = null;
+			$scope.estimates = [{}];
+			$scope.memo = null;
+		};
+		$scope.submit = function () {
+			if ($scope.harvestEstimates.$invalid) {
+				$modal.open({
+					templateUrl: "error-dialog.html",
+					controller: function ($scope, $modalInstance) {
+						$scope.close = function () {
+							$modalInstance.dismiss("close");
+						}
+					}
+				});
+				return;
+			}
+
+			var estimates = $scope.estimates.map(function (estimate) {
+				return {
+					product: estimate.product.name,
+					quantity: estimate.quantity,
+					unit: estimate.product.unit
+				};
+			});
+
+			var formData = {
+				date: $scope.date,
+				plot: $scope.harvest.plot,
+				id: $scope.harvest.id,
+				estimates: estimates,
+				memo: $scope.memo
+			};
+
+			kapaServer.query("submitHarvestEstimates", formData).success(function (id) {
+				$scope.reset();
+			}).finally(function () {
+				popup.close();
+			});
+		};
+		$scope.reset();
 	});
 })();
