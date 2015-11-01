@@ -89,6 +89,23 @@
 	</div>
 </div>
 
+<!-- State -->
+<div class="form-group">
+	<label class="col-md-4 control-label">Állapot</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="state"
+			 	class="form-control"
+				ng-model="harvest.state"
+				ng-disabled="true">
+			</select>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-search"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
 <!-- Estimate -->
 <div ng-repeat="estimate in estimates">
 	<!-- Product -->
