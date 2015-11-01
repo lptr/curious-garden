@@ -112,7 +112,21 @@
 				return product.species == $scope.harvest.species;
 			});
 		};
-		$scope.status = function (id) {
+		$scope.locationStatus = function (location) {
+			if (!$scope.storedEstimates || !$scope.harvests) {
+				return " ";
+			}
+			if (!$scope.harvests.filter(function (harvest) {
+					return harvest.location == location;
+				}).find(function (harvest) {
+					return !$scope.storedEstimates[harvest.id];
+				})) {
+				return "✅";
+			} else {
+				return "❓";
+			}
+		}
+		$scope.harvestStatus = function (id) {
 			if ($scope.storedEstimates && $scope.storedEstimates[id]) {
 				return "✅";
 			} else {

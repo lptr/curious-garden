@@ -26,7 +26,7 @@
 			<select name="location"
 				class="form-control"
 				ng-model="location"
-				ng-options="location for location in locations"
+				ng-options="(locationStatus(location) + ' ' + location) for location in locations"
 				ng-required="true"
 				ng-disabled="!locations.length">
 			</select>
@@ -46,7 +46,7 @@
 			<select name="harvest"
 			 	class="form-control"
 				ng-model="harvest"
-				ng-options="status(harvest.id) + (' ID ' + harvest.id + ' – ' + harvest.produce + ' (ágyás #' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
+				ng-options="harvestStatus(harvest.id) + (' ID ' + harvest.id + ' – ' + harvest.produce + ' (ágyás #' + harvest.plot + ')') group by ('ágyás #' + harvest.plot) for harvest in matchingHarvests()"
 				ng-required="true"
 				ng-disabled="!harvests.length || !products.length || !storedEstimates || !location">
 			</select>
