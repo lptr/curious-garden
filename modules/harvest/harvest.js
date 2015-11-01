@@ -15,15 +15,40 @@
 
 	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer) {
 		$scope.date = new Date();
+		$scope.produces = [
+			{
+				name: "búzavirág, S",
+				species: "búzavirág"
+			},
+			{
+				name: "búzavirág, XS",
+				species: "búzavirág"
+			},
+			{
+				name: "tomatillo",
+				species: "tomatillo"
+			}
+		];
+		$scope.producesIndex = _.indexBy($scope.produces, 'name');
 		$scope.products = [
 			{
-				name: "búzavirág, színmix, kis doboz",
-				produce: "búzavirág, színmix",
+				name: "búzavirág, XS, kis doboz",
+				produce: "búzavirág, XS",
 				unit: "kd"
 			},
 			{
-				name: "búzavirág, színmix, nagy doboz",
-				produce: "búzavirág, színmix",
+				name: "búzavirág, XS, nagy doboz",
+				produce: "búzavirág, XS",
+				unit: "nd"
+			},
+			{
+				name: "búzavirág, S, kis doboz",
+				produce: "búzavirág, S",
+				unit: "kd"
+			},
+			{
+				name: "búzavirág, S, nagy doboz",
+				produce: "búzavirág, S",
 				unit: "nd"
 			},
 			{
@@ -42,7 +67,7 @@
 				location: "fólia",
 				plot: 5,
 				id: 2999,
-				produce: "búzavirág, színmix",
+				produce: "búzavirág, XS",
 				planted: new Date(0),
 				state: "szüretlesős"
 			},
@@ -55,6 +80,20 @@
 				state: "halálszüret piac"
 			},
 		];
+
+		$scope.products.forEach(function (product) {
+			var produce = $scope.producesIndex[product.produce];
+			if (produce) {
+				product.species = produce.species;
+			}
+		});
+		$scope.harvests.forEach(function (harvest) {
+			var produce = $scope.producesIndex[harvest.produce];
+			if (produce) {
+				harvest.species = produce.species;
+			}
+		});
+
 		$scope.locations = _.uniq($scope.harvests.map(function (harvest) {
 			return harvest.location;
 		}));
@@ -78,7 +117,7 @@
 				return [];
 			}
 			return $scope.products.filter(function (product) {
-				return product.produce == $scope.harvest.produce;
+				return product.species == $scope.harvest.species;
 			});
 		};
 	});
