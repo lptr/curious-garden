@@ -13,7 +13,7 @@
 			});
 	});
 
-	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager) {
+	harvestModule.controller("HarvestController", function ($scope, $modal, $filter, kapaServer, produceManager, productManager, harvestManager) {
 		$scope.date = new Date();
 
 		produceManager.load(function (produces) {
@@ -24,6 +24,10 @@
 		productManager.load(function (products) {
 			$scope.unprocessedProducts = products;
 			processProducts();
+		});
+		harvestManager.load(function (harvests) {
+			$scope.unprocessedHarvests = harvests;
+			processHarvests();
 		});
 		var processProducts = function () {
 			if (!$scope.produces || !$scope.unprocessedProducts) {
@@ -37,24 +41,6 @@
 				return product;
 			});
 		};
-		$scope.unprocessedHarvests = [
-			{
-				location: "fólia",
-				plot: 5,
-				id: 2999,
-				produce: "búzavirág, XS",
-				planted: new Date(0),
-				state: "szüretlesős"
-			},
-			{
-				location: "fólia",
-				plot: 33,
-				id: 1713,
-				produce: "tomatillo",
-				planted: new Date(0),
-				state: "halálszüret piac"
-			},
-		];
 		var processHarvests = function () {
 			if (!$scope.produces || !$scope.unprocessedHarvests) {
 				return;

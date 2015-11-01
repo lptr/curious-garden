@@ -113,6 +113,10 @@
 		return new Loader(kapaServer, "getCategories");
 	});
 
+	services.factory("harvestManager", function (kapaServer) {
+		return new Loader(kapaServer, "getHarvests");
+	});
+
 	services.factory("produceManager", function (kapaServer) {
 		return new Loader(kapaServer, "getProduces");
 	});
