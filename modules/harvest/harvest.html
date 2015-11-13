@@ -3,12 +3,12 @@
 
 <!-- Progress -->
 <div class="form-group">
-	<div class="col-md-4 col-md-offset-4">
+	<div class="col-md-3 col-md-offset-4 col-xs-8">
 		<uib-progressbar value="storedCount / harvests.length * 100">
-			<span ng-show="storedCount > harvests.length * 0.2">
-				{{storedCount}} / {{harvests.length}}
-			</span>
 		</uib-progressbar>
+	</div>
+	<div class="col-md-1 col-xs-4 text-center">
+		{{storedCount || '?'}} / {{harvests.length || '?'}}
 	</div>
 </div>
 
