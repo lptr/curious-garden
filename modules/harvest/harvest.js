@@ -59,13 +59,6 @@
 				}
 			});
 		};
-		var updateReadyStats = function () {
-			if ($scope.storedEstimates) {
-				$scope.storedCount = Object.keys($scope.storedEstimates).length;
-			} else {
-				$scope.storedCount = 0;
-			}
-		}
 
 		var now = new Date();
 		produceManager.load(function (produces) {
@@ -83,7 +76,8 @@
 		});
 		$scope.$watch("date", function(date) {
 			$scope.storedEstimates = null;
-			harvestEstimateManager.load(function (storedEstimates) {
+			$scope.storedCount = 0;
+			harvestEstimateManager.load(function (storedEstimates) {	
 				$scope.storedEstimates = {};
 				storedEstimates.forEach(function(estimate) {
 					estimate.date = new Date(Date.parse(estimate.date));
@@ -94,7 +88,7 @@
 					}
 					estimatesForId.push(estimate);
 				});
-				updateReadyStats();
+				$scope.storedCount = Object.keys($scope.storedEstimates).length;
 			}, date);
 		});
 		$scope.$watch("harvest", function (harvest) {
@@ -195,7 +189,6 @@
 			$scope.estimates = null;
 			$scope.memo = null;
 			$scope.$broadcast('show-errors-reset');
-			updateReadyStats();
 		};
 		$scope.submit = function () {
 			if ($scope.harvestEstimates.$invalid) {
@@ -230,7 +223,7 @@
 				memo: $scope.memo
 			};
 
-			kapaServer.query("submitHarvestEstimates", formData).success(function (id) {
+			kapaServer.query("submitHarvestEstimates", formData).success(function (storedCount) {
 				$scope.storedEstimates[$scope.harvest.id] = estimates.map(function (estimate) {
 					return {
 						date: $scope.date,
@@ -242,6 +235,7 @@
 						memo: $scope.memo
 					};
 				});
+				$scope.storedCount = storedCount;
 				$scope.reset();
 			}).finally(function () {
 				popup.close();
