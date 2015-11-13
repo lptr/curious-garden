@@ -66,7 +66,7 @@
 
 				if (!ignoreErrors) {
 					request.error(function(data, status, headers, config) {
-						console.log("Error", data, status, headers, config);
+						console.log("Error", arguments);
 						alert("Error: " + status);
 					});
 				}
