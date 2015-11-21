@@ -31,7 +31,8 @@
 			if (!$scope.produces || !$scope.unprocessedHarvests) {
 				return;
 			}
-			$scope.harvests = $scope.unprocessedHarvests.map(function (harvest) {
+			$scope.harvests = $scope.unprocessedHarvests.map(function (harvest, index) {
+				harvest.index = index;
 				var produce = $scope.produces[harvest.produce];
 				if (produce) {
 					harvest.species = produce.species;
@@ -58,6 +59,30 @@
 					plots.push(harvest.plot);
 				}
 			});
+			chooseFirstNotDoneHarvest(0);
+		};
+
+		var chooseFirstNotDoneHarvest = function (startIndex) {
+			var harvest = findFirstNotDoneHarvest(startIndex);
+
+			$scope.reset();
+			if (harvest) {
+				$scope.location = $scope.locations.find(function (location) {
+					return location.name == harvest.location;
+				});
+			}
+		};
+		var findFirstNotDoneHarvest = function (startIndex) {
+			if (!$scope.harvests || !$scope.storedEstimates) {
+				return;
+			}
+
+			return $scope.harvests.find(function (harvest) {
+				return harvest.index >= startIndex && !isHarvestFinished(harvest);
+			});
+		};
+		var isHarvestFinished = function (harvest) {
+			return $scope.storedEstimates[harvest.id];
 		};
 
 		var now = new Date();
@@ -89,11 +114,37 @@
 					estimatesForId.push(estimate);
 				});
 				$scope.storedCount = Object.keys($scope.storedEstimates).length;
+				chooseFirstNotDoneHarvest();
 			}, date);
+		});
+		var nextHarvest = false;
+		$scope.$watch("location", function (location) {
+			if (nextHarvest || !location || !$scope.harvests) {
+				return;
+			}
+			var harvest = $scope.harvests.find(function (harvest) {
+				return !isHarvestFinished(harvest) && location.plots.some(function (plot) {
+					return harvest.plot == plot;
+				});
+			});
+			if (harvest) {
+				$scope.plot = harvest.plot;
+			}
+		});
+		$scope.$watch("plot", function (plot) {
+			if (nextHarvest || !plot || !$scope.harvests) {
+				return;
+			}
+			$scope.harvest = $scope.harvests.find(function (harvest) {
+				return !isHarvestFinished(harvest) && harvest.plot == plot;
+			});
 		});
 		$scope.$watch("harvest", function (harvest) {
 			if (!harvest) {
 				$scope.estimates = null;
+				if (nextHarvest) {
+					$scope.reset();	
+				}
 			} else {
 				var storedEstimates = $scope.storedEstimates[harvest.id];
 				if (storedEstimates) {
@@ -105,6 +156,12 @@
 					});
 				} else {
 					$scope.estimates = [{}];
+				}
+				if (nextHarvest) {
+					$scope.location = $scope.locations.find(function (location) {
+						return harvest.location == location.name;
+					});
+					$scope.plot = harvest.plot;
 				}
 			}
 		});
@@ -172,7 +229,7 @@
 			} else {
 				return "❗️";
 			}
-		}
+		};
 		$scope.sumIncome = function () {
 			var income = 0;
 			if ($scope.estimates) {
@@ -207,6 +264,7 @@
 				templateUrl: "save-dialog.html"
 			});
 
+			var finishedHarvest = $scope.harvest;
 			var estimates = $scope.estimates.map(function (estimate) {
 				return {
 					product: estimate.product.name,
@@ -217,8 +275,8 @@
 
 			var formData = {
 				date: $scope.date,
-				plot: $scope.harvest.plot,
-				id: $scope.harvest.id,
+				plot: finishedHarvest.plot,
+				id: finishedHarvest.id,
 				estimates: estimates,
 				memo: $scope.memo
 			};
@@ -237,6 +295,19 @@
 				});
 				$scope.storedCount = storedCount;
 				$scope.reset();
+				nextHarvest = true;
+				try {
+					var harvest = findFirstNotDoneHarvest(finishedHarvest.index + 1);
+					if (harvest) {
+						$scope.location = $scope.locations.find(function (location) {
+							return location.name == finishedHarvest.location;
+						});
+						$scope.plot = harvest.plot;
+					}
+					$scope.harvest = harvest;
+				} finally {
+					nextHarvest = false;
+				}
 			}).finally(function () {
 				popup.close();
 			});
