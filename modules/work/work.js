@@ -14,22 +14,9 @@
 			});
 	});
 
-	workModule.controller("WorkController", function ($scope, $uibModal, $filter, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
+	workModule.controller("WorkController", function ($scope, $uibModal, $filter, $q, normalizer, kapaServer, userManager, categoryManager, employeeManager) {
 		$scope.employees = [];
 		$scope.categories = [];
-
-		var setEmployeeToActiveUser = function () {
-			// Make sure both employees and user are loaded, and no employee is set already
-			if ($scope.user && !$scope.employee && $scope.employees) {
-				for (var i = 0; i < $scope.employees.length; i++) {
-					var employee = $scope.employees[i];
-					if (employee.email === $scope.user.email) {
-						$scope.employee = employee;
-						break;
-					}
-				}
-			}
-		};
 
 		$scope.find = normalizer.find;
 
@@ -74,16 +61,31 @@
 
 		$scope.reset();
 
-		userManager.load(function (user) {
+		var userFetched = userManager.fetch();
+		var employeesFetched = employeeManager.fetch("work");
+		var categoriesFetched = categoryManager.fetch();
+
+		userFetched.then(function (user) {
 			$scope.user = user;
-			setEmployeeToActiveUser();
 		});
-		employeeManager.load(function (employees) {
+		employeesFetched.then(function (employees) {
 			$scope.employees = employees;
-			setEmployeeToActiveUser();
-		}, "work");
-		categoryManager.load(function (categories) {
+		});
+		categoriesFetched.then(function (categories) {
 			$scope.categories = categories;
+		});
+
+		$q.all({
+			user: userFetched,
+			employees: employeesFetched
+		}).then(function (fetched) {
+			if (!$scope.employee) {
+				fetched.employees.forEach(function (employee) {
+					if (employee.email === fetched.user.email) {
+						$scope.employee = employee;
+					}
+				});
+			}
 		});
 
 		$scope.submit = function () {

@@ -20,13 +20,13 @@
 		$scope.categories = [];
 		$scope.type = "withdrawal";
 
-		accountManager.load(function (accounts) {
+		accountManager.fetch().then(function (accounts) {
 			$scope.accounts = accounts;
 		});
-		payeeManager.load(function (payees) {
+		payeeManager.fetch().then(function (payees) {
 			$scope.payees = payees;
 		});
-		categoryManager.load(function (categories) {
+		categoryManager.fetch().then(function (categories) {
 			$scope.categories = categories;
 		});
 

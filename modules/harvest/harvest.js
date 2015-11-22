@@ -143,7 +143,7 @@
 			if (!harvest) {
 				$scope.estimates = null;
 				if (nextHarvest) {
-					$scope.reset();	
+					$scope.reset();
 				}
 			} else {
 				var storedEstimates = $scope.storedEstimates[harvest.id];

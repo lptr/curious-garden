@@ -137,7 +137,7 @@
 		$scope.priceTags = [];
 
 		log("Árcímkék betöltése... (amíg tölt, nem lehet árcímkét nyomtatni)");
-		priceTagManager.load(function (priceTags) {
+		priceTagManager.fetch().then(function (priceTags) {
 			$scope.priceTags = priceTags;
 			log("Árcímkék betöltve");
 		});

@@ -91,17 +91,6 @@
 		var cache = {};
 		var cacheQ = {};
 		return {
-			load: function (callback, data) {
-				if (cache[data]) {
-					callback(cache[data]);
-				} else {
-					kapaServer.query(method, data).success(function (result) {
-						console.log(method, "with data", data, "received", result);
-						cache[data] = result;
-						callback(result);
-					});
-				}
-			},
 			fetch: function (data, ignoreErrors) {
 				if (!cacheQ[data]) {
 					cacheQ[data] = kapaServer.queryWithPromise(method, data, ignoreErrors);
