@@ -36,15 +36,16 @@
 		});
 	});
 
-	app.controller("MainController", function ($scope, $uibModal, kapaServer) {
+	app.controller("MainController", function ($scope, $uibModal, userManager) {
 		$scope.user = {
 			features: {}
 		};
-		kapaServer.query("getUser", null, true)
-			.success(function (user) {
+		userManager.fetch(null, true)
+			.then(function (user) {
 				$scope.user = user;
 			})
-			.error(function () {
+			.catch(function (error) {
+				console.log("Error getting user:", error);
 				$uibModal.open({
 					templateUrl: "access-denied.html",
 					backdrop: "static",

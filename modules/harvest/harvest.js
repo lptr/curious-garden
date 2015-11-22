@@ -266,7 +266,7 @@
 			var popup = $uibModal.open({
 				templateUrl: "save-dialog.html"
 			});
-			kapaServer.query("submitHarvestEstimates", data).success(function (result) {
+			kapaServer.query("submitHarvestEstimates", data).then(function (result) {
 				// Remove previously recorded estimates for harvest
 				result.recordsAdded.forEach(function (estimate) {
 					$scope.storedEstimates[estimate.id] = [];

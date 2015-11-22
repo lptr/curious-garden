@@ -97,7 +97,7 @@
 				formData.targetAccount = null;
 			}
 
-			kapaServer.query("submitTransaction", formData).success(function (id) {
+			kapaServer.query("submitTransaction", formData).then(function (id) {
 				$scope.reset();
 			}).finally(function () {
 				popup.close();

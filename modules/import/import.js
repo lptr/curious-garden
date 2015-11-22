@@ -34,10 +34,10 @@
 					log("Tranzakciók feltöltése: " + (start + 1) + "-" + end + " / " + $scope.transactions.length);
 					kapaServer
 						.query("submitTransactions", $scope.transactions.slice(start, end))
-						.success(function (id) {
+						.then(function (id) {
 							submitTransactions(end);
 						})
-						.error(function (error) {
+						.catch(function (error) {
 							$scope.uploading = false;
 							log("HIBA a tranzakciók feltöltése közben: " + error);
 						});

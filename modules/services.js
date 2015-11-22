@@ -55,32 +55,28 @@
 				return serverUrl;
 			},
 			query: function (method, data, ignoreErrors) {
-				console.log("Sending request to " + method, data);
-				var request = $http.jsonp(serverUrl, {
-					params: {
-						method: method,
-						data: JSON.stringify(data),
-						callback: "JSON_CALLBACK"
-					}
-				})
-
-				if (!ignoreErrors) {
-					request.error(function(data, status, headers, config) {
-						console.log("Error", arguments);
-						alert("Error: " + status);
-					});
-				}
-
-				return request;
-			},
-			queryWithPromise: function (method, data, ignoreErrors) {
 				return $q(function (resolve, reject) {
-					that.query(method, data, ignoreErrors)
-						.success(function (result) {
-							console.log(method, "with data", data, "received", result);
-							resolve(result);
-						})
-						.error(reject);
+					console.log("Sending request to " + method, data);
+					var request = $http.jsonp(serverUrl, {
+						params: {
+							method: method,
+							data: JSON.stringify(data),
+							callback: "JSON_CALLBACK"
+						}
+					})
+
+					if (!ignoreErrors) {
+						request.error(function(data, status, headers, config) {
+							console.log("Error", arguments);
+							alert("Error: " + status);
+						});
+					}
+
+					request.success(function (result) {
+						console.log(method, "with data", data, "received", result);
+						resolve(result);
+					});
+					request.error(reject);
 				});
 			}
 		};
@@ -89,13 +85,15 @@
 
 	var Loader = function(kapaServer, method) {
 		var cache = {};
-		var cacheQ = {};
 		return {
 			fetch: function (data, ignoreErrors) {
-				if (!cacheQ[data]) {
-					cacheQ[data] = kapaServer.queryWithPromise(method, data, ignoreErrors);
+				var key = JSON.stringify(data);
+				var promise = cache[key];
+				if (!promise) {
+					promise = kapaServer.query(method, data, ignoreErrors);
+					cache[key] = promise;
 				}
-				return cacheQ[data];
+				return promise;
 			}
 		};
 	};
