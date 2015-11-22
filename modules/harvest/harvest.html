@@ -145,8 +145,12 @@
 <div ng-repeat="estimate in estimates">
 	<!-- Product -->
 	<div class="form-group" show-errors>
-		<label class="col-md-4 control-label">Várható szüret</label>
-		<div class="col-md-3 col-xs-10">
+		<label class="col-md-4 control-label" ng-show="$index === 0">Várható szüretmennyiség<span ng-show="estimates.length > 1">ek</span></label>
+		<div class="clearfix" ng-show="estimates.length > 1"></div>
+		<label class="col-md-4 control-label" ng-show="estimates.length > 1">
+			<span>{{$index + 1}}. szüretelendő termék</span>
+		</label>
+		<div class="col-md-4">
 			<div class="input-group">
 				<select name="product"
 					class="form-control"
@@ -162,20 +166,10 @@
 				</span>
 			</div>
 		</div>
-		<div class="col-md-1 col-xs-2">
-			<div class="input-group">
-				<button type="button"
-					class="btn btn-danger"
-					ng-show="estimates.length > 1"
-					ng-click="remove($index)">
-					<span class="glyphicon glyphicon-trash"></span>
-				</button>
-			</div>
-		</div>
 	</div>
 	<!-- Quantity -->
 	<div class="form-group" show-errors>
-		<div class="col-md-3 col-md-offset-4 col-xs-10">
+		<div class="col-md-offset-4 col-md-4">
 			<div class="input-group">
 				<input name="quantity"
 					ng-model="estimate.quantity"
@@ -192,20 +186,29 @@
 			</div>
 		</div>
 	</div>
+	<div class="form-group">
+		<div class="col-md-offset-4 col-md-4"
+			ng-show="estimates.length > 1">
+			<button type="button"
+				class="btn btn-block btn-danger"
+				ng-click="remove($index)">
+				<span class="glyphicon glyphicon-trash"></span>
+				<span>Termék törlése</span>
+			</button>
+		</div>
+	</div>
 </div>
 
 <!-- Add item -->
 <div class="form-group">
 	<div class="col-md-4 col-md-offset-4">
-		<div class="input-group">
-			<button type="button"
-				class="btn btn-success"
-				ng-disabled="!harvest"
-				ng-click="add()">
-				<span class="glyphicon glyphicon-plus"></span>
-				<span>Még egy terméket fel akarok venni</span>
-			</button>
-		</div>
+		<button type="button"
+			class="btn btn-block btn-success"
+			ng-disabled="!harvest"
+			ng-click="add()">
+			<span class="glyphicon glyphicon-plus"></span>
+			<span>Még egy terméket fel akarok venni</span>
+		</button>
 	</div>
 </div>
 
