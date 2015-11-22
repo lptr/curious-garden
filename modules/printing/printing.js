@@ -1,34 +1,34 @@
 (function() {
-	var labelsModule = angular.module("kapa.labels", [
+	var printingModule = angular.module("kapa.printing", [
 			"kapa.services",
 			"ngRoute",
 			"ui.bootstrap",
 			"ui.bootstrap.showErrors"
 		]);
 
-	labelsModule.config(function($routeProvider) {
+	printingModule.config(function($routeProvider) {
 		$routeProvider
-			.when('/labels', {
-				templateUrl: 'modules/labels/labels.html'
+			.when('/printing', {
+				templateUrl: 'modules/printing/printing.html'
 			});
 	});
 
-	labelsModule.factory("log", function ($filter) {
+	printingModule.factory("log", function ($filter) {
 		return function (message) {
-			var labelsLog = $("#labelsLog");
+			var printingLog = $("#printingLog");
 			var logMessage = "";
 			// logMessage += $filter("date")(new Date(), "yyyy-MM-dd HH:MM:ss") + ": ";
 			logMessage += message;
-			logMessage += "\n" + labelsLog.text();
-			labelsLog.text(logMessage);
+			logMessage += "\n" + printingLog.text();
+			printingLog.text(logMessage);
 		};
 	});
 
-	labelsModule.controller("BrowserController", function ($scope) {
+	printingModule.controller("BrowserController", function ($scope) {
 		$scope.notChrome = navigator.userAgent.indexOf('Chrome/') == -1;
 	});
 
-	labelsModule.controller("LabelPrinterController", function ($scope, $filter, productNameManager, log) {
+	printingModule.controller("LabelPrinterController", function ($scope, $filter, productNameManager, log) {
 		$scope.products = null;
 		$scope.labels = [];
 
@@ -44,7 +44,7 @@
 				return;
 			}
 
-			var printWindow = window.open("modules/labels/print-labels.html", "KAPA_PrintLabels", "width=800, height=600");
+			var printWindow = window.open("modules/printing/print-labels.html", "KAPA_PrintLabels", "width=800, height=600");
 			if (!printWindow) {
 				alert("Nem tudom megnyitni a nyomtatási ablakot");
 				return;
@@ -126,7 +126,7 @@
 		}
 	});
 
-	labelsModule.controller("PriceTagPrinterController", function ($scope, $filter, priceTagManager, log) {
+	printingModule.controller("PriceTagPrinterController", function ($scope, $filter, priceTagManager, log) {
 		$scope.priceTags = [];
 
 		log("Árcímkék betöltése... (amíg tölt, nem lehet árcímkét nyomtatni)");
@@ -141,7 +141,7 @@
 				return;
 			}
 
-			var printWindow = window.open("modules/labels/print-pricetags.html", "KAPA_PrintPriceTags", "width=800, height=600");
+			var printWindow = window.open("modules/printing/print-pricetags.html", "KAPA_PrintPriceTags", "width=800, height=600");
 			if (!printWindow) {
 				alert("Nem tudom megnyitni a nyomtatási ablakot");
 				return;

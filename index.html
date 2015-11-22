@@ -61,8 +61,8 @@
 	<link rel="stylesheet" href="modules/import/import.css" />
 	<script src="modules/import/import.js"></script>
 
-	<link rel="stylesheet" href="modules/labels/labels.css" />
-	<script src="modules/labels/labels.js"></script>
+	<link rel="stylesheet" href="modules/printing/printing.css" />
+	<script src="modules/printing/printing.js"></script>
 
 	<link rel="stylesheet" href="modules/harvest/harvest.css" />
 	<script src="modules/harvest/harvest.js"></script>
@@ -154,10 +154,10 @@
 						Adatok
 					</a>
 				</li>
-				<li ng-class="{ active: isActive('^/labels')}" ng-show="user.access.labels">
-					<a href="#labels">
-						<span class="glyphicon glyphicon-tag"></span>
-						Matricák
+				<li ng-class="{ active: isActive('^/printing')}" ng-show="user.access.printing">
+					<a href="#printing">
+						<span class="glyphicon glyphicon-print"></span>
+						Nyomtatás
 					</a>
 				</li>
 			</ul>

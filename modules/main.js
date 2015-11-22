@@ -6,7 +6,7 @@
 		"kapa.harvest",
 		"kapa.work",
 		"kapa.import",
-		"kapa.labels",
+		"kapa.printing",
 		"ngRoute",
 		"ui.bootstrap.modal"
 	]);
