@@ -78,14 +78,13 @@
 			}
 
 			return $scope.harvests.find(function (harvest) {
-				return harvest.index >= startIndex && !isHarvestFinished(harvest);
+				return harvest.index >= startIndex && !isHarvestDone(harvest);
 			});
 		};
-		var isHarvestFinished = function (harvest) {
+		var isHarvestDone = function (harvest) {
 			return $scope.storedEstimates[harvest.id];
 		};
 
-		var now = new Date();
 		produceManager.load(function (produces) {
 			$scope.produces = _.indexBy(produces, "name");
 			processProducts();
@@ -123,7 +122,7 @@
 				return;
 			}
 			var harvest = $scope.harvests.find(function (harvest) {
-				return !isHarvestFinished(harvest) && location.plots.some(function (plot) {
+				return !isHarvestDone(harvest) && location.plots.some(function (plot) {
 					return harvest.plot == plot;
 				});
 			});
@@ -136,7 +135,7 @@
 				return;
 			}
 			$scope.harvest = $scope.harvests.find(function (harvest) {
-				return !isHarvestFinished(harvest) && harvest.plot == plot;
+				return !isHarvestDone(harvest) && harvest.plot == plot;
 			});
 		});
 		$scope.$watch("harvest", function (harvest) {
@@ -165,6 +164,8 @@
 				}
 			}
 		});
+
+		var now = new Date();
 		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
 		$scope.add = function () {
@@ -247,6 +248,49 @@
 			$scope.memo = null;
 			$scope.$broadcast('show-errors-reset');
 		};
+
+		var submitData = function(data, success) {
+			if (!data || !data.harvests) {
+				return;
+			}
+
+			var popup = $uibModal.open({
+				templateUrl: "save-dialog.html"
+			});
+			kapaServer.query("submitHarvestEstimates", data).success(function (result) {
+				// Remove previously recorded estimates for harvest
+				result.recordsAdded.forEach(function (estimate) {
+					$scope.storedEstimates[estimate.id] = [];
+				});
+				// Record newly added estimates for harvest
+				result.recordsAdded.forEach(function (estimate) {
+					$scope.storedEstimates[estimate.id].push(estimate);
+				});
+				$scope.storedCount = result.recordCount;
+
+				var finishedHarvest = $scope.harvest;
+				$scope.reset();
+
+				if (finishedHarvest) {
+					nextHarvest = true;
+					try {
+						var harvest = findFirstNotDoneHarvest(finishedHarvest.index + 1);
+						if (harvest) {
+							$scope.location = $scope.locations.find(function (location) {
+								return location.name == finishedHarvest.location;
+							});
+							$scope.plot = harvest.plot;
+						}
+						$scope.harvest = harvest;
+					} finally {
+						nextHarvest = false;
+					}
+				}
+			}).finally(function () {
+				popup.close();
+			});
+		};
+
 		$scope.submit = function () {
 			if ($scope.harvestEstimates.$invalid) {
 				$uibModal.open({
@@ -260,10 +304,6 @@
 				return;
 			}
 
-			var popup = $uibModal.open({
-				templateUrl: "save-dialog.html"
-			});
-
 			var finishedHarvest = $scope.harvest;
 			var estimates = $scope.estimates.map(function (estimate) {
 				return {
@@ -273,43 +313,66 @@
 				};
 			});
 
-			var formData = {
+			var data = {
 				date: $scope.date,
-				plot: finishedHarvest.plot,
-				id: finishedHarvest.id,
-				estimates: estimates,
-				memo: $scope.memo
+				harvests: [{
+					plot: finishedHarvest.plot,
+					id: finishedHarvest.id,
+					estimates: estimates,
+					memo: $scope.memo
+				}]
 			};
 
-			kapaServer.query("submitHarvestEstimates", formData).success(function (storedCount) {
-				$scope.storedEstimates[$scope.harvest.id] = estimates.map(function (estimate) {
+			submitData(data);
+		};
+		$scope.isPlotDone = function (plot) {
+			return $scope.harvests.filter(function (harvest) {
+				return harvest.plot == plot;
+			}).every(isHarvestDone);
+		};
+		$scope.closePlot = function () {
+			if (!$scope.plot) {
+				return;
+			}
+
+			var harvestsInPlot = $scope.harvests.filter(function (harvest) {
+				return harvest.plot == $scope.plot && !isHarvestDone(harvest);
+			});
+
+			if (harvestsInPlot.length === 0) {
+				return;
+			}
+
+			$uibModal.open({
+				templateUrl: "close-plot-dialog.html",
+				controller: function ($scope, $uibModalInstance) {
+					$scope.harvests = harvestsInPlot;
+					$scope.ok = function () {
+						$uibModalInstance.close();
+					};
+					$scope.cancel = function () {
+						$uibModalInstance.dismiss("cancel");
+					};
+				}
+			}).result.then(function () {
+				var harvests = harvestsInPlot.map(function (harvest) {
 					return {
-						date: $scope.date,
-						plot: $scope.harvest.plot,
-						id: $scope.harvest.id,
-						product: estimate.product,
-						quantity: estimate.quantity,
-						unit: estimate.unit,
-						memo: $scope.memo
+						plot: harvest.plot,
+						id: harvest.id,
+						estimates: [{
+							product: null,
+							quantity: 0,
+							unit: null
+						}],
+						memo: "jelenleg nem szüretelhető"
 					};
 				});
-				$scope.storedCount = storedCount;
-				$scope.reset();
-				nextHarvest = true;
-				try {
-					var harvest = findFirstNotDoneHarvest(finishedHarvest.index + 1);
-					if (harvest) {
-						$scope.location = $scope.locations.find(function (location) {
-							return location.name == finishedHarvest.location;
-						});
-						$scope.plot = harvest.plot;
-					}
-					$scope.harvest = harvest;
-				} finally {
-					nextHarvest = false;
-				}
-			}).finally(function () {
-				popup.close();
+
+				var data = {
+					date: $scope.date,
+					harvests: harvests
+				};
+				submitData(data);
 			});
 		};
 		$scope.reset();

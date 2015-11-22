@@ -1,3 +1,24 @@
+<script type="text/ng-template" id="close-plot-dialog.html">
+	<div class="modal-header">
+		<h3 class="modal-title">#{{harvests[0].plot}} ágyás lezárása</h3>
+	</div>
+	<div class="modal-body">
+		<p>
+			Biztos, hogy lezárod ezt az ágyást? Ha igennel válaszolsz,
+			a következő vetésekhez az kerül rögzítésre, hogy <strong>jelenleg nem lehet őket szüretelni</strong>:
+		</p>
+		<ul>
+			<li ng-repeat="harvest in harvests">
+				#{{harvest.id}} – {{harvest.produce}}
+			</li>
+		</ul>
+	</div>
+	<div class="modal-footer text-center">
+		<button class="btn btn-primary" type="button" ng-click="ok()">Igen, lezárom</button>
+		<button class="btn btn-danger" type="button" ng-click="cancel()">Még átgondolom</button>
+	</div>
+</script>
+
 <form name="harvestEstimates" class="form-horizontal" ng-disabled="{{submiting}}" novalidate ng-submit="submit()">
 <fieldset>
 
@@ -51,8 +72,8 @@
 
 <!-- Plot -->
 <div class="form-group" show-errors>
-	<label class="col-md-4 control-label">Ágyás</label>
-	<div class="col-md-4">
+	<label class="col-md-4 col-xs-12 control-label">Ágyás</label>
+	<div class="col-md-3 col-xs-8">
 		<div class="input-group">
 			<select name="plot"
 				class="form-control"
@@ -66,6 +87,20 @@
 				<span ng-hide="locations.length" class="glyphicon glyphicon-refresh"></span>
 			</span>
 		</div>
+	</div>
+	<div class="col-md-1 col-xs-4">
+		<button type="button"
+			class="btn btn-primary"
+		 	ng-click="closePlot(plot)"
+			ng-disabled="!plot || isPlotDone(plot)">
+			<span>Lezár</span>
+		</button>
+	</div>
+	<div class="col-md-4 col-md-offset-4 col-xs-12">
+		<span class="help-block">
+			A "Lezár" gomb az ágyásban minden még fel nem vett vetéshez
+			rögzíti, hogy jelenleg nincs benne szüretelhető termény
+		</span>
 	</div>
 </div>
 
