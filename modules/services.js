@@ -29,7 +29,7 @@
 		};
 	});
 
-	services.factory("kapaServer", function ($http, $location) {
+	services.factory("kapaServer", function ($http, $location, $q) {
 		var getQueryString = function () {
 			var result = {}
 			var queryString = location.search.slice(1);
@@ -50,7 +50,7 @@
 		} else {
 			serverUrl = "https://script.google.com/macros/s/AKfycbw3K4PgqRNE6sstX6Z6Exy39cnpmLiIKWReTNUcN-4CRTcRbS8/exec"
 		}
-		return {
+		var that = {
 			getUrl: function () {
 				return serverUrl;
 			},
@@ -72,12 +72,24 @@
 				}
 
 				return request;
+			},
+			queryWithPromise: function (method, data, ignoreErrors) {
+				return $q(function (resolve, reject) {
+					that.query(method, data, ignoreErrors)
+						.success(function (result) {
+							console.log(method, "with data", data, "received", result);
+							resolve(result);
+						})
+						.error(reject);
+				});
 			}
 		};
+		return that;
 	});
 
 	var Loader = function(kapaServer, method) {
 		var cache = {};
+		var cacheQ = {};
 		return {
 			load: function (callback, data) {
 				if (cache[data]) {
@@ -89,6 +101,12 @@
 						callback(result);
 					});
 				}
+			},
+			fetch: function (data, ignoreErrors) {
+				if (!cacheQ[data]) {
+					cacheQ[data] = kapaServer.queryWithPromise(method, data, ignoreErrors);
+				}
+				return cacheQ[data];
 			}
 		};
 	};
@@ -127,10 +145,6 @@
 
 	services.factory("productManager", function (kapaServer) {
 		return new Loader(kapaServer, "getProducts");
-	});
-
-	services.factory("productNameManager", function (kapaServer) {
-		return new Loader(kapaServer, "getProductNames");
 	});
 
 	services.factory("priceTagManager", function (kapaServer) {

@@ -28,13 +28,19 @@
 		$scope.notChrome = navigator.userAgent.indexOf('Chrome/') == -1;
 	});
 
-	printingModule.controller("LabelPrinterController", function ($scope, $filter, productNameManager, log) {
+	printingModule.controller("LabelPrinterController", function ($scope, $filter, productManager, log) {
 		$scope.products = null;
 		$scope.labels = [];
 
 		log("Termékek betöltése... (amíg tölt, nem lehet matricát nyomtatni)");
-		productNameManager.load(function (products) {
-			$scope.products = products;
+		productManager.fetch().then(function (products) {
+			$scope.products = {};
+			products.forEach(function (product) {
+				$scope.products[product.sku] = {
+					hu: product.name,
+					en: product.englishName
+				}
+			});
 			log("Termékek betöltve");
 		});
 
