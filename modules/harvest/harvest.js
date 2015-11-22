@@ -154,7 +154,15 @@
 						}
 					});
 				} else {
-					$scope.estimates = [{}];
+					var estimates = [{}];
+					if ($scope.products) {
+						estimates = [{
+							product: $scope.products.find(function (product) {
+								return product.produce === harvest.produce;
+							})
+						}];
+					}
+					$scope.estimates = estimates;
 				}
 				if (nextHarvest) {
 					$scope.location = $scope.locations.find(function (location) {
