@@ -13,27 +13,57 @@
 			});
 	});
 
-	harvestModule.controller("HarvestController", function ($scope, $uibModal, $filter, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
-		var processProducts = function () {
-			if (!$scope.produces || !$scope.unprocessedProducts) {
+	harvestModule.controller("HarvestController", function ($scope, $uibModal, $filter, $q, kapaServer, produceManager, productManager, harvestManager, harvestEstimateManager) {
+		var chooseFirstNotDoneHarvest = function (startIndex) {
+			var harvest = findFirstNotDoneHarvest(startIndex);
+
+			$scope.reset();
+			if (harvest) {
+				$scope.location = $scope.locations.find(function (location) {
+					return location.name == harvest.location;
+				});
+			}
+		};
+		var findFirstNotDoneHarvest = function (startIndex) {
+			if (!$scope.harvests || !$scope.storedEstimates) {
 				return;
 			}
-			$scope.products = $scope.unprocessedProducts.map(function (product) {
-				var produce = $scope.produces[product.produce];
+
+			return $scope.harvests.find(function (harvest) {
+				return harvest.index >= startIndex && !isHarvestDone(harvest);
+			});
+		};
+		var isHarvestDone = function (harvest) {
+			return $scope.storedEstimates[harvest.id];
+		};
+
+		var producesFetched = produceManager.fetch().then(function (produces) {
+			return _.indexBy(produces, "name");
+		});
+		var harvestsFetched = harvestManager.fetch();
+		var productsFetched = productManager.fetch();
+
+		var productsReady = $q.all({
+			produces: producesFetched,
+			products: productsFetched
+		}).then(function (fetched) {
+			$scope.products = fetched.products.map(function (product) {
+				var produce = fetched.produces[product.produce];
 				if (produce) {
 					product.species = produce.species;
 				}
 				return product;
 			});
-			$scope.productsByName = _.indexBy($scope.products, "name");
-		};
-		var processHarvests = function () {
-			if (!$scope.produces || !$scope.unprocessedHarvests) {
-				return;
-			}
-			$scope.harvests = $scope.unprocessedHarvests.map(function (harvest, index) {
+			$scope.productsByName = _.indexBy($scope.products, "name");			
+		});
+
+		var harvestsReady = $q.all({
+			produces: producesFetched,
+			harvests: harvestsFetched
+		}).then(function (fetched) {
+			$scope.harvests = fetched.harvests.map(function (harvest, index) {
 				harvest.index = index;
-				var produce = $scope.produces[harvest.produce];
+				var produce = fetched.produces[harvest.produce];
 				if (produce) {
 					harvest.species = produce.species;
 				}
@@ -59,49 +89,20 @@
 					plots.push(harvest.plot);
 				}
 			});
-			chooseFirstNotDoneHarvest(0);
-		};
+		});
 
-		var chooseFirstNotDoneHarvest = function (startIndex) {
-			var harvest = findFirstNotDoneHarvest(startIndex);
-
-			$scope.reset();
-			if (harvest) {
-				$scope.location = $scope.locations.find(function (location) {
-					return location.name == harvest.location;
-				});
-			}
-		};
-		var findFirstNotDoneHarvest = function (startIndex) {
-			if (!$scope.harvests || !$scope.storedEstimates) {
-				return;
-			}
-
-			return $scope.harvests.find(function (harvest) {
-				return harvest.index >= startIndex && !isHarvestDone(harvest);
+		$q.all([productsReady, harvestsReady])
+			.then(function () {
+				chooseFirstNotDoneHarvest(0);
+			})
+			.catch(function (error) {
+				alert("Error: " + error);
 			});
-		};
-		var isHarvestDone = function (harvest) {
-			return $scope.storedEstimates[harvest.id];
-		};
 
-		produceManager.load(function (produces) {
-			$scope.produces = _.indexBy(produces, "name");
-			processProducts();
-			processHarvests();
-		});
-		harvestManager.load(function (harvests) {
-			$scope.unprocessedHarvests = harvests;
-			processHarvests();
-		});
-		productManager.load(function (products) {
-			$scope.unprocessedProducts = products;
-			processProducts();
-		});
 		$scope.$watch("date", function(date) {
 			$scope.storedEstimates = null;
 			$scope.storedCount = 0;
-			harvestEstimateManager.load(function (storedEstimates) {	
+			harvestEstimateManager.fetch(date).then(function (storedEstimates) {
 				$scope.storedEstimates = {};
 				storedEstimates.forEach(function(estimate) {
 					estimate.date = new Date(Date.parse(estimate.date));
@@ -114,7 +115,7 @@
 				});
 				$scope.storedCount = Object.keys($scope.storedEstimates).length;
 				chooseFirstNotDoneHarvest();
-			}, date);
+			});
 		});
 		var nextHarvest = false;
 		$scope.$watch("location", function (location) {
