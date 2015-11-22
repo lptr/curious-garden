@@ -126,6 +126,7 @@
 		}
 	});
 
+/*
 	printingModule.controller("PriceTagPrinterController", function ($scope, $filter, priceTagManager, log) {
 		$scope.priceTags = [];
 
@@ -174,4 +175,5 @@
 			});
 		}
 	});
+*/
 })();
