@@ -142,9 +142,10 @@
 		}
 	});
 
-	printingModule.controller("OrderPrinterController", function ($scope, $filter, $templateCache, $templateRequest, $compile, $timeout, productManager, harvestEstimateManager, log) {
+	printingModule.controller("OrderPrinterController", function ($scope, $filter, $q, $templateCache, $templateRequest, $compile, $timeout, productManager, harvestEstimateManager, potentialHarvestManager, log) {
 		$scope.products = null;
 		$scope.estimates = null;
+		$scope.potentialHarvests = null;
 
 		$scope.$watch("date", function(date) {
 			$scope.estimates = null;
@@ -157,6 +158,7 @@
 		});
 
 		var now = new Date();
+		$scope.today = now;
 		$scope.date = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		$scope.orders = [];
 
@@ -168,7 +170,7 @@
 				if (product.category.search(/Levelek/i) !== -1) {
 					baseCategory = "Levelek";
 				} else if (product.category.search(/Virágok/i) !== -1) {
-					baseCategory = "Ehető virágok";
+					baseCategory = "Virágok";
 				} else if (product.category.search(/Zöldségek/i) !== -1) {
 					baseCategory = "Zöldségek";
 				} else {
@@ -178,6 +180,11 @@
 			});
 			$scope.products = _.indexBy(products, "sku");
 			log("Termékek betöltve");
+		});
+
+		var potentialHarvestsFetched = potentialHarvestManager.fetch();
+		potentialHarvestsFetched.then(function (potentialHarvests) {
+			$scope.potentialHarvests = potentialHarvests;
 		});
 
 		$scope.printOrders = function() {
@@ -201,7 +208,7 @@
 					}
 
 					printWindow.document.open();
-					printWindow.document.write('<html><head><link rel="stylesheet" type="text/css" href="modules/printing/print-orders.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" /></head><body>' + printContents + '</body></html>');
+					printWindow.document.write('<!doctype html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="modules/printing/print-orders.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" /></head><body>' + printContents + '</body></html>');
 
 					$(printWindow).load(function () {
 						printWindow.focus();
@@ -230,14 +237,17 @@
 				var numberOfMissingProducts = 0;
 
 				$scope.mins = mins = function (minutes) {
-					var min = minutes % 60;
+					var min = Math.abs(minutes) % 60;
 					var hrs = Math.floor(minutes / 60);
 
 					var result = "";
-					if (hrs < 10) {
+					if (Math.abs(hrs) < 10) {
+						if (hrs < 0) {
+							result += "-";
+						}
 						result += "0";
 					}
-					result += hrs;
+					result += Math.abs(hrs);
 					result += ":";
 					if (min < 10) {
 						result += "0";
@@ -274,27 +284,27 @@
 							return estimate.plot;
 						}).sort().join(", ");
 
-						//=if(F14="hűtőben", "", if(D14<>"Levelek", B14*10, (B14*2)+if (E14 <>E13, 4,0))))
+						var potentialPlots = $scope.potentialHarvests.filter(function (harvest) {
+							return harvest.produce == product.produce;
+						}).map(function (harvest) {
+							return harvest.plot;
+						}).sort().join(", ");
+
 						var harvestTime;
-						if (plots === "hűtőben") {
-							harvestTime = 0;
+						if (product.baseCategory !== "Levelek") {
+							harvestTime = count * 10;
 						} else {
-							if (product.baseCategory !== "Levelek") {
-								harvestTime = count * 10;
-							} else {
-								harvestTime = count * 2;
-							}
-							// If need to change plot, add some extra time
-							if (plots != previousOrder.plots) {
-								harvestTime += 4;
-							}
+							harvestTime = count * 2;
 						}
+						// Time to move between plots
+						harvestTime += 4;
 
 						var order = {
 							product: product,
 							count: count,
 							netValue: netPrice * count,
 							plots: plots,
+							potentialPlots: potentialPlots,
 							harvestTime: harvestTime
 						};
 						console.log("Found:", product, order);
@@ -307,55 +317,63 @@
 					}
 
 					var sumNetValue = 0;
-					var sumNetValueToHarvest = 0;
-					var sumUnitsToHarvest = 0;
+					var sumUnits = 0;
 
 					// All times are in minutes
 					var sumHarvestTime = 0;
-					var sumCleanupTime = 30;
+					var dailyCleanupTime = 30;
 					var dailyMeetingTime = 30;
 
 					orders.forEach(function (order) {
 						sumNetValue += order.netValue;
-						if (order.plots !== "hűtőben") {
-							sumNetValueToHarvest += order.netValue;
-							sumUnitsToHarvest += order.count;
-						}
+						sumUnits += order.count;
 						sumHarvestTime += order.harvestTime;
 					});
 
-					var sumWashingTime = sumUnitsToHarvest * 1;
-					var sumLabelingTime = sumUnitsToHarvest * 0.5;
+					var sumWashingTime = sumUnits * 1;
+					var sumLabelingTime = Math.round(sumUnits * 0.5);
 
-					var remainingTimeInDay = 8 * 60 - (sumHarvestTime + sumWashingTime + sumLabelingTime + sumCleanupTime + dailyMeetingTime);
+					var remainingTimeInDay = 8 * 60 - (sumHarvestTime + sumWashingTime + sumLabelingTime + dailyCleanupTime + dailyMeetingTime);
+
+					orders.sort(function (a, b) {
+						var result = a.product.baseCategory.localeCompare(b.product.baseCategory);
+						if (!result) {
+							result = a.plots.localeCompare(b.plots);
+							if (!result) {
+								result = a.product.name.localeCompare(b.product.name);
+							}
+						}
+						return result;
+					});
 
 					$scope.notes = [
+						{
+							name: "Szüretösszeírás dátuma",
+							value: $filter("date")($scope.date, "EEEE, MMM d, y")
+						},
 						{
 							name: "Napi nettó rendelés összesen",
 							value: sumNetValue.toLocaleString() + " Ft"
 						},{
-							name: "Ebből szüretelendő összesen",
-							value: sumNetValueToHarvest.toLocaleString() + " Ft"
-						},{
 							name: "Összesen szüretelendő egységek",
-							value: sumUnitsToHarvest.toLocaleString() + " egység"
+							value: sumUnits.toLocaleString() + " egység"
 						},{
-							name: "Össz várható szedési idő (óra)",
+							name: "Össz várható szedési idő (óra:perc)",
 							value: mins(sumHarvestTime)
 						},{
-							name: "Össz várható mosási idő (óra)",
+							name: "Össz várható mosási idő (óra:perc)",
 							value: mins(sumWashingTime)
 						},{
-							name: "Össz várható matricázási idő (óra)",
+							name: "Össz várható matricázási idő (óra:perc)",
 							value: mins(sumLabelingTime)
 						},{
-							name: "Rendrakás",
-							value: mins(sumCleanupTime)
+							name: "Rendrakás (óra:perc)",
+							value: mins(dailyCleanupTime)
 						},{
-							name: "Napi megbeszélés",
+							name: "Napi megbeszélés (óra:perc)",
 							value: mins(dailyMeetingTime)
 						},{
-							name: "Más feladatokra idő",
+							name: "Más feladatokra idő (óra:perc)",
 							value: mins(remainingTimeInDay)
 						},
 					];

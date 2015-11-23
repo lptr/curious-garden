@@ -1,14 +1,8 @@
 <div id="print">
 
-<h1>Beszerzési lista – {{date | date : 'EEEE, MMM d, y'}}</h1>
+<h1>Beszerzési lista – {{today | date : 'EEEE, MMM d, y'}}</h1>
 
 <table class="table table-condensed table-bordered">
-    <thead>
-        <tr>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
     <tbody>
         <tr ng-repeat="note in notes">
             <td>{{note.name}}</td>
@@ -17,27 +11,37 @@
     </tbody>
 </table>
 
-<table class="table table-condensed table-bordered">
+<table class="table table-condensed table-small table-stripped table-bordered">
     <thead>
         <tr>
             <th></th>
-            <th>Terméknév</th>
+            <th>Termény</th>
             <th>Mennyiség</th>
-            <th>Összesen</th>
-            <th>Alapkategória</th>
-            <th>Ágyás #</th>
-            <th>Célidő</th>
+            <th>Kategória</th>
+            <th>Ágyás (biztos)</th>
+            <th>Ágyás (lesős)</th>
+            <th>Kedzés</th>
+            <th>Végzés</th>
+            <th>Szüretelő</th>
+            <th>Megjegyzés</th>
         </tr>
     </thead>
     <tbody>
         <tr ng-repeat="order in orders">
-            <td class="text-right">{{$index + 1}}</td>
+            <td class="col-md-1 text-right">
+                {{$index + 1}}
+                <br/>
+                <strong><tt>[&nbsp;]</tt></strong>
+            </td>
             <td>{{order.product.produce}}</td>
             <td class="text-right">{{order.count}} &times; {{order.product.unit}}</td>
-            <td class="text-right">{{order.netValue.toLocaleString()}} Ft</td>
             <td>{{order.product.baseCategory}}</td>
             <td>{{order.plots}}</td>
-            <td class="text-right">{{mins(order.harvestTime)}}</td>
+            <td>{{order.potentialPlots}}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
         </tr>
     </tbody>
 </table>

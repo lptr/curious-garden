@@ -10,3 +10,7 @@ tr {
 thead {
     display: table-header-group;
 }
+
+.table-small > tbody > tr > td {
+	font-size: 10.5pt;
+}
