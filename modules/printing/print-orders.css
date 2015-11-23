@@ -1,0 +1,12 @@
+@media print {
+	@page {
+		size: "a4";
+	}
+}
+
+tr {
+    page-break-inside: avoid;
+}
+thead {
+    display: table-header-group;
+}

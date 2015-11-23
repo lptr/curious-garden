@@ -1,0 +1,45 @@
+<div id="print">
+
+<h1>Beszerzési lista – {{date | date : 'EEEE, MMM d, y'}}</h1>
+
+<table class="table table-condensed table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="note in notes">
+            <td>{{note.name}}</td>
+            <td class="text-right">{{note.value}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<table class="table table-condensed table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Terméknév</th>
+            <th>Mennyiség</th>
+            <th>Összesen</th>
+            <th>Alapkategória</th>
+            <th>Ágyás #</th>
+            <th>Célidő</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr ng-repeat="order in orders">
+            <td class="text-right">{{$index + 1}}</td>
+            <td>{{order.product.produce}}</td>
+            <td class="text-right">{{order.count}} &times; {{order.product.unit}}</td>
+            <td class="text-right">{{order.netValue.toLocaleString()}} Ft</td>
+            <td>{{order.product.baseCategory}}</td>
+            <td>{{order.plots}}</td>
+            <td class="text-right">{{mins(order.harvestTime)}}</td>
+        </tr>
+    </tbody>
+</table>
+
+</div>
