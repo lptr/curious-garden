@@ -148,6 +148,10 @@
 		return dataManager("getPriceTags");
 	});
 
+	services.factory("seedManager", function (dataManager) {
+		return dataManager("getSeeds");
+	});
+
 	services.filter('reverse', function() {
 		return function(items) {
 			return items.slice().reverse();
