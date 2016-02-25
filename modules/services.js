@@ -83,63 +83,69 @@
 		return that;
 	});
 
-	var Loader = function(kapaServer, method) {
-		var cache = {};
-		return {
-			fetch: function (data, ignoreErrors) {
-				var key = JSON.stringify(data);
-				var promise = cache[key];
-				if (!promise) {
-					promise = kapaServer.query(method, data, ignoreErrors);
-					cache[key] = promise;
+	services.factory("dataManager", function (kapaServer) {
+		var Loader = function(kapaServer, method) {
+			var cache = {};
+			return {
+				fetch: function (data, ignoreErrors) {
+					var key = JSON.stringify(data);
+					var promise = cache[key];
+					if (!promise) {
+						promise = kapaServer.query(method, data, ignoreErrors);
+						cache[key] = promise;
+					}
+					return promise;
 				}
-				return promise;
-			}
+			};
 		};
-	};
 
-	services.factory("userManager", function (kapaServer) {
-		return new Loader(kapaServer, "getUser");
+		return function (method) {
+			return new Loader(kapaServer, method);
+		};
 	});
 
-	services.factory("accountManager", function (kapaServer) {
-		return new Loader(kapaServer, "getAccounts");
+	services.factory("userManager", function (dataManager) {
+		return dataManager("getUser");
 	});
 
-	services.factory("payeeManager", function (kapaServer) {
-		return new Loader(kapaServer, "getPayees");
+	services.factory("accountManager", function (dataManager) {
+		return dataManager("getAccounts");
 	});
 
-	services.factory("employeeManager", function (kapaServer) {
-		return new Loader(kapaServer, "getEmployees");
+	services.factory("payeeManager", function (dataManager) {
+		return dataManager("getPayees");
 	});
 
-	services.factory("categoryManager", function (kapaServer) {
-		return new Loader(kapaServer, "getCategories");
+	services.factory("employeeManager", function (dataManager) {
+		return dataManager("getEmployees");
 	});
 
-	services.factory("harvestManager", function (kapaServer) {
-		return new Loader(kapaServer, "getHarvests");
+	services.factory("categoryManager", function (dataManager) {
+		return dataManager("getCategories");
 	});
 
-	services.factory("harvestEstimateManager", function (kapaServer) {
-		return new Loader(kapaServer, "getHarvestEstimates");
+	services.factory("harvestManager", function (dataManager) {
+		return dataManager("getHarvests");
 	});
 
-	services.factory("potentialHarvestManager", function (kapaServer) {
-		return new Loader(kapaServer, "getPotentialHarvests");
+	services.factory("harvestEstimateManager", function (dataManager) {
+		return dataManager("getHarvestEstimates");
 	});
 
-	services.factory("produceManager", function (kapaServer) {
-		return new Loader(kapaServer, "getProduces");
+	services.factory("potentialHarvestManager", function (dataManager) {
+		return dataManager("getPotentialHarvests");
 	});
 
-	services.factory("productManager", function (kapaServer) {
-		return new Loader(kapaServer, "getProducts");
+	services.factory("produceManager", function (dataManager) {
+		return dataManager("getProduces");
 	});
 
-	services.factory("priceTagManager", function (kapaServer) {
-		return new Loader(kapaServer, "getPriceTags");
+	services.factory("productManager", function (dataManager) {
+		return dataManager("getProducts");
+	});
+
+	services.factory("priceTagManager", function (dataManager) {
+		return dataManager("getPriceTags");
 	});
 
 	services.filter('reverse', function() {
