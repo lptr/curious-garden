@@ -2,7 +2,6 @@
 
 - Igényterv összeállítása (papíron)
 
-- ID
 - Vetés időpontja
 - Termény
 - Mag (ajánlva a termény alapján, felülírható)
@@ -10,10 +9,15 @@
 - Mennyiség (szapláda? sáv? sor?)
 - Mibe (kocka vagy földbe)
 - Növénytávolság (cm, magból default felajánlva)
-- Szorzó (aka mag csírázási képessége)
 - Sortávolság (")
 - Vetésmélység (")
-- Megjegyzés
+- Szorzó (aka mag csírázási képessége)
+
+- Vetések
+    - ID
+    - Ágyás
+    - Megjegyzés
+
 
 - Összefoglaló:
     - Csírázás időpontja
