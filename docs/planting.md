@@ -90,7 +90,7 @@
 ## Rendelesre szuretelheto vetesek (query)
 
 - cel: milyen termeny melyik agyasban talalhato, de csak a rendelesre szuretelhetok (agyas allapot = 'rendelesre')
-- celkozonseg: 
+- celkozonseg:
 - kulcs: termeny (termenynev)
 - input: veteslog
 
@@ -98,6 +98,6 @@
 ## Szuretelheto osszes (query)
 
 - cel: milyen termeny melyik agyasban talalhato, osszes termeny
-- celkozonseg: 
+- celkozonseg:
 - kulcs: termeny (termenynev)
 - input: veteslog

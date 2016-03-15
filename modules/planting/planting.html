@@ -1,0 +1,313 @@
+<form name="planting" class="form-horizontal" novalidate ng-submit="submit()">
+<fieldset>
+
+<!-- ID -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">ID</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="produce"
+				type="number"
+				class="form-control clearable"
+				ng-model="id"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-tag"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Produce -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Termény</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="produce"
+				type="text"
+				class="form-control clearable"
+				ng-model="produce"
+				uib-typeahead="produce.name for produce in find(produces, $viewValue, 'name')"
+				uib-typeahead-min-length="0"
+				placeholder="mit vetünk?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span ng-show="produces.length" class="glyphicon glyphicon-apple"></span>
+				<span ng-hide="produces.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Date -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Vetés időpontja</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="date"
+				ng-model="date"
+				type="date"
+				class="form-control"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-calendar"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Area -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Terület</label>
+	<div class="col-md-2 col-xs-4">
+		<div class="input-group">
+			<input name="quantity"
+				type="number"
+				class="form-control"
+				ng-model="quantity"
+				placeholder="mennyit vetünk?"
+				ng-required="true"/>
+		</div>
+	</div>
+	<div class="col-md-2 col-xs-8">
+		<div class="input-group">
+			<select name="unit"
+				class="form-control"
+				ng-model="unit"
+				ng-options="unit for unit in units"
+				ng-required="true">
+			</select>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-th"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Location and Plot -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Ágyás</label>
+	<div class="col-md-2">
+			<select name="location"
+				class="form-control"
+				ng-model="location"
+				ng-options="location.name for location in locations"
+				ng-required="true"
+				ng-disabled="!locations.length">
+			</select>
+	</div>
+	<div class="col-md-2">
+		<div class="input-group">
+			<select name="plot"
+				class="form-control"
+				ng-model="plot"
+				ng-options="('#' + plot) for plot in location.plots"
+				ng-required="true"
+				ng-disabled="!location">
+			</select>
+			<span class="input-group-addon">
+				<span ng-show="locations.length" class="glyphicon glyphicon-th-large"></span>
+				<span ng-hide="locations.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Experiment -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Kísérlet</label>
+	<div class="col-md-2">
+		<input name="experiment"
+			class="form-control"
+			type="number"
+			ng-model="experiment" />
+	</div>
+	<div class="col-md-2">
+		<div class="input-group">
+			<input name="parameter"
+				class="form-control"
+				type="number"
+				ng-model="parameter" />
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-adjust"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Add item -->
+<div class="form-group">
+	<div class="col-md-4 col-md-offset-4">
+		<button type="button"
+			class="btn btn-block btn-success"
+			ng-click="calculateDefaults()">
+			<span class="glyphicon glyphicon-arrow-down"></span>
+			<span>Részletek kiszámítása</span>
+		</button>
+	</div>
+</div>
+
+<!-- Secondary parameters -->
+
+<!-- Seed -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Mag</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="seed"
+				type="text"
+				class="form-control clearable"
+				ng-model="seed"
+				uib-typeahead="seed.name for seed in find(seeds, $viewValue, 'name')"
+				uib-typeahead-min-length="0"
+				placeholder="milyen magot vetünk?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span ng-show="seeds.length" class="glyphicon glyphicon-record"></span>
+				<span ng-hide="seeds.length" class="glyphicon glyphicon-refresh"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Basket -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Kosár</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="basket"
+				class="form-control"
+				ng-model="basket"
+				ng-options="basket for basket in ['K', 'A', 'B', 'C', 'D']"
+				ng-required="true">
+			</select>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-filter"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Target -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Mibe vetünk?</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<select name="target"
+				class="form-control"
+				ng-model="target"
+				ng-options="target for target in ['kocka', 'föld']"
+				ng-required="true"
+				ng-disabled="!seed">
+			</select>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-download-alt"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Plant distance -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Növénytávolság</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="plantDistance"
+				type="number"
+				class="form-control"
+				ng-model="plantDistance"
+				placeholder="milyen messze vannak a növények egymástól a sorban?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-resize-vertical"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Row distance -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Sortávolság</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="rowDistance"
+				type="number"
+				class="form-control"
+				ng-model="rowDistance"
+				placeholder="milyen messze vannak a sorok egymástól?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-resize-horizontal"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Depth -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Vetési mélység</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="depth"
+				type="number"
+				class="form-control"
+				ng-model="depth"
+				placeholder="milyen mélyre ültetünk?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-sort-by-attributes"></span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Multiplier -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label">Plusz magmennyiség</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<input name="extraSeeds"
+				type="number"
+				class="form-control"
+				ng-model="extraSeeds"
+				placeholder="mennyivel vetünk több magot?"
+				ng-required="true"/>
+			<span class="input-group-addon">
+				<span style="font-weight: bold;">%</span>
+			</span>
+		</div>
+	</div>
+</div>
+
+<!-- Memo -->
+<div class="form-group" show-errors>
+	<label class="col-md-4 control-label" for="memo">Megjegyzés</label>
+	<div class="col-md-4">
+		<div class="input-group">
+			<textarea name="memo" ng-model="memo" type="text" placeholder="bármi egyéb információ?" class="form-control clearable"></textarea>
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-paperclip"></span>
+			</span>
+		</div>
+		<div class="input-group">
+			<span class="help-block">Ha kertészeti probléma van az ágyással, azt is írd ide</span>
+		</div>
+	</div>
+</div>
+
+<!-- Submit -->
+<div class="form-group">
+	<label class="col-md-4 control-label"></label>
+	<div class="col-md-4">
+		<button type="button" class="btn btn-danger" ng-click="reset()">
+			<span class="glyphicon glyphicon-trash"></span>
+			Töröl
+		</button>
+		<button type="submit" class="btn btn-primary pull-right">
+			<span class="glyphicon glyphicon-ok"></span>
+			Rögzít
+		</button>
+	</div>
+</div>
+</fieldset>
+</form>
