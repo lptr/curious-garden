@@ -132,6 +132,10 @@
 		return dataManager("getHarvestEstimates");
 	});
 
+	services.factory("plantingLabelManager", function (dataManager) {
+		return dataManager("getPlantingLabels");
+	});
+
 	services.factory("plotManager", function (dataManager) {
 		return dataManager("getPlots");
 	});

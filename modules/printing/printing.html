@@ -2,7 +2,7 @@
 
 <div ng-controller="LabelPrinterController" class="panel panel-default">
 	<div class="panel-heading">
-		<span>Matricák</span>
+		<span>Termék matricák</span>
 		<img src="images/logo-hu.png" style="width: 16px; height: 16px;"/>
 		<img src="images/logo-en.png" style="width: 16px; height: 16px;"/>
 	</div>
@@ -32,6 +32,28 @@
 						<button type="submit"
 							class="btn btn-block btn-primary"
 							ng-disabled="labels.length === 0">
+							<span class="glyphicon glyphicon-print"></span>
+							<span>Nyomtat</span>
+						</button>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>
+
+<div ng-controller="PlantingLabelPrinterController" class="panel panel-default">
+	<div class="panel-heading">
+		<span>Vetési matricák</span>
+	</div>
+	<div class="panel-body">
+		<form name="plantingLabelPrinter" novalidate ng-submit="printLabels()">
+			<fieldset>
+				<div class="form-group">
+					<div class="col-md-4 col-md-offset-4">
+						<button type="submit"
+							class="btn btn-block btn-primary"
+							ng-disabled="labels.length == 0">
 							<span class="glyphicon glyphicon-print"></span>
 							<span>Nyomtat</span>
 						</button>

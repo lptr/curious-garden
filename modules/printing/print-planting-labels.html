@@ -1,0 +1,53 @@
+<div id="print">
+<div class="label" ng-repeat="label in labels">
+    <div class="identification">
+        <div class="id">{{label.id}}</div>
+        <div class="produce">{{label.produce}}</div>
+        <div class="simpleId">{{label.simpleId}}</div>
+    </div>
+
+    <div class="left">
+        <div class="experiment" ng-show="label.experiment">
+            <div class="title">Kísérlet:</div>
+            <div class="data experiment">{{label.experiment}}</div>
+            <div class="title">/</div>
+            <div class="data experimentParam">{{label.experimentParam}}</div>
+        </div>
+
+        <div class="planting">
+            <div class="data plantingDate">{{label.plantingDate | date : 'MMM d'}}</div>
+            <div class="title">@</div>
+            <div class="data plot">#{{label.plot}}</div>
+            <div class="data strip" ng-show="lable.strip">{{label.strip}}</div>
+            <div class="title">–</div>
+            <div class="data plantingCount">{{label.plantingCount}}</div>
+            <div class="data plantingUnit">{{label.plantingUnit}}</div>
+        </div>
+
+        <div class="parameters">
+            <div class="data rowSpacing">{{label.rowSpacing}} cm</div>
+            <div class="title">&times;</div>
+            <div class="data plantSpacing">{{label.plantSpacing}} cm</div>
+            <div class="title">&darr;</div>
+            <div class="data plantingDepth">{{label.plantingDepth}} cm</div>
+            <div class="title">/</div>
+            <div class="data basket">{{label.basket}}</div>
+            <div class="title">kosár</div>
+        </div>
+    </div>
+    <div class="right">
+        <div class="germination">
+            <div class="data germinationDate">{{label.germinationDate | date : 'MMM d'}}</div>
+            <div class="title">(csíra)</div>
+        </div>
+        <div class="firstHarvest">
+            <div class="data firstHarvestDate">{{label.firstHarvestDate | date : 'MMM d'}}</div>
+            <div class="title">(szüret)</div>
+        </div>
+        <div class="lastHarvest">
+            <div class="data lastHarvestDate">{{label.lastHarvestDate | date : 'MMM d'}}</div>
+            <div class="title">(halál)</div>
+        </div>
+    </div>
+</div>
+</div>

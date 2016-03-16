@@ -1,0 +1,92 @@
+@import url(https://fonts.googleapis.com/css?family=BenchNine:400,700,300&subset=latin,latin-ext);
+
+@media print {
+	@page {
+		size: "a4";
+		margin: 0;
+	}
+	.label {
+		page-break-inside: avoid;
+	}
+	.label:nth-child(12n) {
+		page-break-after: always;
+	}
+}
+
+html, body {
+	margin: 0;
+	width: 210mm;
+	font-family: 'BenchNine', sans-serif;
+	font-size: 2.6mm;
+}
+
+.label {
+	float: left;
+	width: 43.3mm;
+	height: 20.6mm;
+	border-right: 0.5mm dashed white;
+	border-bottom: 0.5mm dashed white;
+	margin: 0;
+	overflow: hidden;
+	padding: 4mm;
+}
+
+.label:nth-child(4n) {
+	border-right: 0;
+}
+
+.label .data,
+.label .title {
+	padding: 0.25mm 0.1mm;
+	overflow: hidden;
+}
+
+.label .data,
+.label .title {
+	display: inline-block;
+}
+
+.label .data {
+	font-weight: bold;
+}
+
+.label .title {
+	color: #888;
+}
+
+.label .identification {
+	font-weight: bold;
+	border-bottom: 0.25mm dashed black;
+}
+
+.label .identification .data {
+	padding-top: 0;
+	padding-bottom: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.label .left {
+	float: left;
+	clear: left;
+	width: 30mm;
+	border-right: 0.25mm dashed black;
+	margin-right: 0.5mm;
+}
+
+.label .right {
+	clear: right;
+	padding-left: 2mm;
+}
+
+.label .id {
+	font-size: 5.2mm;
+	font-weight: bold;
+	float: left;
+	padding: 0;
+	margin: 0;
+	margin-right: 0.5mm;
+	padding-left: 0.25mm;
+	padding-right: 0.25mm;
+	border: 0.5mm solid black;
+}

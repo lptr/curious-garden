@@ -142,7 +142,50 @@
 		}
 	});
 
-	printingModule.controller("OrderPrinterController", function ($scope, $filter, $q, $templateCache, $templateRequest, $compile, $timeout, productManager, harvestEstimateManager, potentialHarvestManager, log) {
+	printingModule.controller("PlantingLabelPrinterController", function ($scope, $filter, $templateRequest, $compile, $timeout, plantingLabelManager, log) {
+		$scope.labels = [];
+
+		log("Vetés matricák betöltése... (amíg tölt, nem lehet matricát nyomtatni)");
+		var plantingLabelsFetched = plantingLabelManager.fetch();
+		plantingLabelsFetched.then(function (labels) {
+			labels.forEach(function (label) {
+				label.plantingDate = new Date(Date.parse(label.plantingDate));
+				label.germinationDate = new Date(Date.parse(label.germinationDate));
+				label.firstHarvestDate = new Date(Date.parse(label.firstHarvestDate));
+				label.lastHarvestDate = new Date(Date.parse(label.lastHarvestDate));
+			});
+			$scope.labels = labels;
+			log("Vetés matricák betöltve");
+		});
+
+		$scope.printLabels = function() {
+			$scope.title = "Title, ho!";
+			$templateRequest("modules/printing/print-planting-labels.html").then(function (template) {
+				$timeout(function () {
+					var linkFn = $compile(template);
+					var linkedContent = linkFn($scope);
+					$scope.$apply();
+					var printContents = linkedContent.html();
+
+					var printWindow = window.open("about:blank", "KAPA_PrintOrders", "width=800, height=600");
+					if (!printWindow) {
+						alert("Nem tudom megnyitni a nyomtatási ablakot");
+						return;
+					}
+
+					printWindow.document.open();
+					printWindow.document.write('<!doctype html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="modules/printing/print-planting-labels.css" /></head><body>' + printContents + '</body></html>');
+
+					$(printWindow).load(function () {
+						printWindow.focus();
+						printWindow.print();
+					});
+				}, 0);
+			});
+		}
+	});
+
+	printingModule.controller("OrderPrinterController", function ($scope, $filter, $templateRequest, $compile, $timeout, productManager, harvestEstimateManager, potentialHarvestManager, log) {
 		$scope.products = null;
 		$scope.estimates = null;
 		$scope.potentialHarvests = null;
