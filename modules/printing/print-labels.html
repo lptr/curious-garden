@@ -2,56 +2,32 @@
 <html>
 <head>
 	<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="print-labels.css" />
 <style>
-@media print {
-	@page {
-		size: auto;
-		margin: 0;
-	}
-	.label {
-		page-break-inside: avoid;
-	}
-	.label:nth-child(12n) {
-		page-break-after: always;
-	}
-}
-html, body {
-	margin: 0;
-	width: 210mm;
-	font-family: "Helvetica Neue", sans-serif;
-	font-size: 3mm;
-}
+@import url(https://fonts.googleapis.com/css?family=Special+Elite);
 .label {
-	float: left;
-	width: 43.3mm;
-	height: 20.6mm;
-	border-right: 0.5mm dashed white;
-	border-bottom: 0.5mm dashed white;
-	margin: 0;
-	overflow: hidden;
-	padding: 4.5mm;
 	background-image: url("../../images/logo-hu-small.png");
 	background-size: 15mm 15mm;
 	background-repeat: no-repeat;
 	background-position: 92% 80%;
 }
-.label:nth-child(4n) {
-	border-right: 0;
-}
-.customer {
+
+.label .customer {
 	font-weight: bold;
 	margin-bottom: 0.5em;
 	text-decoration: underline;
 }
-.hu {
+.label .hu {
 	font-weight: bold;
 }
-.date {
-	font-family: "American Typewriter", monospace;
+.label .date {
+	font-family: "Special Elite", monospace;
 	margin-top: 0.5em;
 	font-size: 3mm;
 }
-.hu, .en, .date {
+.label .hu,
+.label .en,
+.label .date {
 	width: 75%;
 }
 </style>

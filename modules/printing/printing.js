@@ -174,7 +174,13 @@
 					}
 
 					printWindow.document.open();
-					printWindow.document.write('<!doctype html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="modules/printing/print-planting-labels.css" /></head><body>' + printContents + '</body></html>');
+					printWindow.document.write(
+						'<!doctype html><html><head>'
+						+ '<meta charset="utf-8"/>'
+						+ '<link rel="stylesheet" type="text/css" href="modules/printing/print-labels.css" />'
+						+ '<link rel="stylesheet" type="text/css" href="modules/printing/print-planting-labels.css" />'
+						+ '</head><body>' + printContents + '</body></html>'
+					);
 
 					$(printWindow).load(function () {
 						printWindow.focus();
@@ -251,7 +257,14 @@
 					}
 
 					printWindow.document.open();
-					printWindow.document.write('<!doctype html><html><head><meta charset="utf-8"/><link rel="stylesheet" type="text/css" href="modules/printing/print-orders.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" /></head><body>' + printContents + '</body></html>');
+					printWindow.document.write(
+						'<!doctype html><html><head>'
+						+ '<meta charset="utf-8"/>'
+						+ '<link rel="stylesheet" type="text/css" href="modules/printing/print-orders.css" />'
+						+ '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />'
+						+ '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css" />'
+						+ '</head><body>' + printContents + '</body></html>'
+					);
 
 					$(printWindow).load(function () {
 						printWindow.focus();
