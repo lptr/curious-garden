@@ -1,9 +1,13 @@
 @import url(https://fonts.googleapis.com/css?family=BenchNine:400,700,300&subset=latin,latin-ext);
 
 @media print {
+	#header, #footer, #nav {
+		display: none !important;
+	}
 	@page {
 		size: "a4";
 		margin: 0;
+		padding: 0;
 	}
 	.label {
 		page-break-inside: avoid;
@@ -15,15 +19,21 @@
 
 html, body {
 	margin: 0;
+	padding: 0;
 	width: 210mm;
 	font-family: 'BenchNine', sans-serif;
-	font-size: 2.6mm;
+	font-size: 3mm;
+}
+
+body {
+	margin-top: -2mm;
+	margin-left: 3.5mm;
 }
 
 .label {
 	float: left;
-	width: 43.3mm;
-	height: 20.6mm;
+	width: 43.3mm; /* 43.3mm; */
+	height: 19.75mm; /* 20.6mm; */
 	border-right: 0.5mm dashed white;
 	border-bottom: 0.5mm dashed white;
 	margin: 0;
@@ -37,7 +47,14 @@ html, body {
 
 .label .data,
 .label .title {
-	padding: 0.25mm 0.1mm;
+	padding: 0;
+	overflow: hidden;
+}
+
+.label .section {
+	padding: 0;
+	margin-bottom: -1mm;
+	white-space: nowrap;
 	overflow: hidden;
 }
 
