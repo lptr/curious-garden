@@ -1,5 +1,5 @@
 <div id="print">
-<div class="label" ng-repeat="label in labels">
+<div class="label" ng-repeat="label in labels | filter : { selected: true } : true">
     <div class="identification">
         <div class="id">{{label.id}}</div>
         <div class="produce">{{label.produce}}</div>

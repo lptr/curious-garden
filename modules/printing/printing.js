@@ -144,11 +144,17 @@
 
 	printingModule.controller("PlantingLabelPrinterController", function ($scope, $filter, $templateRequest, $compile, $timeout, plantingLabelManager, log) {
 		$scope.labels = [];
+		$scope.selectAll = function (selected) {
+			$scope.labels.forEach(function (label) {
+				label.selected = selected;
+			});
+		}
 
 		log("Vetés matricák betöltése... (amíg tölt, nem lehet matricát nyomtatni)");
 		var plantingLabelsFetched = plantingLabelManager.fetch();
 		plantingLabelsFetched.then(function (labels) {
 			labels.forEach(function (label) {
+				label.selected = true;
 				label.plantingDate = new Date(Date.parse(label.plantingDate));
 				label.germinationDate = new Date(Date.parse(label.germinationDate));
 				label.firstHarvestDate = new Date(Date.parse(label.firstHarvestDate));
@@ -159,7 +165,6 @@
 		});
 
 		$scope.printLabels = function() {
-			$scope.title = "Title, ho!";
 			$templateRequest("modules/printing/print-planting-labels.html").then(function (template) {
 				$timeout(function () {
 					var linkFn = $compile(template);
