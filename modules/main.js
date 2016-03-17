@@ -6,7 +6,9 @@
 		"kapa.harvest",
 		"kapa.work",
 		"kapa.import",
-		"kapa.printing",
+		"kapa.printing.orders",
+		"kapa.printing.planting",
+		"kapa.printing.products",
 		"ngRoute",
 		"ui.bootstrap.modal"
 	]);

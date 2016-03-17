@@ -1,0 +1,60 @@
+<div ng-controller="OrderPrinterController" class="panel panel-default">
+	<div class="panel-heading">
+		<span>Beszerzési lista</span>
+	</div>
+	<div class="panel-body">
+		<form name="orderPrinter" class="form-horizontal" novalidate ng-submit="printOrders()">
+			<fieldset>
+
+				<!-- Date -->
+				<div class="form-group" show-errors>
+					<label class="col-md-4 control-label">Szüretösszeírás dátuma</label>
+					<div class="col-md-4">
+						<div class="input-group">
+							<input name="date"
+								ng-model="date"
+								type="date"
+								class="form-control"
+								ng-required="true"/>
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-calendar"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- File -->
+				<div class="form-group">
+					<label class="col-md-4 control-label">"Beszerzési lista" fájl a webshopból</label>
+					<div class="col-md-4">
+						<div class="input-group">
+							<input name="file"
+								type="file"
+								class="form-control"
+								ng-model="file"
+								accept="text/csv"
+								ng-required="true"
+								onchange="angular.element(this).scope().filePicked(this)"
+								ng-disabled="!products || !estimates || !potentialHarvests" />
+							<span class="input-group-addon">
+								<span class="glyphicon glyphicon-file"></span>
+							</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Submit -->
+				<div class="form-group">
+					<div class="col-md-4 col-md-offset-4">
+						<button type="submit"
+							class="btn btn-block btn-primary"
+							ng-disabled="orders.length === 0">
+							<span class="glyphicon glyphicon-print"></span>
+							<span>Nyomtat</span>
+						</button>
+					</div>
+				</div>
+			</fieldset>
+		</form>
+	</div>
+</div>

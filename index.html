@@ -62,11 +62,17 @@
 	<link rel="stylesheet" href="modules/import/import.css" />
 	<script src="modules/import/import.js"></script>
 
-	<link rel="stylesheet" href="modules/printing/printing.css" />
-	<script src="modules/printing/printing.js"></script>
-
 	<link rel="stylesheet" href="modules/harvest/harvest.css" />
 	<script src="modules/harvest/harvest.js"></script>
+
+	<link rel="stylesheet" href="modules/printing/orders/module.css" />
+	<script src="modules/printing/orders/module.js"></script>
+
+	<link rel="stylesheet" href="modules/printing/planting/module.css" />
+	<script src="modules/printing/planting/module.js"></script>
+
+	<link rel="stylesheet" href="modules/printing/products/module.css" />
+	<script src="modules/printing/products/module.js"></script>
 
 <script type="text/ng-template" id="save-dialog.html">
 	<div class="modal-header">
@@ -155,11 +161,17 @@
 						Adatok
 					</a>
 				</li>
-				<li ng-class="{ active: isActive('^/printing')}" ng-show="user.access.printing">
-					<a href="#printing">
+				<li class="dorpdown" ng-class="{ active: isActive('^/printing')}" ng-show="user.access.printing">
+					<a class="dropdown-toggle" data-toggle="dropdown" role="button">
 						<span class="glyphicon glyphicon-print"></span>
 						Nyomtatás
+						<span class="caret"></span>
 					</a>
+		            <ul class="dropdown-menu">
+		              <li><a href="#printing/orders">Beszerzési lista</a></li>
+		              <li><a href="#printing/planting">Vetési matricák</a></li>
+		              <li><a href="#printing/products">Termék matricák</a></li>
+		            </ul>
 				</li>
 			</ul>
 			<p class="navbar-text navbar-right">{{user.name}}</p>
